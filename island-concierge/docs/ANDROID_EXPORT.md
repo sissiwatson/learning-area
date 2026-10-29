@@ -66,24 +66,33 @@ fichiers).
 
 ## Liste de vérification sur appareil
 
-À remplir sur un vrai téléphone ; rien de cette liste n'a encore été validé.
+Colonne « Appareil réel » : résultat de la recette sur téléphone Android.
+Colonne « Simulé » : couvert par les tests GUT ou les captures (gestes
+rejoués, renderer de compatibilité) — **ce n'est pas une validation sur
+appareil**.
 
-| # | Vérification | Résultat attendu | OK ? |
-|---|--------------|------------------|------|
-| 1 | Lancement | Carte de Mahana en paysage, plein écran, sans écran noir | |
-| 2 | Glisser à un doigt | La carte suit le doigt sans à-coup ; inertie naturelle au lâcher | |
-| 3 | Pincer | Zoom centré entre les doigts, sans saut au début ni à la fin | |
-| 4 | Lever un doigt pendant un pincement | Pas de saut ; le glisser continue | |
-| 5 | Limites | Impossible de perdre l'île ; zoom min = île entière, max = ×2 | |
-| 6 | Tap sur le bungalow (sol et toit) | Panneau ouvert, contour jaune, carte immobile | |
-| 7 | Tap « imprécis » (doigt qui bouge un peu) | Toujours reconnu comme un tap | |
-| 8 | Boutons du panneau | Faciles à toucher, texte lisible sans zoomer | |
-| 9 | Glisser sur le panneau | La carte ne bouge pas | |
-| 10 | Encoche / bords arrondis | Titre et panneau non masqués | |
-| 11 | Mise en arrière-plan puis retour | Le jeu reprend sans erreur (pas encore de sauvegarde : l'état peut être perdu si Android ferme l'app) | |
-| 12 | Fluidité | Pas de saccade visible en déplaçant la carte au zoom min | |
+Recette n°1 — APK 0.1.0 (commit `8f0f47d`), réalisée par l'équipe produit.
+Modèle de téléphone et version d'Android : non communiqués.
+
+| # | Vérification | Résultat attendu | Appareil réel | Simulé |
+|---|--------------|------------------|---------------|--------|
+| 1 | Lancement | Carte de Mahana en paysage, plein écran, sans écran noir | ✅ | — |
+| 2 | Glisser à un doigt | La carte suit le doigt sans à-coup ; inertie naturelle au lâcher | ✅ (inertie non mentionnée) | ✅ |
+| 3 | Pincer | Zoom centré entre les doigts, sans saut au début ni à la fin | ✅ | ✅ |
+| 4 | Lever un doigt pendant un pincement | Pas de saut ; le glisser continue | ⏳ non vérifié | ✅ |
+| 5 | Limites | Impossible de perdre l'île ; zoom min = île entière, max = ×2 | ✅ | ✅ |
+| 6 | Tap sur le bungalow (sol et toit) | Panneau ouvert, contour jaune, carte immobile | ✅ (sol ; toit non précisé) | ✅ |
+| 7 | Tap « imprécis » (doigt qui bouge un peu) | Toujours reconnu comme un tap | ⏳ non vérifié | ✅ |
+| 8 | Boutons du panneau | Faciles à toucher, texte lisible sans zoomer | ✅ | — |
+| 9 | Glisser sur le panneau | La carte ne bouge pas | ✅ | ✅ |
+| 10 | Encoche / bords arrondis | Titre et panneau non masqués | ⏳ non vérifié | — |
+| 11 | Mise en arrière-plan puis retour | Le jeu reprend sans erreur (pas encore de sauvegarde : l'état peut être perdu si Android ferme l'app) | ⏳ non vérifié | — |
+| 12 | Fluidité | Pas de saccade visible en déplaçant la carte au zoom min | ✅ | — |
 
 Merci de noter le modèle de téléphone et la version d'Android.
+
+À vérifier lors de la prochaine recette : n° 4, 7, 10, 11, l'inertie au lâcher
+et le tap sur le toit du bungalow.
 
 ## Construction dans l'environnement de développement de Claude
 

@@ -2,17 +2,18 @@
 
 Légende : ✅ fait · 🔜 prochaine étape · ⬜ à faire · 💡 idée à préciser.
 Une tâche n'est cochée que si elle a été exécutée ou testée ; ce qui reste à
-valider sur appareil est indiqué explicitement.
+valider sur appareil est indiqué explicitement. 📱 = validé sur Android réel
+(recette n°1, APK 0.1.0) ; 🧪 = vérifié par tests automatisés ou simulation.
 
 ## V0.1 — boucle de réservation jouable
 
 | Statut | Étape | Reste à valider |
 |--------|-------|-----------------|
-| ✅ | 0 · Squelette du projet, GUT, i18n | — |
-| ✅ | 1 · Carte isométrique de Mahana | Rendu avec le renderer Mobile (captures faites en compatibilité OpenGL) |
-| ✅ | 2 · Caméra tactile (glisser, pincer, molette, limites, inertie) | Gestes réels sur appareil Android ; réglage du seuil de tap et de l'inertie au doigt |
-| ✅ | 3 · Bungalow Hibiscus interactif | Lisibilité du panneau et taille des boutons sur un vrai téléphone |
-| ✅ | 4 · Export Android debug (APK construit, signé, vérifié) | **Installation et liste de vérification sur appareil** (`ANDROID_EXPORT.md`) |
+| ✅ 🧪 | 0 · Squelette du projet, GUT, i18n | — |
+| ✅ 🧪 📱 | 1 · Carte isométrique de Mahana | — (affichage validé sur appareil) |
+| ✅ 🧪 📱 | 2 · Caméra tactile (glisser, pincer, molette, limites, inertie) | Sur appareil : lever un doigt pendant un pincement, tap imprécis, inertie |
+| ✅ 🧪 📱 | 3 · Bungalow Hibiscus interactif | Sur appareil : tap sur le toit |
+| ✅ 🧪 📱 | 4 · Export Android debug | Sur appareil : encoche, mise en arrière-plan |
 | 🔜 | 5 · Économie de base (coquillages, inventaire, HUD) | |
 | ⬜ | 6 · Base de données et validation de `data/` | |
 | ⬜ | 7 · Réservations (bureau, durée de séjour, commission) | |
