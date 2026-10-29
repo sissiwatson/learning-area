@@ -5,3 +5,24 @@ MAP_MAHANA,Mahana
 ZONE_EAST_COAST,Côte Est
 ZONE_WEST_JUNGLE,Jungle de l'Ouest
 ZONE_LOCKED,Zone verrouillée
+BUILDING_BUNGALOW_HIBISCUS,Bungalow Hibiscus
+ROLE_LODGING,Hébergement
+LODGING_STATE_VACANT,Libre
+LODGING_STATE_BOOKED,Réservé
+LODGING_STATE_READY,Prêt à accueillir
+LODGING_STATE_OCCUPIED,Occupé
+LODGING_STATE_STAY_COMPLETE,Séjour terminé
+ACTION_ACCEPT_BOOKING,Accepter une réservation
+ACTION_PREPARE,Préparer le bungalow
+ACTION_WELCOME_GUESTS,Accueillir les voyageurs
+ACTION_END_STAY,Terminer le séjour
+ACTION_COLLECT_COMMISSION,Encaisser la commission
+PANEL_OWNER,Propriétaire
+PANEL_STATE,État
+PANEL_CAPACITY,Capacité
+PANEL_GUESTS,%d voyageurs
+PANEL_ACTIONS,Actions disponibles
+PANEL_NO_ACTION,Aucune action pour le moment
+PANEL_CLOSE,Fermer
+ERR_INVALID_ACTION,Action impossible dans l'état actuel
+ERR_UNKNOWN_LODGING,Logement introuvable

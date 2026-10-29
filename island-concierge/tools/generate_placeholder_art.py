@@ -5,6 +5,8 @@ Sorties (dans assets/) :
   tiles/terrain_atlas.png  8 tuiles iso 128×64 : océan, lagon, sable, herbe,
                            jungle, chemin, parcelle constructible, voile verrouillé
   tiles/decor_atlas.png    2 décors 128×160 : palmier, buisson
+  buildings/bungalow_hibiscus.png  bungalow sur 2×2 cellules (256×256, pied du
+                           bâtiment = centre de l'emprise au pixel (128, 192))
 
 Le tirage aléatoire est fixé : relancer le script redonne les mêmes images.
 Usage : python3 tools/generate_placeholder_art.py   (nécessite Pillow)
@@ -148,6 +150,52 @@ def bush(rng):
     return img
 
 
+def iso(x, y, z=0.0):
+    """Coordonnées d'emprise (0..2 cellules) et hauteur → pixels d'une image 256×256."""
+    return (128 + (x - y) * 64, 128 + (x + y) * 32 - z)
+
+
+def box(d, x0, y0, x1, y1, z0, z1, top, right, left):
+    """Pavé iso : dessine les faces visibles (dessus, face +x, face +y)."""
+    d.polygon([iso(x1, y0, z0), iso(x1, y1, z0), iso(x1, y1, z1), iso(x1, y0, z1)], fill=right)
+    d.polygon([iso(x0, y1, z0), iso(x1, y1, z0), iso(x1, y1, z1), iso(x0, y1, z1)], fill=left)
+    d.polygon([iso(x0, y0, z1), iso(x1, y0, z1), iso(x1, y1, z1), iso(x0, y1, z1)], fill=top)
+
+
+def bungalow_hibiscus():
+    img = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.polygon([iso(0.1, 0.1), iso(1.95, 0.1), iso(1.95, 1.95), iso(0.1, 1.95)], fill=(0, 0, 0, 50))  # ombre
+    box(d, 0.15, 0.15, 1.85, 1.85, 0, 10, (196, 150, 98, 255), (150, 108, 66, 255), (170, 124, 78, 255))  # terrasse
+    for i in range(1, 7):  # lames de la terrasse
+        t = 0.15 + i * 1.7 / 7
+        d.line((iso(t, 0.15, 10), iso(t, 1.85, 10)), fill=(170, 126, 80, 255), width=1)
+    box(d, 0.45, 0.45, 1.55, 1.55, 10, 78, (230, 200, 150, 255), (205, 168, 116, 255), (232, 196, 142, 255))  # murs
+    # porte (face +y) et fenêtre (face +x), encadrements turquoise
+    d.polygon([iso(0.85, 1.55, 10), iso(1.15, 1.55, 10), iso(1.15, 1.55, 54), iso(0.85, 1.55, 54)], fill=(40, 150, 160, 255))
+    d.polygon([iso(0.9, 1.55, 12), iso(1.1, 1.55, 12), iso(1.1, 1.55, 50), iso(0.9, 1.55, 50)], fill=(120, 72, 40, 255))
+    d.polygon([iso(1.55, 0.75, 34), iso(1.55, 1.25, 34), iso(1.55, 1.25, 62), iso(1.55, 0.75, 62)], fill=(40, 150, 160, 255))
+    d.polygon([iso(1.55, 0.8, 37), iso(1.55, 1.2, 37), iso(1.55, 1.2, 59), iso(1.55, 0.8, 59)], fill=(170, 225, 240, 255))
+    # toit de chaume à quatre pans
+    e0, e1, ze, apex = 0.25, 1.75, 74, iso(1.0, 1.0, 150)
+    back = (196, 150, 60, 255)
+    d.polygon([iso(e0, e0, ze), iso(e1, e0, ze), apex], fill=back)
+    d.polygon([iso(e0, e0, ze), iso(e0, e1, ze), apex], fill=back)
+    d.polygon([iso(e1, e0, ze), iso(e1, e1, ze), apex], fill=(206, 160, 66, 255))
+    d.polygon([iso(e0, e1, ze), iso(e1, e1, ze), apex], fill=(232, 190, 92, 255))
+    for k in range(1, 6):  # rangs de chaume
+        t = k / 6
+        a = (apex[0] + (iso(e0, e1, ze)[0] - apex[0]) * t, apex[1] + (iso(e0, e1, ze)[1] - apex[1]) * t)
+        b = (apex[0] + (iso(e1, e1, ze)[0] - apex[0]) * t, apex[1] + (iso(e1, e1, ze)[1] - apex[1]) * t)
+        c = (apex[0] + (iso(e1, e0, ze)[0] - apex[0]) * t, apex[1] + (iso(e1, e0, ze)[1] - apex[1]) * t)
+        d.line((a, b, c), fill=(190, 140, 50, 255), width=2)
+    # massif d'hibiscus devant la terrasse
+    for cx, cy in (iso(1.95, 1.2), iso(1.95, 1.55), iso(1.75, 1.85)):
+        d.ellipse((cx - 13, cy - 22, cx + 13, cy + 2), fill=(58, 140, 60, 255), outline=(36, 104, 44, 255), width=2)
+        d.ellipse((cx - 5, cy - 16, cx + 3, cy - 8), fill=(232, 60, 100, 255))
+    return img
+
+
 def main():
     ROOT.mkdir(parents=True, exist_ok=True)
     rng = random.Random(1987)
@@ -161,7 +209,10 @@ def main():
     for i, fn in enumerate((palm, bush)):
         decor.paste(fn(rng), (i * TW, 0))
     decor.save(ROOT / "decor_atlas.png")
-    print("Écrit :", ROOT / "terrain_atlas.png", ROOT / "decor_atlas.png")
+    buildings = ROOT.parent / "buildings"
+    buildings.mkdir(parents=True, exist_ok=True)
+    bungalow_hibiscus().save(buildings / "bungalow_hibiscus.png")
+    print("Écrit :", ROOT / "terrain_atlas.png", ROOT / "decor_atlas.png", buildings / "bungalow_hibiscus.png")
 
 
 if __name__ == "__main__":

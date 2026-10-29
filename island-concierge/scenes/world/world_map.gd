@@ -31,11 +31,14 @@ const LockBadge := preload("res://scenes/world/lock_badge.gd")
 var grid: MapGrid
 var _locked := {}  # StringName (id de zone) -> bool
 var _badges := {}  # StringName -> LockBadge
+## uid du placement -> BuildingView
+var buildings := {}
 
 @onready var ground: TileMapLayer = $Ground
 @onready var decor: TileMapLayer = $Objects/Decor
 @onready var zone_overlay: TileMapLayer = $ZoneOverlay
 @onready var _badge_root: Node2D = $LockBadges
+@onready var _objects: Node2D = $Objects
 
 
 func _ready() -> void:
@@ -53,6 +56,7 @@ func build() -> void:
 			var cell := Vector2i(x, y)
 			ground.set_cell(cell, TERRAIN_SOURCE, TERRAIN_TILES[grid.terrain_at(cell)])
 	_build_decor()
+	_spawn_buildings()
 	_locked.clear()
 	for zone in map_def.zones:
 		_locked[zone.id] = zone.starts_locked
@@ -77,6 +81,15 @@ func world_bounds() -> Rect2:
 	return rect.grow_individual(half.x, half.y, half.x, half.y)
 
 
+## Bâtiment touché par une position monde (le plus en avant), ou null.
+func building_at(world_pos: Vector2) -> BuildingView:
+	var best: BuildingView = null
+	for view: BuildingView in buildings.values():
+		if view.hit_test(world_pos) and (best == null or view.position.y > best.position.y):
+			best = view
+	return best
+
+
 func is_zone_locked(zone_id: StringName) -> bool:
 	return _locked.get(zone_id, false)
 
@@ -92,6 +105,18 @@ func locked_zone_at(cell: Vector2i) -> ZoneDef:
 		if is_zone_locked(zone.id) and zone.rect.has_point(cell):
 			return zone
 	return null
+
+
+func _spawn_buildings() -> void:
+	for view in buildings.values():
+		view.free()
+	buildings.clear()
+	var map_local := func(cell: Vector2i) -> Vector2: return ground.map_to_local(cell)
+	for placement in map_def.placements:
+		var view := BuildingView.new()
+		_objects.add_child(view)
+		view.setup(placement, map_local)
+		buildings[placement.uid] = view
 
 
 func _build_decor() -> void:

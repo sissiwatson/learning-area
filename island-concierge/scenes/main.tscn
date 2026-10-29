@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/mahana.tscn" id="2_mahana"]
 [ext_resource type="Script" path="res://scenes/world/map_camera.gd" id="3_camera"]
+[ext_resource type="Script" path="res://scenes/ui/hud.gd" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/building_panel.tscn" id="5_panel"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -13,6 +15,7 @@ script = ExtResource("1_main")
 script = ExtResource("3_camera")
 
 [node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
 
 [node name="Title" type="Label" parent="HUD"]
 unique_name_in_owner = true
@@ -22,3 +25,6 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.05, 0.2, 0.3, 1)
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 48
+
+[node name="BuildingPanel" parent="HUD" instance=ExtResource("5_panel")]
+unique_name_in_owner = true

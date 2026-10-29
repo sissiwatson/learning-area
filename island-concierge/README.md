@@ -79,7 +79,9 @@ par rangée, un caractère par cellule.
 
 Les zones verrouillées sont des rectangles de cellules (`zones`).
 
-![Mahana](docs/screenshots/step1_mahana.png)
+![Mahana](docs/screenshots/current_map.png)
+
+![Bungalow Hibiscus sélectionné](docs/screenshots/step3_bungalow_selected.png)
 
 ## Organisation
 

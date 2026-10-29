@@ -4,3 +4,9 @@
 ## elles communiquent par ces signaux. Chaque étape du plan ajoute ici les
 ## signaux dont elle a besoin (voir docs/ARCHITECTURE.md §5).
 extends Node
+@warning_ignore_start("unused_signal")
+
+## Un logement a changé d'état (Lodging.State).
+signal lodging_state_changed(lodging_uid: StringName, state: int)
+## Une commande a été refusée ; `error_code` → clé i18n "ERR_<CODE>".
+signal action_failed(error_code: StringName, params: Dictionary)

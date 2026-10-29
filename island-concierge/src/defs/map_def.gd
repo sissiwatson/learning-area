@@ -11,5 +11,6 @@ extends Resource
 @export var size := Vector2i(32, 32)
 @export_multiline var layout: String
 @export var zones: Array[ZoneDef] = []
+@export var placements: Array[PlacementDef] = []
 ## Graine du placement des palmiers et buissons (même graine = même décor).
 @export var decor_seed := 1

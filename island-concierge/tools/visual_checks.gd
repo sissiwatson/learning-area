@@ -5,7 +5,10 @@
 ## godot --path . -s tools/visual_checks.gd -- <dossier_sortie> [scénario...]
 extends SceneTree
 
-const SCENARIOS := ["zoom_initial", "zoom_min", "zoom_max", "pan_after_drag"]
+const SCENARIOS := [
+	"zoom_initial", "zoom_min", "zoom_max", "pan_after_drag",
+	"bungalow_overview", "bungalow_selected", "bungalow_booked",
+]
 
 var main: Node
 var cam: MapCamera
@@ -95,3 +98,34 @@ func _scenario_pan_after_drag() -> void:
 		_drag(0, Vector2(1400 - 30 * k, 700 - 12 * k))
 	_t += 400  # pause avant le lâcher : pas d'inertie
 	_touch(0, false, Vector2(800, 460))
+
+
+func _focus_hibiscus(zoom: float) -> BuildingView:
+	var view: BuildingView = main.map.buildings[&"hibiscus_1"]
+	cam.rig.set_zoom(zoom)
+	# décalé vers la gauche pour laisser la place au panneau
+	cam.rig.center_on(view.global_position + Vector2(260, -60))
+	cam.position = cam.rig.position
+	cam.zoom = Vector2.ONE * cam.rig.zoom
+	return view
+
+
+func _tap(screen_pos: Vector2) -> void:
+	_touch(0, true, screen_pos)
+	_t += 60
+	_touch(0, false, screen_pos)
+
+
+func _scenario_bungalow_overview() -> void:
+	_focus_hibiscus(1.3)
+
+
+func _scenario_bungalow_selected() -> void:
+	var view := _focus_hibiscus(1.3)
+	_tap(cam.rig.world_to_screen(view.global_position + Vector2(0, -60)))
+
+
+func _scenario_bungalow_booked() -> void:
+	var view := _focus_hibiscus(1.3)
+	_tap(cam.rig.world_to_screen(view.global_position + Vector2(0, -60)))
+	main.panel.action_buttons()[0].pressed.emit()

@@ -2,7 +2,7 @@
 
 | Élément | Source | Licence |
 |---------|--------|---------|
-| Tuiles et décors provisoires (`assets/tiles/*.png`) | Créés pour le projet par `tools/generate_placeholder_art.py` | Propriété du projet |
+| Tuiles, décors et bâtiments provisoires (`assets/tiles/*.png`, `assets/buildings/*.png`) | Créés pour le projet par `tools/generate_placeholder_art.py` | Propriété du projet |
 | Icône (`icon.svg`) | Créée pour le projet | Propriété du projet |
 | GUT 9.4.0 (`addons/gut/`) | https://github.com/bitwes/Gut | MIT (`addons/gut/LICENSE.md`) |
 | Police par défaut | Fournie par Godot Engine | Voir https://godotengine.org/license |
