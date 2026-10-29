@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="MapDef" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/defs/map_def.gd" id="1_map"]
+[ext_resource type="Script" path="res://src/defs/zone_def.gd" id="2_zone"]
+
+[sub_resource type="Resource" id="Resource_east_coast"]
+script = ExtResource("2_zone")
+id = &"east_coast"
+name_key = "ZONE_EAST_COAST"
+rect = Rect2i(21, 12, 8, 12)
+starts_locked = true
+
+[sub_resource type="Resource" id="Resource_west_jungle"]
+script = ExtResource("2_zone")
+id = &"west_jungle"
+name_key = "ZONE_WEST_JUNGLE"
+rect = Rect2i(4, 12, 8, 10)
+starts_locked = true
+
+[resource]
+script = ExtResource("1_map")
+id = &"mahana"
+name_key = "MAP_MAHANA"
+size = Vector2i(32, 32)
+layout = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~--~~~~~~~~~~~~~~
+~~~~~~~~~~~~---------~~~~~~~~~~~
+~~~~~~~~~~------------~~~~~~~~~~
+~~~~~~~~-----.......---~~~~~~~~~
+~~~~~~~----..........--~~~~~~~~~
+~~~~~~---....,,,#,,...--~~~~~~~~
+~~~~~~--...,,,,,#,,,..--~~~~~~~~
+~~~~~---..,,+++,#,,,,..--~~~~~~~
+~~~~~--..,,,+++,#,,,,..---~~~~~~
+~~~~~--..,,,+++,#,,,,...---~~~~~
+~~~~~--..,,,,,,,#,,,TT...---~~~~
+~~~~~--..,,,,,,,#,,,TTT...---~~~
+~~~~~--..,,,,,++#,++,TTTT..--~~~
+~~~~---..TT,,,++#,++,TTTTT..--~~
+~~~~--..TTT,,,,,#,,,,TTTTT..--~~
+~~~~--..##################..---~
+~~~--..T++T,,,,,#,,,,,,++T..---~
+~~~--..T++TT,,,,#,,,,,,++,..--~~
+~~~--..TTTTT,,,,#,,,,,,,,...--~~
+~~~--..TTTT,,,,,#,,,,,,,...--~~~
+~~~--..TTT,,,,,++,,,,,....---~~~
+~~~--.++T,,,,,,++,,,,...----~~~~
+~~~---++#########,,....---~~~~~~
+~~~~----........#....----~~~~~~~
+~~~~~-----------#..-----~~~~~~~~
+~~~~~~~---------------~~~~~~~~~~
+~~~~~~~~~~~~~~~-----~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+zones = Array[ExtResource("2_zone")]([SubResource("Resource_east_coast"), SubResource("Resource_west_jungle")])
+decor_seed = 2026

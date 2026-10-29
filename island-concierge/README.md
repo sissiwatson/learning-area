@@ -40,6 +40,33 @@ Le script renvoie un code non nul si un test échoue. Les tests peuvent aussi
 tools/capture.sh res://scenes/main.tscn capture.png
 ```
 
+## Graphismes provisoires
+
+Les tuiles et décors de `assets/tiles/` sont générés par un script (Pillow) :
+
+```bash
+python3 tools/generate_placeholder_art.py
+```
+
+## Carte de Mahana
+
+Le plan 32×32 est le champ `layout` de `data/maps/mahana.tres` : une ligne
+par rangée, un caractère par cellule.
+
+| Caractère | Terrain |
+|-----------|---------|
+| `~` | océan |
+| `-` | lagon |
+| `.` | sable |
+| `,` | herbe |
+| `T` | jungle |
+| `#` | chemin |
+| `+` | parcelle constructible |
+
+Les zones verrouillées sont des rectangles de cellules (`zones`).
+
+![Mahana](docs/screenshots/step1_mahana.png)
+
 ## Organisation
 
 | Dossier        | Rôle |
