@@ -92,6 +92,8 @@ island-concierge/
 │   │   ├── map_def.gd            # taille, placements, zones
 │   │   ├── placement_def.gd      # building_id, cellule, verrouillé ?, condition
 │   │   └── new_game_def.gd
+│   ├── core/narrative/           # conditions, effets, dialogues, quêtes, relations, carnet
+│   ├── core/reputation/          # notes, registre d'avis, paliers, missions de redressement
 │   ├── view/                     # logique de présentation pure (sans Node), testée
 │   │   ├── camera_rig.gd         # déplacement, zoom centré, limites, inertie
 │   │   └── touch_gestures.gd     # tap / glisser / pincer, changements de doigts
@@ -340,7 +342,8 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |
 | 8  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier) | Tests minuteurs / hors-ligne ; boucle complète jouable | à faire |
 | R3–R4 | **Réputation : séjours notés** | journal de séjour, règles, avis publié en fin de séjour | Séjour parfait = 5,00 ; sans panier = note attendue | à faire |
-| 9  | **Progression & quêtes** | XP, niveaux, quêtes guidées, toasts | Tests ; tutoriel jouable | à faire |
+| 9  | **Progression & tutoriel narratif** | XP, niveaux, toasts ; N1–N5 : conditions/effets, PNJ et relations, dialogues, quêtes narratives, tutoriel avec Hina (voir `NARRATIVE.md`) | Test de bout en bout du tutoriel ; partie jouée à la main | à faire |
+| N6–N7 | **Carnet de voyage et validation de contenu** | 3 fiches de Mahana, test de cohérence des références | Récompenses uniques ; données cassées détectées | à faire |
 | 10 | **Sauvegarde** | JSON versionné (avis inclus), autosave, migration | `test_save_load` ; relance conserve l'état | à faire |
 | R5–R6 | **Réputation : effets et redressement** | offres par palier, missions | Jamais 0 offre ; scénario de récupération | à faire |
 | 11 | **Tiki bar** | Chantier → construction → bâtiment | `test_full_loop` jusqu'au tiki bar | à faire |
@@ -386,3 +389,23 @@ Place dans l'architecture : configuration dans `src/defs/` + `data/reputation/`,
 logique pure dans `src/core/reputation/`, état dans `GameState`, signaux
 `review_published` et `reputation_changed` dans `EventBus`, tableau de bord
 dans `scenes/ui/`.
+
+---
+
+## 12. Découverte culturelle, personnages et missions narratives
+
+Conception dans [`NARRATIVE.md`](NARRATIVE.md), scénario du tutoriel dans
+[`SCENARIO_TUTORIEL.md`](SCENARIO_TUTORIEL.md). En résumé :
+
+- Destinations (`DestinationDef`) : Mahana (fictive) puis destinations
+  inspirées de lieux réels, avec sources vérifiées et distinction visible
+  fait / inspiré / fiction.
+- PNJ récurrents (`NpcDef`) avec relation à 6 niveaux jamais perdus et
+  services débloquables : Hina, Tao, Malia, Kimo.
+- Dialogues, quêtes narratives, conditions, effets et fiches du carnet de
+  voyage sont des **données** ; le moteur (`src/core/narrative/`) est
+  générique et ses récompenses sont idempotentes.
+- Les quêtes guidées du tutoriel sont des quêtes narratives données par Hina :
+  un seul système de quêtes.
+- Un test de données vérifie la cohérence de toutes les références
+  (PNJ, lieux, quêtes, dialogues, fiches, i18n, sources).

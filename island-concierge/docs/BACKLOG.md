@@ -19,7 +19,8 @@ valider sur appareil est indiqué explicitement.
 | ⬜ | R1–R2 · Réputation : calcul de note, registre d'avis, paliers | |
 | ⬜ | 8 · Productions (ananas, panier d'accueil) | |
 | ⬜ | R3–R4 · Réputation : journal de séjour, avis en fin de séjour | |
-| ⬜ | 9 · Progression et quêtes guidées | |
+| ⬜ | 9 · Progression et tutoriel narratif avec Hina (N1–N5) | |
+| ⬜ | N6–N7 · Carnet de voyage (3 fiches) et validation du contenu | |
 | ⬜ | 10 · Sauvegarde et chargement | |
 | ⬜ | R5–R6 · Réputation : effets et missions de redressement | |
 | ⬜ | 11 · Tiki bar | |
@@ -46,9 +47,31 @@ Conception : [`REPUTATION.md`](REPUTATION.md) ; critères d'acceptation au §10.
 | ⬜ | R13 · Photographie des logements (V0.2) |
 | ⬜ | R14 · Expansion et investissement (V0.2+) |
 
+## Découverte culturelle et narration (lot N)
+
+Conception : [`NARRATIVE.md`](NARRATIVE.md) ; critères d'acceptation au §10.
+Tutoriel : [`SCENARIO_TUTORIEL.md`](SCENARIO_TUTORIEL.md) (proposition à valider).
+
+| Statut | Étape |
+|--------|-------|
+| ⬜ | N1 · Conditions et effets (récompenses idempotentes) |
+| ⬜ | N2 · PNJ et relations (Hina, Tao, Malia, Kimo) |
+| ⬜ | N3 · Dialogues et panneau de dialogue |
+| ⬜ | N4 · Quêtes narratives |
+| ⬜ | N5 · Tutoriel « Le bungalow de Hina » |
+| ⬜ | N6 · Carnet de voyage |
+| ⬜ | N7 · Validation du contenu (références, i18n, sources, graphe de quêtes) |
+| ⬜ | N8 · PNJ sur la carte (V0.2) |
+| ⬜ | N9 · Services débloqués par la relation (V0.2) |
+| ⬜ | N10 · Missions culturelles de Mahana, une par catégorie (V0.2) |
+| ⬜ | N11 · Cadre multi-destinations (V0.3) |
+| ⬜ | N12 · Première destination réelle, fiches sourcées et relues (V0.3) |
+
 ## Points ouverts
 
 - 💡 Retour haptique au tap sur Android (`Input.vibrate_handheld`), à évaluer sur appareil.
 - 💡 Recentrer la caméra sur le bâtiment sélectionné quand le panneau le masque.
 - 💡 Mettre à l'échelle le seuil de tap selon la densité de l'écran (`DisplayServer.screen_get_dpi`).
+- 💡 Choix de la première destination réelle et des relecteurs culturels.
+- 💡 Portraits des PNJ : style graphique à définir (originaux).
 - 💡 Animation légère de l'eau (à mesurer en performances sur appareil d'entrée de gamme).
