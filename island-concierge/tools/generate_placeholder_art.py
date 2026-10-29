@@ -7,6 +7,8 @@ Sorties (dans assets/) :
   tiles/decor_atlas.png    2 décors 128×160 : palmier, buisson
   buildings/bungalow_hibiscus.png  bungalow sur 2×2 cellules (256×256, pied du
                            bâtiment = centre de l'emprise au pixel (128, 192))
+  ui/icon_shells.png, ui/icon_pineapple.png, ui/icon_welcome_basket.png
+                           icônes 96×96 de l'interface
 
 Le tirage aléatoire est fixé : relancer le script redonne les mêmes images.
 Usage : python3 tools/generate_placeholder_art.py   (nécessite Pillow)
@@ -196,6 +198,52 @@ def bungalow_hibiscus():
     return img
 
 
+def icon_shells():
+    img = Image.new("RGBA", (96, 96), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    # coquille en éventail : secteur centré sur la charnière, côtes rayonnantes
+    hinge = (48, 80)
+    d.pieslice((6, 38, 90, 122), 200, 340, fill=(248, 196, 150, 255), outline=(196, 120, 80, 255), width=3)
+    for k in range(-3, 4):
+        a = math.radians(270 + k * 18)
+        d.line((hinge, (hinge[0] + math.cos(a) * 40, hinge[1] + math.sin(a) * 40)), fill=(218, 146, 100, 255), width=3)
+    d.polygon([(36, 92), (40, 78), (56, 78), (60, 92)], fill=(232, 164, 120, 255), outline=(196, 120, 80, 255))
+    return img
+
+
+def icon_pineapple():
+    img = Image.new("RGBA", (96, 96), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for dx, h in ((-14, 30), (0, 38), (14, 30), (-7, 34), (7, 34)):  # couronne
+        d.polygon([(48 + dx - 6, 36), (48 + dx, 36 - h), (48 + dx + 6, 36)], fill=(60, 160, 70, 255), outline=(36, 110, 46, 255))
+    d.ellipse((24, 32, 72, 92), fill=(240, 186, 50, 255), outline=(176, 120, 30, 255), width=3)
+    for k in range(-3, 4):  # motif en losanges
+        d.line(((48 + k * 10 - 20, 36), (48 + k * 10 + 20, 90)), fill=(196, 140, 36, 255), width=2)
+        d.line(((48 + k * 10 + 20, 36), (48 + k * 10 - 20, 90)), fill=(196, 140, 36, 255), width=2)
+    d.ellipse((24, 32, 72, 92), outline=(176, 120, 30, 255), width=3)
+    img2 = Image.new("RGBA", (96, 96), (0, 0, 0, 0))
+    mask = Image.new("L", (96, 96), 0)
+    ImageDraw.Draw(mask).ellipse((24, 32, 72, 92), fill=255)
+    ImageDraw.Draw(mask).rectangle((0, 0, 96, 33), fill=255)
+    img2.paste(img, (0, 0), mask)
+    return img2
+
+
+def icon_welcome_basket():
+    img = Image.new("RGBA", (96, 96), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.arc((22, 10, 74, 70), 180, 360, fill=(150, 100, 50, 255), width=6)  # anse
+    d.ellipse((30, 30, 52, 52), fill=(240, 186, 50, 255))  # fruits
+    d.ellipse((46, 28, 68, 50), fill=(232, 60, 100, 255))
+    d.ellipse((38, 24, 56, 42), fill=(120, 190, 70, 255))
+    d.polygon([(14, 44), (82, 44), (72, 88), (24, 88)], fill=(196, 146, 80, 255), outline=(130, 86, 40, 255))
+    for y in range(50, 88, 8):  # tressage
+        d.line(((16 + (y - 44) * 0.2, y), (80 - (y - 44) * 0.2, y)), fill=(150, 104, 52, 255), width=2)
+    for x in range(26, 74, 10):
+        d.line(((x, 46), (x + (48 - x) * 0.15, 86)), fill=(170, 120, 62, 255), width=2)
+    return img
+
+
 def main():
     ROOT.mkdir(parents=True, exist_ok=True)
     rng = random.Random(1987)
@@ -212,7 +260,12 @@ def main():
     buildings = ROOT.parent / "buildings"
     buildings.mkdir(parents=True, exist_ok=True)
     bungalow_hibiscus().save(buildings / "bungalow_hibiscus.png")
-    print("Écrit :", ROOT / "terrain_atlas.png", ROOT / "decor_atlas.png", buildings / "bungalow_hibiscus.png")
+    ui = ROOT.parent / "ui"
+    ui.mkdir(parents=True, exist_ok=True)
+    icon_shells().save(ui / "icon_shells.png")
+    icon_pineapple().save(ui / "icon_pineapple.png")
+    icon_welcome_basket().save(ui / "icon_welcome_basket.png")
+    print("Écrit : assets/tiles/*.png, assets/buildings/*.png, assets/ui/icon_*.png")
 
 
 if __name__ == "__main__":

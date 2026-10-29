@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="NewGameDef" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/defs/new_game_def.gd" id="1_new_game"]
+[ext_resource type="Resource" path="res://data/currencies/shells.tres" id="2_shells"]
+[ext_resource type="Resource" path="res://data/items/pineapple.tres" id="3_pineapple"]
+[ext_resource type="Resource" path="res://data/items/welcome_basket.tres" id="4_basket"]
+[ext_resource type="Script" path="res://src/defs/currency_def.gd" id="5_currency_def"]
+[ext_resource type="Script" path="res://src/defs/item_def.gd" id="6_item_def"]
+
+[resource]
+script = ExtResource("1_new_game")
+currencies = Array[ExtResource("5_currency_def")]([ExtResource("2_shells")])
+items = Array[ExtResource("6_item_def")]([ExtResource("3_pineapple"), ExtResource("4_basket")])
+starting_balances = Dictionary[StringName, int]({
+&"shells": 50
+})
+starting_items = Dictionary[StringName, int]({})
+inventory_capacity = 50

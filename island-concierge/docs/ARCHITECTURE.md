@@ -335,8 +335,8 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 1  | **Carte Mahana** | Tuiles iso placeholder, plan 32×32 en données, `TileMapLayer`, zones verrouillées | Tests du plan et des conversions cellule ↔ monde ; capture | ✅ |
 | 2  | **Caméra tactile** | `CameraRig`, `TouchGestures`, `MapCamera` : glisser, pincer, molette, limites, inertie | Tests des calculs et des gestes simulés ; captures zoom min/initial/max | ✅ (non testé sur appareil) |
 | 3  | **Bungalow interactif** | Bungalow Hibiscus, sélection au tap, panneau (nom, propriétaire, état, actions), `Lodging`, `GameState` | Tests de la machine à états et du tap simulé ; captures | ✅ (non testé sur appareil) |
-| 4  | **Export Android debug** | `export_presets.cfg`, `ANDROID_EXPORT.md`, `tools/export_android_debug.sh` | APK construit et signature vérifiée ✅ ; **test sur appareil réel à faire** | ✅ build / ⏳ appareil |
-| 5  | **Économie de base** | `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché | à faire |
+| 4  | **Export Android debug** | `export_presets.cfg`, `ANDROID_EXPORT.md`, `tools/export_android_debug.sh` | APK construit et signature vérifiée ; recette sur appareil réel n°1 réussie | ✅ 📱 |
+| 5  | **Économie de base** | `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché | ✅ (non testé sur appareil) |
 | 6  | **Données** | `Database` + validation de toutes les références de `data/` | `test_data_integrity` | à faire |
 | 7  | **Réservations** | `BookingSystem`, bureau de conciergerie, durée de séjour, commission | Tests ; boucle réservation jouable | à faire |
 | R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |

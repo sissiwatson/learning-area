@@ -87,7 +87,16 @@ Les zones verrouillées sont des rectangles de cellules (`zones`).
 
 ![Mahana](docs/screenshots/current_map.png)
 
-![Bungalow Hibiscus sélectionné](docs/screenshots/step3_bungalow_selected.png)
+![Bungalow Hibiscus sélectionné, barre de ressources](docs/screenshots/step5_hud_resources.png)
+
+## Économie (V0.1)
+
+- Monnaie : **coquillages** (`data/currencies/shells.tres`). Une autre monnaie
+  (ex. perles) s'ajoute par un fichier de données, sans code. Aucun paiement réel.
+- Partie neuve : `data/balance/new_game.tres` (50 coquillages, inventaire de 50 places).
+- Règles (`src/core/wallet.gd`, `src/core/inventory.gd`) : montants entiers
+  positifs, jamais de solde négatif, opérations atomiques, journal des
+  mouvements, sauvegarde/restauration avec correction des valeurs invalides.
 
 ## Organisation
 

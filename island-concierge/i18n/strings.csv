@@ -26,3 +26,13 @@ PANEL_NO_ACTION,Aucune action pour le moment
 PANEL_CLOSE,Fermer
 ERR_INVALID_ACTION,Action impossible dans l'état actuel
 ERR_UNKNOWN_LODGING,Logement introuvable
+CURRENCY_SHELLS,Coquillages
+ITEM_PINEAPPLE,Ananas
+ITEM_WELCOME_BASKET,Panier d'accueil
+ERR_INSUFFICIENT_FUNDS,Fonds insuffisants
+ERR_BALANCE_OVERFLOW,Montant trop élevé
+ERR_UNKNOWN_CURRENCY,Monnaie inconnue
+ERR_INVALID_AMOUNT,Montant invalide
+ERR_INVENTORY_FULL,Inventaire plein
+ERR_MISSING_ITEMS,Objets manquants
+ERR_UNKNOWN_ITEM,Objet inconnu

@@ -8,13 +8,13 @@ var selected: BuildingView
 @onready var camera: MapCamera = $Camera
 @onready var hud: CanvasLayer = $HUD
 @onready var panel: BuildingPanel = %BuildingPanel
-@onready var _title: Label = %Title
+@onready var resource_bar: ResourceBar = %ResourceBar
 
 
 func _ready() -> void:
 	# Partie neuve à chaque lancement tant que la sauvegarde n'existe pas (étape 9).
 	GameState.new_game(map.map_def)
-	_title.text = tr("APP_TITLE")
+	resource_bar.rebuild()
 	var bounds := map.world_bounds()
 	# Vue initiale entre le centre de l'île et le premier bungalow.
 	var focus := bounds.get_center()

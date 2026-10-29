@@ -14,8 +14,8 @@ valider sur appareil est indiqué explicitement. 📱 = validé sur Android rée
 | ✅ 🧪 📱 | 2 · Caméra tactile (glisser, pincer, molette, limites, inertie) | Sur appareil : lever un doigt pendant un pincement, tap imprécis, inertie |
 | ✅ 🧪 📱 | 3 · Bungalow Hibiscus interactif | Sur appareil : tap sur le toit |
 | ✅ 🧪 📱 | 4 · Export Android debug | Sur appareil : encoche, mise en arrière-plan |
-| 🔜 | 5 · Économie de base (coquillages, inventaire, HUD) | |
-| ⬜ | 6 · Base de données et validation de `data/` | |
+| ✅ 🧪 | 5 · Économie de base (coquillages, inventaire, HUD) | Sur appareil : lisibilité de la barre de ressources (APK 0.1.1) |
+| 🔜 | 6 · Base de données et validation de `data/` | |
 | ⬜ | 7 · Réservations (bureau, durée de séjour, commission) | |
 | ⬜ | R1–R2 · Réputation : calcul de note, registre d'avis, paliers | |
 | ⬜ | 8 · Productions (ananas, panier d'accueil) | |

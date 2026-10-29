@@ -10,3 +10,7 @@ extends Node
 signal lodging_state_changed(lodging_uid: StringName, state: int)
 ## Une commande a été refusée ; `error_code` → clé i18n "ERR_<CODE>".
 signal action_failed(error_code: StringName, params: Dictionary)
+## Le solde d'une monnaie a changé.
+signal currency_changed(currency_id: StringName, balance: int)
+## La quantité d'un objet a changé.
+signal inventory_changed(item_id: StringName, count: int)
