@@ -326,21 +326,26 @@ révisé : une **carte navigable et un bungalow interactif d'abord**, puis
 l'économie, les réservations et les productions viennent s'y brancher.
 Une étape n'est validée que si elle a été exécutée ou testée.
 
-| #  | Étape | Contenu | Vérification |
-|----|-------|---------|--------------|
-| 0  | **Squelette** | `project.godot` (Mobile, paysage, stretch), Godot figé, `EventBus`, GUT, i18n FR, outils de test et de capture | Tests GUT verts en headless ; scène principale capturée |
-| 1  | **Carte Mahana** | Tuiles iso placeholder, plan 32×32 en données, `TileMapLayer`, zones verrouillées | Tests du plan et des conversions cellule ↔ monde ; capture de la carte |
-| 2  | **Caméra tactile** | `CameraController` : glisser, pincer, molette, bornes | Tests de la logique de caméra (gestes simulés) ; essai manuel |
-| 3  | **Bungalow interactif** | Bungalow Hibiscus posé sur la carte, sélection au tap, panneau | Test de sélection simulée ; capture avec panneau ouvert |
-| 4  | **Économie de base** | `Result`, `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché |
-| 5  | **Données** | `defs/`, `data/*.tres` des bâtiments de Mahana, `Database` + validation | `test_data_integrity` |
-| 6  | **Réservations** | `Lodging`, `BookingSystem`, bureau de conciergerie, panneau du bungalow branché | Tests de la machine à états ; boucle réservation jouable |
-| 7  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier) | Tests minuteurs / hors-ligne ; boucle complète jouable |
-| 8  | **Progression & quêtes** | XP, niveaux, quêtes guidées, toasts | Tests ; tutoriel jouable |
-| 9  | **Sauvegarde** | JSON versionné, autosave, migration | `test_save_load` ; relance conserve l'état |
-| 10 | **Tiki bar** | Chantier → construction → bâtiment | `test_full_loop` jusqu'au tiki bar |
-| 11 | **Android** | `ANDROID_EXPORT.md`, preset, pause/reprise | APK debug installé et testé sur appareil |
-| 12 | **Finitions V0.1** | `ADDING_CONTENT.md`, `CREDITS.md`, équilibrage | Revue de la checklist du brief |
+| #  | Étape | Contenu | Vérification | Statut |
+|----|-------|---------|--------------|--------|
+| 0  | **Squelette** | `project.godot` (Mobile, paysage, stretch), Godot figé, `EventBus`, GUT, i18n FR, outils de test et de capture | Tests GUT verts en headless ; scène principale capturée | ✅ |
+| 1  | **Carte Mahana** | Tuiles iso placeholder, plan 32×32 en données, `TileMapLayer`, zones verrouillées | Tests du plan et des conversions cellule ↔ monde ; capture | ✅ |
+| 2  | **Caméra tactile** | `CameraRig`, `TouchGestures`, `MapCamera` : glisser, pincer, molette, limites, inertie | Tests des calculs et des gestes simulés ; captures zoom min/initial/max | ✅ (non testé sur appareil) |
+| 3  | **Bungalow interactif** | Bungalow Hibiscus, sélection au tap, panneau (nom, propriétaire, état, actions), `Lodging`, `GameState` | Tests de la machine à états et du tap simulé ; captures | ✅ (non testé sur appareil) |
+| 4  | **Export Android debug** | `export_presets.example.cfg`, `ANDROID_EXPORT.md`, APK debug | APK construit ; **test tactile sur appareil réel par l'équipe** | à faire |
+| 5  | **Économie de base** | `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché | à faire |
+| 6  | **Données** | `Database` + validation de toutes les références de `data/` | `test_data_integrity` | à faire |
+| 7  | **Réservations** | `BookingSystem`, bureau de conciergerie, durée de séjour, commission | Tests ; boucle réservation jouable | à faire |
+| R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |
+| 8  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier) | Tests minuteurs / hors-ligne ; boucle complète jouable | à faire |
+| R3–R4 | **Réputation : séjours notés** | journal de séjour, règles, avis publié en fin de séjour | Séjour parfait = 5,00 ; sans panier = note attendue | à faire |
+| 9  | **Progression & quêtes** | XP, niveaux, quêtes guidées, toasts | Tests ; tutoriel jouable | à faire |
+| 10 | **Sauvegarde** | JSON versionné (avis inclus), autosave, migration | `test_save_load` ; relance conserve l'état | à faire |
+| R5–R6 | **Réputation : effets et redressement** | offres par palier, missions | Jamais 0 offre ; scénario de récupération | à faire |
+| 11 | **Tiki bar** | Chantier → construction → bâtiment | `test_full_loop` jusqu'au tiki bar | à faire |
+| 12 | **Finitions V0.1** | `ADDING_CONTENT.md`, `CREDITS.md`, équilibrage, nouvel APK | Revue de la checklist du brief | à faire |
+
+Le détail des tâches à venir est dans [`BACKLOG.md`](BACKLOG.md).
 
 ---
 
@@ -355,3 +360,28 @@ Une étape n'est validée que si elle a été exécutée ou testée.
    comme une colonne `en`.
 5. **Graphismes** : assets provisoires originaux, mais vraie carte isométrique
    navigable dès l'étape 1.
+
+---
+
+## 11. Réputation et satisfaction des voyageurs
+
+Mécanique centrale décrite dans [`REPUTATION.md`](REPUTATION.md). En résumé :
+
+- Note moyenne de la conciergerie sur 5 ; **seuil d'excellence 4,80**.
+- Chaque séjour est noté sur 5 critères pondérés (propreté 25 %,
+  communication 20 %, confort et décoration 20 %, annonce/photos 15 %,
+  expérience 20 %), configurables dans `data/reputation/`.
+- Calcul **déterministe en entiers (centièmes)**, troncature, à partir des
+  faits réellement vécus pendant le séjour ; aucun tirage aléatoire.
+- Avis **immuables** (instantané avec version des règles), registre en ajout
+  seul, historique sauvegardé.
+- La réputation (moyenne glissante des 20 derniers avis) influence la
+  visibilité, le nombre et le type de réservations, la confiance des
+  propriétaires, l'accès aux logements premium et les opportunités
+  d'expansion. Sous 4,80 : difficultés accrues mais jamais de blocage
+  (plancher d'offres, missions de redressement, contenu jamais reverrouillé).
+
+Place dans l'architecture : configuration dans `src/defs/` + `data/reputation/`,
+logique pure dans `src/core/reputation/`, état dans `GameState`, signaux
+`review_published` et `reputation_changed` dans `EventBus`, tableau de bord
+dans `scenes/ui/`.
