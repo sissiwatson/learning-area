@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/mahana.tscn" id="2_mahana"]
+[ext_resource type="Script" path="res://scenes/world/map_camera.gd" id="3_camera"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -9,6 +10,7 @@ script = ExtResource("1_main")
 [node name="Mahana" parent="." instance=ExtResource("2_mahana")]
 
 [node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("3_camera")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

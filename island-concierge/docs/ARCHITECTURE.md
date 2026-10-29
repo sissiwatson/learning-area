@@ -92,6 +92,9 @@ island-concierge/
 │   │   ├── map_def.gd            # taille, placements, zones
 │   │   ├── placement_def.gd      # building_id, cellule, verrouillé ?, condition
 │   │   └── new_game_def.gd
+│   ├── view/                     # logique de présentation pure (sans Node), testée
+│   │   ├── camera_rig.gd         # déplacement, zoom centré, limites, inertie
+│   │   └── touch_gestures.gd     # tap / glisser / pincer, changements de doigts
 │   ├── core/                     # logique pure, sans Node — 100 % testée
 │   │   ├── result.gd             # Result.ok(value) / Result.err(code, params)
 │   │   ├── clock.gd              # Clock (système) — FakeClock dans tests/
@@ -114,7 +117,7 @@ island-concierge/
 │   ├── world/
 │   │   ├── mahana.tscn           # TileMapLayer sol / décor / zones + conteneur Y-sort
 │   │   ├── iso_map.gd            # conversions cellule ↔ monde, pose des bâtiments
-│   │   ├── camera_controller.gd  # glisser un doigt, pincer pour zoomer, bornes, inertie
+│   │   ├── map_camera.gd         # Camera2D : événements → TouchGestures → CameraRig
 │   │   ├── building_view.tscn/.gd# sprite + zone tactile + badge d'état/minuteur
 │   │   └── lock_overlay.tscn/.gd # voile + cadenas sur zones verrouillées
 │   └── ui/

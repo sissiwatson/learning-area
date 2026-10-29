@@ -19,7 +19,15 @@ L'architecture et le plan d'implémentation sont décrits dans
 
 En ligne de commande : `godot --path island-concierge`
 
-Sur PC, la souris émule le toucher (un doigt) ; la molette remplace le pincement.
+### Contrôles
+
+| Geste | Écran tactile | PC |
+|-------|---------------|----|
+| Déplacer la carte | glisser un doigt (inertie au lâcher) | cliquer-glisser |
+| Zoomer / dézoomer | pincer à deux doigts | molette |
+| Sélectionner | tap | clic |
+
+Sur PC, la souris émule un doigt (`emulate_touch_from_mouse`).
 
 ## Lancer les tests
 
@@ -34,11 +42,17 @@ GODOT=/chemin/vers/godot tools/run_tests.sh
 Le script renvoie un code non nul si un test échoue. Les tests peuvent aussi
 être lancés depuis l'éditeur via le panneau **GUT** en bas de l'écran.
 
-## Capture d'écran d'une scène (Linux)
+## Captures d'écran (Linux, xvfb)
 
 ```bash
-tools/capture.sh res://scenes/main.tscn capture.png
+tools/capture.sh res://scenes/main.tscn capture.png   # une scène
+tools/visual_checks.sh captures/                      # scénarios de gestes simulés
 ```
+
+`tools/visual_checks.gd` rejoue des gestes (pincement, glisser, tap) avec les
+mêmes `InputEvent` qu'un écran tactile et enregistre une capture par scénario.
+Ce n'est **pas** un test sur appareil : les captures utilisent le renderer
+de compatibilité OpenGL.
 
 ## Graphismes provisoires
 
@@ -73,6 +87,7 @@ Les zones verrouillées sont des rectangles de cellules (`zones`).
 |----------------|------|
 | `src/core/`    | règles métier pures (sans scène), entièrement testées |
 | `src/defs/`    | classes décrivant les données de jeu |
+| `src/view/`    | logique de présentation pure (caméra, gestes), testée |
 | `src/autoload/`| services globaux (`EventBus`, …) |
 | `data/`        | données configurables (bâtiments, ressources, carte) |
 | `scenes/`      | présentation : carte, caméra, bâtiments, interface |
