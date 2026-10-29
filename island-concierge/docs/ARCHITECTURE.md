@@ -1,7 +1,8 @@
 # Island Concierge — Architecture et plan d'implémentation (V0.1)
 
-> Statut : **proposition à valider** avant tout développement.
-> Cible : Godot 4.4+ (GDScript typé), renderer *Mobile*, export Android.
+> Statut : **validé** (avec les décisions du §10), en cours d'implémentation.
+> Cible : Godot **4.4.1-stable** (figé dans `.godot-version`), GDScript typé,
+> renderer *Mobile*, export Android, orientation paysage.
 
 ---
 
@@ -317,30 +318,37 @@ signal action_failed(error_code: StringName, params: Dictionary)
 
 ## 9. Plan d'implémentation — petites étapes vérifiables
 
-Chaque étape = un commit (ou une PR) autonome, avec son critère de validation.
-Les étapes 1 à 5 livrent **toute la boucle de jeu, testée, sans graphismes** ;
-la carte et l'interface viennent ensuite se brancher dessus.
+Chaque étape = un commit autonome, avec son critère de validation. Ordre
+révisé : une **carte navigable et un bungalow interactif d'abord**, puis
+l'économie, les réservations et les productions viennent s'y brancher.
+Une étape n'est validée que si elle a été exécutée ou testée.
 
-| # | Étape | Contenu | Vérification |
-|---|-------|---------|--------------|
-| 0 | **Squelette** | `project.godot` (renderer Mobile, paysage, stretch), dossiers, autoloads vides, GUT, README | Le projet s'ouvre dans Godot ; `gut_cmdln` passe avec un test témoin |
-| 1 | **Économie de base** | `Result`, `Clock`/`FakeClock`, `Wallet`, `Inventory` | Tests unitaires verts (soldes, refus, atomicité) |
-| 2 | **Données** | classes `defs/`, fichiers `data/*.tres` de Mahana, `Database` + validation | `test_data_integrity` vert ; une donnée invalide fait échouer le test |
-| 3 | **Production & progression** | `ProductionSlot`, `Progression` (XP/niveaux) | Tests : minuteurs, hors-ligne, montée de niveau |
-| 4 | **Réservations & logements** | `Lodging`, `BookingSystem`, `BuildingState`, `GameState` (commandes) | `test_full_loop` : réservation → ananas → panier → préparation → accueil → commission → tiki bar |
-| 5 | **Sauvegarde** | `to_dict`/`from_dict`, `SaveManager`, autosave, migration | `test_save_load` vert ; relancer le jeu conserve l'état |
-| 6 | **Carte Mahana** | Tuiles placeholder, TileMapLayer 32×32, `CameraController` | Lancement PC : carte visible, glisser/zoomer à la souris et en touch émulé |
-| 7 | **Bâtiments & panneau** | `BuildingView`, sélection au tap, `BuildingPanel`, zones verrouillées | La boucle complète se joue à la main sur PC |
-| 8 | **HUD & quêtes** | `QuestTracker`, HUD, toasts, quêtes tutoriel | Un nouveau joueur est guidé jusqu'au tiki bar ; tests quêtes verts |
-| 9 | **Android** | `ANDROID_EXPORT.md`, preset, réglages tactiles, pause/reprise | APK debug installé via `adb`, partie sauvegardée après mise en arrière-plan |
-| 10 | **Finitions V0.1** | `ADDING_CONTENT.md`, `CREDITS.md`, équilibrage, feedbacks visuels | Revue de la checklist du brief point par point |
+| #  | Étape | Contenu | Vérification |
+|----|-------|---------|--------------|
+| 0  | **Squelette** | `project.godot` (Mobile, paysage, stretch), Godot figé, `EventBus`, GUT, i18n FR, outils de test et de capture | Tests GUT verts en headless ; scène principale capturée |
+| 1  | **Carte Mahana** | Tuiles iso placeholder, plan 32×32 en données, `TileMapLayer`, zones verrouillées | Tests du plan et des conversions cellule ↔ monde ; capture de la carte |
+| 2  | **Caméra tactile** | `CameraController` : glisser, pincer, molette, bornes | Tests de la logique de caméra (gestes simulés) ; essai manuel |
+| 3  | **Bungalow interactif** | Bungalow Hibiscus posé sur la carte, sélection au tap, panneau | Test de sélection simulée ; capture avec panneau ouvert |
+| 4  | **Économie de base** | `Result`, `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché |
+| 5  | **Données** | `defs/`, `data/*.tres` des bâtiments de Mahana, `Database` + validation | `test_data_integrity` |
+| 6  | **Réservations** | `Lodging`, `BookingSystem`, bureau de conciergerie, panneau du bungalow branché | Tests de la machine à états ; boucle réservation jouable |
+| 7  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier) | Tests minuteurs / hors-ligne ; boucle complète jouable |
+| 8  | **Progression & quêtes** | XP, niveaux, quêtes guidées, toasts | Tests ; tutoriel jouable |
+| 9  | **Sauvegarde** | JSON versionné, autosave, migration | `test_save_load` ; relance conserve l'état |
+| 10 | **Tiki bar** | Chantier → construction → bâtiment | `test_full_loop` jusqu'au tiki bar |
+| 11 | **Android** | `ANDROID_EXPORT.md`, preset, pause/reprise | APK debug installé et testé sur appareil |
+| 12 | **Finitions V0.1** | `ADDING_CONTENT.md`, `CREDITS.md`, équilibrage | Revue de la checklist du brief |
 
 ---
 
-## 10. Questions ouvertes (à trancher avant l'étape 0)
+## 10. Décisions
 
-1. **Orientation** : paysage (proposé, plus confortable pour une carte iso) ou portrait ?
-2. **Version de Godot** : 4.4+ proposé (TileMapLayer, GDScript typé) — une version imposée ?
-3. **Monnaies** : coquillages seuls en V0.1, ou aussi des perles (gagnées en jeu uniquement) ?
-4. **Langue** : interface en français seulement, ou FR + EN dès la V0.1 ?
-5. **Direction artistique** : placeholders géométriques suffisants pour la V0.1, ou un style cible à respecter dès maintenant ?
+1. **Orientation** : paysage (base 1920×1080).
+2. **Godot** : 4.4.1-stable, figé dans `.godot-version` (vérifié par un test).
+3. **Monnaie** : coquillages uniquement en V0.1 ; `Wallet` indexé par
+   identifiant de monnaie pour ajouter les perles sans refonte.
+4. **Langues** : français par défaut (locale de repli `fr`), tous les textes
+   passent par des clés `tr()` dans `i18n/strings.csv` ; l'anglais s'ajoute
+   comme une colonne `en`.
+5. **Graphismes** : assets provisoires originaux, mais vraie carte isométrique
+   navigable dès l'étape 1.
