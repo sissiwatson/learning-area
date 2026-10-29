@@ -409,3 +409,18 @@ Conception dans [`NARRATIVE.md`](NARRATIVE.md), scénario du tutoriel dans
   un seul système de quêtes.
 - Un test de données vérifie la cohérence de toutes les références
   (PNJ, lieux, quêtes, dialogues, fiches, i18n, sources).
+
+---
+
+## 13. Destinées de l'archipel (V0.3)
+
+Conception dans [`ARCHIPELAGO_DESTINIES.md`](ARCHIPELAGO_DESTINIES.md).
+Quatre indicateurs indépendants (rentabilité, réputation touristique,
+patrimoine et communauté, équilibre environnemental), grandes décisions
+narratives pilotées par des données (options exclusives, clauses, coûts,
+conséquences immédiates et différées, modifications de carte, réactions des
+PNJ), réparations toujours possibles, aucun choix dominant (vérifié par
+simulation). Logique pure dans `src/core/destinies/`, réutilise le moteur de
+conditions et d'effets du lot N ; la carte d'origine n'est jamais réécrite
+(superposition de modifications sauvegardée). Première quête : « L'avenir de
+la baie ».
