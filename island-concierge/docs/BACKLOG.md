@@ -12,8 +12,8 @@ valider sur appareil est indiqué explicitement.
 | ✅ | 1 · Carte isométrique de Mahana | Rendu avec le renderer Mobile (captures faites en compatibilité OpenGL) |
 | ✅ | 2 · Caméra tactile (glisser, pincer, molette, limites, inertie) | Gestes réels sur appareil Android ; réglage du seuil de tap et de l'inertie au doigt |
 | ✅ | 3 · Bungalow Hibiscus interactif | Lisibilité du panneau et taille des boutons sur un vrai téléphone |
-| 🔜 | 4 · Export Android debug | Installation et essai sur appareil |
-| ⬜ | 5 · Économie de base (coquillages, inventaire, HUD) | |
+| ✅ | 4 · Export Android debug (APK construit, signé, vérifié) | **Installation et liste de vérification sur appareil** (`ANDROID_EXPORT.md`) |
+| 🔜 | 5 · Économie de base (coquillages, inventaire, HUD) | |
 | ⬜ | 6 · Base de données et validation de `data/` | |
 | ⬜ | 7 · Réservations (bureau, durée de séjour, commission) | |
 | ⬜ | R1–R2 · Réputation : calcul de note, registre d'avis, paliers | |

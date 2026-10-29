@@ -29,6 +29,12 @@ En ligne de commande : `godot --path island-concierge`
 
 Sur PC, la souris émule un doigt (`emulate_touch_from_mouse`).
 
+## Android
+
+Voir [`docs/ANDROID_EXPORT.md`](docs/ANDROID_EXPORT.md) : export debug depuis l'éditeur ou
+`tools/export_android_debug.sh`, installation via `adb`, liste de vérification
+sur appareil.
+
 ## Lancer les tests
 
 Les tests utilisent [GUT 9.4.0](https://github.com/bitwes/Gut) (licence MIT,

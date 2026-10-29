@@ -149,8 +149,9 @@ island-concierge/
     └── ADDING_CONTENT.md         # ajouter un bâtiment / une ressource / un territoire
 ```
 
-`export_presets.cfg` n'est pas versionné tel quel (il peut contenir des chemins
-de keystore) ; un modèle `export_presets.example.cfg` sera fourni.
+`export_presets.cfg` est versionné : depuis Godot 4.3 les identifiants de
+signature sont stockés à part (`.godot/export_credentials.cfg`) ou passés par
+variables d'environnement.
 
 ---
 
@@ -332,7 +333,7 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 1  | **Carte Mahana** | Tuiles iso placeholder, plan 32×32 en données, `TileMapLayer`, zones verrouillées | Tests du plan et des conversions cellule ↔ monde ; capture | ✅ |
 | 2  | **Caméra tactile** | `CameraRig`, `TouchGestures`, `MapCamera` : glisser, pincer, molette, limites, inertie | Tests des calculs et des gestes simulés ; captures zoom min/initial/max | ✅ (non testé sur appareil) |
 | 3  | **Bungalow interactif** | Bungalow Hibiscus, sélection au tap, panneau (nom, propriétaire, état, actions), `Lodging`, `GameState` | Tests de la machine à états et du tap simulé ; captures | ✅ (non testé sur appareil) |
-| 4  | **Export Android debug** | `export_presets.example.cfg`, `ANDROID_EXPORT.md`, APK debug | APK construit ; **test tactile sur appareil réel par l'équipe** | à faire |
+| 4  | **Export Android debug** | `export_presets.cfg`, `ANDROID_EXPORT.md`, `tools/export_android_debug.sh` | APK construit et signature vérifiée ✅ ; **test sur appareil réel à faire** | ✅ build / ⏳ appareil |
 | 5  | **Économie de base** | `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché | à faire |
 | 6  | **Données** | `Database` + validation de toutes les références de `data/` | `test_data_integrity` | à faire |
 | 7  | **Réservations** | `BookingSystem`, bureau de conciergerie, durée de séjour, commission | Tests ; boucle réservation jouable | à faire |
