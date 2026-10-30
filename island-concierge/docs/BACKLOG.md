@@ -278,23 +278,32 @@ réputation achetée, accélérations plafonnées, transparence).
 | ⬜ | $3 · Packs décoratifs, conforts, extensions | $1 |
 | ⬜ | $4 · Simulation : progression complète atteignable sans achat | $2–$3 |
 
-## Feuille de route des versions
+## Feuille de route des versions (validée)
 
-| Version | Contenu | Condition de passage |
-|---------|---------|----------------------|
-| **V0.1** « Premier séjour » | Étapes 0–12 ci-dessus : boucle simple, XP et niveaux, quêtes de Hina, animation de production, tiki bar | Tests verts + recette Android |
-| **V0.2** « Le métier de concierge » | O1–O3, A1–A3, C1, F1, T1–T2, V1b–V1c, S1–S3, I1, E1–E2 (charges par séjour, marge), R1–R6, B1–B4, décoration, N6–N7 | Tests verts (294 tests V0.1 compris) + simulation « un tiers d'actions de production au plus » + recette Android |
-| **V0.3** « L'entreprise » | A4–A6, C2, C4, F2–F3, T3–T4, T6, V1d, P1–P4, M1–M4, E3–E4 (charges fixes, trésorerie, tableau de bord), I2–I5, D1 (calendrier de simulation, requis par E3 et V1d), Bungalow Corail | Tests verts + recette Android |
-| **V0.4** « L'investisseur et l'île vivante » | C3, C5, F4, T5, O4, X2–X4, V2–V3, D2–D10 (« L'avenir de la baie »), R7–R13, N8–N10 | Tests verts dont non-dominance + recette Android |
-| **V0.5** « L'archipel » | N11–N12, R14 | Relecture culturelle des fiches |
-| **V1.0** | Équilibrage, accessibilité, monétisation éthique ($1–$4) si décidée | Simulation sans achat validée |
+| Version | Thème | Contenu | Condition de passage |
+|---------|-------|---------|----------------------|
+| **V0.1** « Premier séjour » | Boucle simple et jouable | Étapes 0–12 | Tests verts + recette de stabilité + recette Android |
+| **V0.2** « Immersion et découverte » | Donner envie de jouer, faire vivre l'île | O1–O3 (introduction, nom), V1b–V1c (habitants et voyageurs qui se déplacent), F1 (marché de Malia), A1–A3 (paniers réalistes, migration), C1 (ressources achetées au marché), T1–T2 (premières expériences), C4 partiel + N6 (premières fiches pédagogiques) | Tests verts (non-régression V0.1) + simulation « production ≤ un tiers des actions » + recette Android |
+| **V0.2.5** « Réalités du métier » | La gestion au centre | S1–S3 et I1 (premiers incidents), R1–R6 (avis et réputation), E1–E2 (charges par séjour), bilan financier (chiffre d'affaires propriétaires, commission, coûts, marge), premières décisions à conséquences (décoration, situations), B1–B4 | Tests verts + recette Android |
+| **V0.3** « Développement de l'entreprise » | Grandir | P1–P4 et F2–F3 (recrutement, délégation, prestataires), M1–M4 (mandats et négociations), A4–A6, C2, T3–T6 (artisanat et activités avancés), E3–E4, D1, V1d, I2–I5, Bungalow Corail | Tests verts + recette Android |
+| **V0.4** « L'investisseur et l'île vivante » | Investir | C3, C5, F4, O4, X2–X4, V2–V3, D2–D10, R7–R13, N8–N10 | Tests verts dont non-dominance + recette Android |
+| **V0.5** « L'archipel » | Plusieurs destinations | N11–N12, R14 | Relecture culturelle des fiches |
+| **V1.0** | Finition | Équilibrage, accessibilité, monétisation éthique ($1–$4) si décidée | Simulation sans achat validée |
+
+Exigences transverses (validées) :
+
+1. Introduction **interactive, courte et passable**, qui donne envie de jouer immédiatement.
+2. Recettes **cohérentes et pédagogiques** : les fruits sont le **contenu** du panier,
+   jamais son matériau ; le contenant est une corbeille tressée en fibres végétales.
+3. **Gestion financière dès la V0.2.5** : mécanique centrale.
+4. Animations **au service de l'immersion ou du jeu**, sans actions répétitives inutiles.
+5. **Sauvegardes existantes, tests automatisés et compatibilité Android préservés** à chaque version.
 
 ## Points ouverts
 
 - 💡 Retour haptique au tap sur Android (`Input.vibrate_handheld`), à évaluer sur appareil.
 - 💡 Recentrer la caméra sur le bâtiment sélectionné quand le panneau le masque.
 - 💡 Mettre à l'échelle le seuil de tap selon la densité de l'écran (`DisplayServer.screen_get_dpi`).
-- 💡 V0.2 chargée : si nécessaire, la scinder en V0.2 (introduction, paniers, marché, expériences simples, vie de l'île) et V0.2.5 (situations, incidents, réputation).
 - 💡 Bulles des personnages : éviter qu'elles passent sous le bandeau d'objectif.
 - 💡 Message au joueur après une sauvegarde récupérée ou réinitialisée (toast), quand le système de notifications existera.
 - 💡 Destinées : durée d'un jour de jeu (temps réel ou cycles d'activité) à décider avant D1.

@@ -5,6 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 GODOT="${GODOT:-godot}"
 out="$(realpath -m "$1")"; shift
-xvfb-run -a -s "-screen 0 1920x1080x24" "$GODOT" --path . \
-	--rendering-method gl_compatibility --audio-driver Dummy --resolution 1280x720 \
+RES="${RES:-1280x720}"
+xvfb-run -a -s "-screen 0 2600x1700x24" "$GODOT" --path . \
+	--rendering-method gl_compatibility --audio-driver Dummy --resolution "$RES" \
 	-s tools/visual_checks.gd -- "$out" "$@"

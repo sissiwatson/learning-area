@@ -122,7 +122,7 @@ contenant tressé, fruits, fleurs, produits artisanaux.
 
 | Gamme | Composition (proposition) | Coût des matières* | Temps | Effet sur la satisfaction (critère « expérience ») | Vente possible en supplément |
 |-------|---------------------------|-------------------:|-------|-------------------------|-----------------------------|
-| **Panier de fruits** (recette V0.1 conservée) | 3 ananas | 0 (récolte) | 1 min | évite le malus « pas de panier » | non |
+| **Panier de fruits** | 1 corbeille tressée + 3 fruits (ananas) | 0 si récolté | 1 min | évite le malus « pas de panier » | non |
 | **Bienvenue** | 1 corbeille tressée, 2 fruits, 1 fleur | 12 | 2 min | +0,10 | non |
 | **Découverte** | corbeille, 3 fruits, 2 fleurs, 1 savon | 30 | 3 min | +0,20 | oui (50 ⇒ marge 20) |
 | **Prestige** | corbeille, fruits, couronne de fleurs, huile parfumée, carte manuscrite | 60 | 4 min | +0,30 ; attendu par les profils premium | oui (100 ⇒ marge 40) |
@@ -132,7 +132,8 @@ contenant tressé, fruits, fleurs, produits artisanaux.
 jamais dépasser 5,00 (`REPUTATION.md`).
 
 **Transition sans casser la V0.1** : la recette « 3 ananas → 1 panier »
-reste en place et devient la gamme « Panier de fruits » ; l'objet
+(qui confond fruits et matériau) reste en place jusqu'à la V0.2, où elle est
+remplacée par « corbeille tressée (fibres) + fruits → panier garni » ; l'objet
 `welcome_basket` des sauvegardes existantes est converti par une migration
 de sauvegarde testée (version 1 → 2).
 
@@ -252,6 +253,10 @@ Règles vérifiables, à respecter par chaque extension :
   contre-épreuve de régression.
 
 ## 8. Découpage par versions
+
+> **Feuille de route validée** (V0.2 « Immersion et découverte », V0.2.5
+> « Réalités du métier », V0.3 « Développement de l'entreprise ») : voir
+> `BACKLOG.md`, qui fait foi. Le tableau ci-dessous reste la vision d'origine.
 
 | Version | Thème | Contenu | Ce qu'on garde hors champ |
 |---------|-------|---------|---------------------------|
