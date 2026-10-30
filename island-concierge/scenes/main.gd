@@ -25,7 +25,8 @@ func _ready() -> void:
 	camera.tapped_world.connect(_on_map_tapped)
 	panel.closed.connect(_clear_selection)
 	panel.open_requested.connect(func(uid): select_building(map.buildings[uid]))
-	for signal_ref in [EventBus.lodging_state_changed, EventBus.offers_changed]:
+	for signal_ref in [EventBus.lodging_state_changed, EventBus.offers_changed,
+			EventBus.production_blocked_changed, EventBus.inventory_changed]:
 		signal_ref.connect(func(_a = null, _b = null): refresh_attention())
 	refresh_attention()
 
@@ -61,6 +62,8 @@ func refresh_attention() -> void:
 		var needs := false
 		if def.role == BuildingDef.Role.LODGING:
 			needs = not GameState.get_lodging(uid).available_actions().is_empty()
+		elif def.role == BuildingDef.Role.PRODUCER:
+			needs = GameState.blocked_producers.has(uid)
 		elif def.role == BuildingDef.Role.OFFICE:
 			for offer in GameState.bookings.offers:
 				needs = needs or GameState.find_lodging_for(offer.template.guests) != &""

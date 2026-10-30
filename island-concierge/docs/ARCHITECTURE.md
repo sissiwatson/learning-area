@@ -340,7 +340,7 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 6  | **Données** | `Database`, `DataValidator`, données de tous les bâtiments de Mahana, recettes, PNJ, quêtes du tutoriel (données seules) | `test_data_validator` (données manquantes, invalides, incohérentes), `test_data_integrity` | ✅ (non testé sur appareil) |
 | 7  | **Réservations** | `Booking`, `BookingSystem`, `Lodging` avec minuteurs, bureau, ménage, accueil, fin automatique, commission, versement, pastilles « ! » | Tests des montants, durées, transitions, doubles paiements, réservations invalides, anti-blocage | ✅ (non testé sur appareil) |
 | R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |
-| 8  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier), panier exigé pour préparer | Tests minuteurs, capacité, taps répétés ; boucle complète jouable | à faire |
+| 8  | **Productions** | `Producer` (emplacements à minuteurs), plantation d'ananas, atelier (panier), panier exigé pour préparer, livraison automatique | Tests minuteurs, capacité, taps répétés, application fermée, production pendant un séjour | ✅ (non testé sur appareil) |
 | 9  | **Sauvegarde** | JSON versionné, sauvegarde en arrière-plan, rattrapage des minuteurs, corruption, migrations, horloge système modifiée | Tests avec horloge simulée ; relance conserve l'état | à faire |
 | R3–R4 | **Réputation : séjours notés** | journal de séjour, règles, avis publié en fin de séjour | Séjour parfait = 5,00 ; sans panier = note attendue | à faire |
 | 10 | **Progression & tutoriel narratif** | XP, niveaux, toasts ; N1–N5 : conditions/effets, PNJ et relations, dialogues, quêtes narratives, tutoriel avec Hina (voir `NARRATIVE.md`) | Test de bout en bout du tutoriel ; partie jouée à la main | à faire |
@@ -516,3 +516,21 @@ déterministes et testées.
 
 Demandes de réservation enrichies (statuts, expiration, profils voyageurs) :
 [`BOOKING_REQUESTS.md`](BOOKING_REQUESTS.md), même moteur que l'étape 7.
+
+## 18. Productions (étape 8)
+
+- `Producer` : un emplacement par recette en cours (`slots` en données),
+  horodatages de début et de fin ; pas de répétition automatique.
+- `GameState.start_production` : tout ou rien. Bâtiment occupé ou entrées
+  manquantes ⇒ refus sans consommation ; des taps répétés ne consomment
+  donc qu'une fois. Les entrées sont consommées au lancement.
+- Livraison automatique à l'inventaire au `tick` (chaque seconde, au retour
+  au premier plan) ; si l'inventaire est plein, la production **attend**
+  (rien n'est perdu) et une pastille « ! » s'affiche ; elle est livrée dès
+  qu'une place se libère. Tresser un panier libère 2 places : un inventaire
+  plein ne bloque jamais la partie.
+- Le ménage d'un bungalow exige **1 panier d'accueil**
+  (`LodgingDef.prepare_items`), produit gratuitement : récolte (gratuite)
+  puis tressage (3 ananas). Règle anti-blocage vérifiée par `DataValidator`.
+- Productions et séjours sont indépendants : on récolte et on tresse pendant
+  qu'un séjour est en cours (testé).

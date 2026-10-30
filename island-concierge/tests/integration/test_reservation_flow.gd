@@ -28,6 +28,12 @@ func _advance(seconds: int) -> void:
 	GameState.tick()
 
 
+## Ménage avec le panier d'accueil exigé (les productions ont leurs propres tests).
+func _prepare() -> Result:
+	GameState.add_items({&"welcome_basket": 1})
+	return GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+
+
 func _state() -> Lodging.State:
 	return GameState.get_lodging(&"hibiscus_1").state
 
@@ -57,7 +63,7 @@ func test_full_loop_amounts_and_durations() -> void:
 	assert_eq(_state(), Lodging.State.BOOKED)
 	assert_signal_emitted(EventBus, "booking_accepted")
 
-	assert_true(GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE).ok)
+	assert_true(_prepare().ok)
 	_advance(119)
 	assert_eq(_state(), Lodging.State.PREPARING)
 	_advance(1)
@@ -84,7 +90,7 @@ func test_full_loop_amounts_and_durations() -> void:
 
 func test_double_payment_is_impossible() -> void:
 	var booking: Booking = GameState.accept_offer(_first_offer()).value
-	GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+	_prepare()
 	_advance(120)
 	GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.WELCOME_GUESTS)
 	_advance(600)
@@ -120,7 +126,7 @@ func test_family_is_never_offered_while_only_small_lodgings_are_open() -> void:
 		for offer in GameState.bookings.offers:
 			assert_ne(offer.template.id, &"family_morel")
 		GameState.accept_offer(_first_offer())
-		GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+		_prepare()
 		_advance(120)
 		GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.WELCOME_GUESTS)
 		_advance(3 * 300)
@@ -131,15 +137,28 @@ func test_invalid_lodging_transitions_through_game_state() -> void:
 	for action in [Lodging.Action.PREPARE, Lodging.Action.WELCOME_GUESTS, Lodging.Action.COLLECT_COMMISSION]:
 		assert_eq(GameState.perform_lodging_action(&"hibiscus_1", action).error, &"invalid_action")
 	GameState.accept_offer(_first_offer())
-	GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+	_prepare()
 	assert_eq(GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.WELCOME_GUESTS).error,
 			&"invalid_action", "pas d'accueil pendant le ménage")
 	assert_eq(GameState.perform_lodging_action(&"nowhere", Lodging.Action.PREPARE).error, &"unknown_lodging")
 
 
+func test_preparation_requires_and_consumes_one_basket() -> void:
+	GameState.accept_offer(_first_offer())
+	var r := GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+	assert_eq(r.error, &"missing_items")
+	assert_eq(_state(), Lodging.State.BOOKED, "rien ne change sans panier")
+	GameState.add_items({&"welcome_basket": 2})
+	assert_true(GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE).ok)
+	assert_eq(GameState.inventory.count(&"welcome_basket"), 1, "un seul panier consommé")
+	for i in 5:  # taps répétés
+		assert_false(GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE).ok)
+	assert_eq(GameState.inventory.count(&"welcome_basket"), 1)
+
+
 func test_stay_ends_while_the_game_is_closed() -> void:
 	GameState.accept_offer(_first_offer())
-	GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+	_prepare()
 	clock.advance(3 * 3600)  # aucune mise à jour pendant 3 h
 	GameState.tick()
 	assert_eq(_state(), Lodging.State.READY)

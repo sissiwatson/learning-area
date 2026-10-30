@@ -89,6 +89,11 @@ func test_full_loop_through_the_panels() -> void:
 	assert_eq(panel.detail_values[&"stay"].text, "2 nuits · 600 coquillages")
 	assert_eq(panel.detail_values[&"commission"].text, "120 coquillages (20 %)")
 	assert_eq(panel.detail_values[&"owner_share"].text, "480")
+	assert_true(panel.action_buttons()[0].disabled, "pas de panier : ménage impossible")
+	assert_eq(panel.action_buttons()[0].text, "Il manque : 1 Panier d'accueil")
+	assert_eq(panel.info.text, "Le ménage demande : 1 Panier d'accueil")
+	GameState.add_items({&"welcome_basket": 1})
+	assert_false(panel.action_buttons()[0].disabled, "le panneau se met à jour avec l'inventaire")
 	assert_eq(panel.action_buttons()[0].text, "Faire le ménage (2 min)")
 	assert_true(_view(&"hibiscus_1").attention)
 	_press("Action_PREPARE")
@@ -202,6 +207,7 @@ func test_panel_shrinks_back_after_a_long_content() -> void:
 
 func test_panel_keeps_its_width_in_every_state() -> void:
 	var widths := []
+	GameState.add_items({&"welcome_basket": 1})
 	var panel := _tap_building(&"hibiscus_1")
 	for step in 3:
 		for i in 3:

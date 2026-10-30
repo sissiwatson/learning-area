@@ -11,6 +11,7 @@ const SCENARIOS := [
 	"buildings_overview", "corail_locked", "workshop_panel",
 	"office_offers", "hibiscus_booked", "hibiscus_cleaning", "hibiscus_stay",
 	"hibiscus_complete", "hibiscus_collected",
+	"farm_running", "workshop_missing", "workshop_crafting", "hibiscus_needs_basket",
 ]
 const FakeClock := preload("res://tests/helpers/fake_clock.gd")
 
@@ -176,6 +177,7 @@ func _to_hibiscus_state(step: int) -> void:
 		return
 	_game_state().accept_offer(_game_state().bookings.offers[0].id)
 	if step >= 2:
+		_game_state().add_items({&"welcome_basket": 1})
 		_game_state().perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
 		_advance(45)
 	if step >= 3:
@@ -217,3 +219,28 @@ func _scenario_hibiscus_collected() -> void:
 ## Autoload GameState (pas d'accès direct par son nom dans un script -s).
 func _game_state() -> Node:
 	return root.get_node("GameState")
+
+
+func _scenario_farm_running() -> void:
+	_game_state().start_production(&"farm_1", &"harvest_pineapple")
+	_advance(12)
+	_tap_building(&"farm_1", 1.1)
+	_advance(0)
+
+
+func _scenario_workshop_missing() -> void:
+	_game_state().add_items({&"pineapple": 2})
+	_tap_building(&"workshop_1", 1.2)
+
+
+func _scenario_workshop_crafting() -> void:
+	_game_state().add_items({&"pineapple": 3})
+	_game_state().start_production(&"workshop_1", &"craft_welcome_basket")
+	_advance(25)
+	_tap_building(&"workshop_1", 1.2)
+	_advance(0)
+
+
+func _scenario_hibiscus_needs_basket() -> void:
+	_game_state().accept_offer(_game_state().bookings.offers[0].id)
+	_tap_building(&"hibiscus_1", 1.3)

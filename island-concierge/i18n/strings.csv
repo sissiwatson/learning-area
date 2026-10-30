@@ -113,3 +113,15 @@ NIGHTS_ONE,1 nuit
 NIGHTS_MANY,%d nuits
 TRAVELERS_ONE,1 voyageur
 TRAVELERS_MANY,%d voyageurs
+ACTION_START_RECIPE,Lancer (%s)
+PANEL_INPUTS,Il faut
+PANEL_FREE,Gratuit
+PANEL_OUTPUTS,Produit
+PANEL_PRODUCTION_PROGRESS,%s : encore %s
+PANEL_PRODUCTION_BUSY,Production en cours
+PANEL_PRODUCTION_BLOCKED,Inventaire plein : la production attend qu'une place se libère.
+PANEL_MISSING,Il manque : %s
+PANEL_PREPARE_NEEDS,Le ménage demande : %s
+ERR_PRODUCER_BUSY,Ce bâtiment produit déjà
+ERR_UNKNOWN_RECIPE,Recette inconnue
+ERR_UNKNOWN_BUILDING,Bâtiment inconnu

@@ -23,6 +23,13 @@ var bookings: BookingSystem
 ## Réservations déjà payées (identifiant -> true) : garde-fou contre tout
 ## double versement, même avec une sauvegarde incohérente.
 var paid_bookings := {}
+## uid du placement -> Producer
+var producers := {}
+## Recettes de la carte par identifiant.
+var recipe_defs := {}
+## Productions terminées mais en attente de place dans l'inventaire
+## (uid -> true), pour l'affichage.
+var blocked_producers := {}
 ## Réservations terminées et payées, de la plus ancienne à la plus récente.
 var stay_history: Array[Dictionary] = []
 var _placements := {}  # uid -> PlacementDef
@@ -60,6 +67,9 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 	if not setup.starting_items.is_empty():
 		inventory.add(setup.starting_items)
 	lodgings.clear()
+	producers.clear()
+	recipe_defs.clear()
+	blocked_producers.clear()
 	_placements.clear()
 	paid_bookings.clear()
 	stay_history.clear()
@@ -73,6 +83,10 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 			var zone := map.zone_at(placement.cell)
 			lodging.locked = zone != null and zone.starts_locked
 			lodgings[placement.uid] = lodging
+		elif def.role == BuildingDef.Role.PRODUCER:
+			producers[placement.uid] = Producer.new(def.producer.slots)
+			for recipe in def.producer.recipes:
+				recipe_defs[recipe.id] = recipe
 		elif def.role == BuildingDef.Role.OFFICE and office == null:
 			office = def.office
 	var templates: Array[BookingTemplateDef] = []
@@ -91,14 +105,16 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 func tick() -> void:
 	if map == null:
 		return
-	var now := clock.now()
+	var at := now()
 	for uid in lodgings:
 		var lodging: Lodging = lodgings[uid]
-		for reached in lodging.update(now):
+		for reached in lodging.update(at):
 			EventBus.lodging_state_changed.emit(uid, reached)
 			if reached == Lodging.State.STAY_COMPLETE:
 				EventBus.stay_completed.emit(uid, lodging.booking.id, lodging.booking.commission())
-	if bookings.update(now, _max_free_capacity()):
+	for uid in producers:
+		_deliver(uid, at)
+	if bookings.update(at, _max_free_capacity()):
 		EventBus.offers_changed.emit()
 
 
@@ -124,6 +140,63 @@ func add_items(items: Dictionary) -> Result:
 func remove_items(items: Dictionary) -> Result:
 	var result := inventory.remove(items)
 	return _report(result, _emit_items.bind(items))
+
+
+# --- Productions -----------------------------------------------------------
+
+## Recettes proposées par un bâtiment de production.
+func recipes_of(uid: StringName) -> Array[RecipeDef]:
+	var placement := get_placement(uid)
+	if placement == null or placement.building.producer == null:
+		return []
+	return placement.building.producer.recipes
+
+
+## Lance une recette : consomme les entrées puis démarre le minuteur.
+## Tout ou rien : si le bâtiment est occupé ou qu'il manque une entrée, rien
+## n'est consommé (des taps répétés ne consomment donc qu'une fois).
+func start_production(uid: StringName, recipe_id: StringName) -> Result:
+	var producer: Producer = producers.get(uid)
+	if producer == null:
+		return _report(Result.failure(&"unknown_building"), Callable(), {"uid": uid})
+	var recipe: RecipeDef = null
+	for r in recipes_of(uid):
+		if r.id == recipe_id:
+			recipe = r
+	if recipe == null:
+		return _report(Result.failure(&"unknown_recipe"), Callable(), {"uid": uid})
+	if producer.free_slot() < 0:
+		return _report(Result.failure(&"producer_busy"), Callable(), {"uid": uid})
+	if not recipe.inputs.is_empty():
+		if not inventory.has_all(recipe.inputs):
+			return _report(Result.failure(&"missing_items"), Callable(), {"uid": uid})
+		remove_items(recipe.inputs)
+	var result := producer.start(recipe, now())
+	EventBus.production_started.emit(uid, recipe.id)
+	return result
+
+
+## Livre à l'inventaire les productions terminées ; si l'inventaire est
+## plein, la production attend (rien n'est perdu) et repart au tick suivant.
+func _deliver(uid: StringName, at: int) -> void:
+	var producer: Producer = producers[uid]
+	var blocked := false
+	for index in producer.done_slots(at):
+		var recipe: RecipeDef = recipe_defs.get(producer.slots[index].recipe)
+		if inventory.add(recipe.outputs).ok:
+			producer.clear(index)
+			_emit_items(recipe.outputs)
+			for id in recipe.outputs:
+				EventBus.item_collected.emit(id, recipe.outputs[id])
+			EventBus.production_completed.emit(uid, recipe.id)
+		else:
+			blocked = true
+	if blocked != blocked_producers.has(uid):
+		if blocked:
+			blocked_producers[uid] = true
+		else:
+			blocked_producers.erase(uid)
+		EventBus.production_blocked_changed.emit(uid, blocked)
 
 
 # --- Réservations et logements -----------------------------------------
@@ -168,7 +241,7 @@ func accept_offer(offer_id: StringName, lodging_uid := &"") -> Result:
 	if not check.ok:
 		return _report(check, Callable(), {"uid": uid})
 	var percent: int = get_placement(uid).building.lodging.commission_percent
-	var booking: Booking = bookings.take_offer(offer_id, percent, clock.now()).value
+	var booking: Booking = bookings.take_offer(offer_id, percent, now()).value
 	lodging.book(booking)
 	EventBus.booking_accepted.emit(booking.id, uid)
 	EventBus.lodging_state_changed.emit(uid, lodging.state)
@@ -185,7 +258,7 @@ func perform_lodging_action(uid: StringName, action: Lodging.Action) -> Result:
 		Lodging.Action.PREPARE:
 			return _prepare(uid, lodging)
 		Lodging.Action.WELCOME_GUESTS:
-			var result := lodging.welcome_guests(clock.now(), timings.night_seconds)
+			var result := lodging.welcome_guests(now(), timings.night_seconds)
 			return _report(result, func(): EventBus.lodging_state_changed.emit(uid, lodging.state), {"uid": uid})
 		Lodging.Action.COLLECT_COMMISSION:
 			return _collect(uid, lodging)
@@ -199,10 +272,10 @@ func _prepare(uid: StringName, lodging: Lodging) -> Result:
 		return _report(Result.failure(&"lodging_locked" if lodging.locked else &"invalid_action"), Callable(), {"uid": uid})
 	var items: Dictionary = get_placement(uid).building.lodging.prepare_items
 	if not items.is_empty():
-		var removed := remove_items(items)
-		if not removed.ok:
-			return removed
-	var result := lodging.start_preparing(clock.now(), timings.cleaning_seconds)
+		if not inventory.has_all(items):
+			return _report(Result.failure(&"missing_items"), Callable(), {"uid": uid})
+		remove_items(items)
+	var result := lodging.start_preparing(now(), timings.cleaning_seconds)
 	return _report(result, func(): EventBus.lodging_state_changed.emit(uid, lodging.state), {"uid": uid})
 
 
@@ -222,12 +295,17 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 		earn(COMMISSION_CURRENCY, amount, StringName("commission:" + booking.id))
 	stay_history.append({
 		"booking": booking.to_dict(), "lodging": uid, "commission": amount,
-		"owner_share": booking.owner_share(), "paid_at": clock.now(),
+		"owner_share": booking.owner_share(), "paid_at": now(),
 	})
 	EventBus.commission_collected.emit(uid, booking.id, amount)
 	EventBus.lodging_state_changed.emit(uid, lodging.state)
 	tick()
 	return Result.success(amount)
+
+
+## Instant présent pour toutes les règles de jeu.
+func now() -> int:
+	return clock.now()
 
 
 func _max_free_capacity() -> int:

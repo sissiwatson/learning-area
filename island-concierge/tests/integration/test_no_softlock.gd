@@ -18,11 +18,23 @@ func after_each() -> void:
 	GameState.clock = Clock.new()
 
 
+## Produit gratuitement un panier : récolte (gratuite) puis tressage.
+func _free_basket() -> void:
+	assert_true(GameState.start_production(&"farm_1", &"harvest_pineapple").ok, "récolte gratuite")
+	clock.advance(30)
+	GameState.tick()
+	assert_true(GameState.start_production(&"workshop_1", &"craft_welcome_basket").ok)
+	clock.advance(60)
+	GameState.tick()
+	assert_eq(GameState.inventory.count(&"welcome_basket"), 1)
+
+
 ## Joue une réservation complète avec uniquement des actions gratuites.
 func _free_booking_cycle() -> int:
 	var before := GameState.wallet.balance(&"shells")
 	assert_gt(GameState.bookings.offers.size(), 0, "une offre est toujours disponible")
 	assert_true(GameState.accept_offer(GameState.bookings.offers[0].id).ok)
+	_free_basket()
 	assert_true(GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE).ok)
 	clock.advance(GameState.timings.cleaning_seconds)
 	GameState.tick()

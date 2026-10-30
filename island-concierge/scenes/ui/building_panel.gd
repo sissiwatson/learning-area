@@ -67,6 +67,10 @@ func _ready() -> void:
 	close_button.pressed.connect(close_panel)
 	EventBus.lodging_state_changed.connect(_on_lodging_state_changed)
 	EventBus.offers_changed.connect(_on_offers_changed)
+	EventBus.inventory_changed.connect(_on_inventory_changed)
+	EventBus.production_started.connect(_on_production_changed)
+	EventBus.production_completed.connect(_on_production_changed)
+	EventBus.production_blocked_changed.connect(_on_production_changed)
 	EventBus.action_failed.connect(_on_action_failed)
 	# Rafraîchit les comptes à rebours une fois par seconde, panneau ouvert seulement.
 	var timer := Timer.new()
@@ -157,18 +161,38 @@ func _show_lodging(def: BuildingDef) -> void:
 			info.text = tr("PANEL_READY_HINT")
 		Lodging.State.STAY_COMPLETE:
 			info.text = tr("PANEL_COMPLETE_HINT")
+	var prepare_items := def.lodging.prepare_items
 	for action in lodging.available_actions():
 		var text := tr(ACTION_KEYS[action])
+		var enabled := true
 		if action == Lodging.Action.PREPARE:
 			text = tr("ACTION_PREPARE_TIMED") % NumberFormat.duration(GameState.timings.cleaning_seconds)
+			if not prepare_items.is_empty():
+				info.text = tr("PANEL_PREPARE_NEEDS") % _items_text(prepare_items)
+				var missing := _missing(prepare_items)
+				if not missing.is_empty():
+					text = tr("PANEL_MISSING") % _items_text(missing)
+					enabled = false
 		elif action == Lodging.Action.COLLECT_COMMISSION:
 			text = tr("ACTION_COLLECT_AMOUNT") % NumberFormat.thousands(booking.commission())
-		_add_button(StringName("Action_" + Lodging.Action.keys()[action]), text, _on_action_pressed.bind(action))
+		var button := _add_button(StringName("Action_" + Lodging.Action.keys()[action]), text, _on_action_pressed.bind(action))
+		button.disabled = not enabled
 	_update_progress()
 
 
+func _update_producer_progress() -> void:
+	var state: Producer = GameState.producers[placement.uid]
+	var at := GameState.now()
+	var running := state.slot_state(0, at) == Producer.SlotState.RUNNING
+	%ProgressRow.visible = running
+	if running:
+		var recipe: RecipeDef = GameState.recipe_defs[state.slots[0].recipe]
+		progress.value = state.progress(0, at) * 100.0
+		progress_label.text = tr("PANEL_PRODUCTION_PROGRESS") % [tr(recipe.name_key), NumberFormat.duration(state.remaining(0, at))]
+
+
 func _show_office() -> void:
-	var now := GameState.clock.now()
+	var now := GameState.now()
 	var system := GameState.bookings
 	offers_box.add_child(_make_label(tr("PANEL_OFFERS"), 38))
 	if system.offers.is_empty():
@@ -219,10 +243,15 @@ func offer_buttons() -> Array[Button]:
 
 
 func _update_progress() -> void:
-	if placement == null or placement.building.role != BuildingDef.Role.LODGING:
+	if placement == null:
+		return
+	if placement.building.role == BuildingDef.Role.PRODUCER:
+		_update_producer_progress()
+		return
+	if placement.building.role != BuildingDef.Role.LODGING:
 		return
 	var lodging := GameState.get_lodging(placement.uid)
-	var now := GameState.clock.now()
+	var now := GameState.now()
 	%ProgressRow.visible = lodging.is_timing()
 	if not lodging.is_timing():
 		return
@@ -239,13 +268,43 @@ func _update_progress() -> void:
 func _show_producer(producer: ProducerDef) -> void:
 	if producer.operator:
 		_add_detail(&"operator", tr("PANEL_OPERATOR"), producer.operator.display_name)
+	var state: Producer = GameState.producers[placement.uid]
+	var busy := state.free_slot() < 0
+	if GameState.blocked_producers.has(placement.uid):
+		info.text = tr("PANEL_PRODUCTION_BLOCKED")
 	for recipe in producer.recipes:
-		var outputs := PackedStringArray()
-		for id in recipe.outputs:
-			outputs.append("%d %s" % [recipe.outputs[id], tr(GameState.item_defs[id].name_key)])
+		var inputs := _items_text(recipe.inputs) if not recipe.inputs.is_empty() else tr("PANEL_FREE")
 		_add_detail(StringName("recipe_" + recipe.id), tr("PANEL_RECIPE"),
-				tr("PANEL_RECIPE_LINE") % [tr(recipe.name_key), ", ".join(outputs), NumberFormat.duration(recipe.duration_seconds)])
-	info.text = tr("PANEL_SOON_PRODUCTION")
+				tr("PANEL_RECIPE_LINE") % [tr(recipe.name_key), _items_text(recipe.outputs), NumberFormat.duration(recipe.duration_seconds)])
+		_add_detail(StringName("inputs_" + recipe.id), tr("PANEL_INPUTS"), inputs)
+		var button_text := tr("ACTION_START_RECIPE") % NumberFormat.duration(recipe.duration_seconds)
+		var missing := _missing(recipe.inputs)
+		var enabled := not busy and missing.is_empty()
+		if busy:
+			button_text = tr("PANEL_PRODUCTION_BUSY")
+		elif not missing.is_empty():
+			button_text = tr("PANEL_MISSING") % _items_text(missing)
+		var button := _add_button(StringName("Start_" + recipe.id), button_text, _on_start_pressed.bind(recipe.id))
+		button.disabled = not enabled
+	_update_progress()
+
+
+## « 3 Ananas, 1 Panier d'accueil ».
+func _items_text(items: Dictionary) -> String:
+	var parts := PackedStringArray()
+	for id in items:
+		parts.append("%d %s" % [items[id], tr(GameState.item_defs[id].name_key)])
+	return ", ".join(parts)
+
+
+## Objets manquants dans l'inventaire pour `items`.
+func _missing(items: Dictionary) -> Dictionary:
+	var missing := {}
+	for id in items:
+		var lack: int = items[id] - GameState.inventory.count(id)
+		if lack > 0:
+			missing[id] = lack
+	return missing
 
 
 func _show_construction(construction: ConstructionDef) -> void:
@@ -271,13 +330,14 @@ func _fit_height() -> void:
 	reset_size()  # reprend la hauteur minimale, plus grande ou plus petite
 
 
-func _add_button(button_name: StringName, text: String, callback: Callable) -> void:
+func _add_button(button_name: StringName, text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.name = String(button_name)
 	button.text = text
 	button.custom_minimum_size.y = ACTION_BUTTON_HEIGHT
 	button.pressed.connect(callback)
 	actions.add_child(button)
+	return button
 
 
 ## Singulier ou pluriel : clés <PREFIXE>_ONE et <PREFIXE>_MANY.
@@ -326,6 +386,21 @@ func _on_action_pressed(action: Lodging.Action) -> void:
 	GameState.perform_lodging_action(placement.uid, action)
 
 
+func _on_start_pressed(recipe_id: StringName) -> void:
+	error_label.hide()
+	GameState.start_production(placement.uid, recipe_id)
+
+
+func _on_inventory_changed(_id: StringName, _count: int) -> void:
+	if visible and placement and placement.building.role in [BuildingDef.Role.PRODUCER, BuildingDef.Role.LODGING]:
+		_refresh()
+
+
+func _on_production_changed(uid: StringName, _detail: Variant = null) -> void:
+	if visible and placement and placement.uid == uid:
+		_refresh()
+
+
 func _on_accept_pressed(offer_id: StringName) -> void:
 	error_label.hide()
 	GameState.accept_offer(offer_id)
@@ -352,7 +427,7 @@ func _on_second() -> void:
 	if not visible or placement == null:
 		return
 	if placement.building.role == BuildingDef.Role.OFFICE:
-		var wait := GameState.bookings.seconds_to_next_offer(GameState.clock.now())
+		var wait := GameState.bookings.seconds_to_next_offer(GameState.now())
 		if wait > 0:
 			info.text = tr("PANEL_NEXT_OFFER") % NumberFormat.duration(wait)
 	else:

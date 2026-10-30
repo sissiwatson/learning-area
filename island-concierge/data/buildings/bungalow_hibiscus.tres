@@ -10,7 +10,7 @@ script = ExtResource("3_lodging")
 owner = ExtResource("4_owner")
 capacity = 2
 commission_percent = 20
-prepare_items = Dictionary[StringName, int]({})
+prepare_items = Dictionary[StringName, int]({&"welcome_basket": 1})
 
 [resource]
 script = ExtResource("1_script")

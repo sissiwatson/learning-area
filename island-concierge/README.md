@@ -98,12 +98,16 @@ Les zones verrouillées sont des rectangles de cellules (`zones`).
   positifs, jamais de solde négatif, opérations atomiques, journal des
   mouvements, sauvegarde/restauration avec correction des valeurs invalides.
 
-## Boucle jouable (V0.1, étape 7)
+## Boucle jouable (V0.1, étapes 7 et 8)
 
 1. Toucher le **bureau de conciergerie** (pastille « ! ») et accepter une réservation.
-2. Toucher le **Bungalow Hibiscus** : « Faire le ménage » (2 min).
-3. « Accueillir les voyageurs » : le séjour dure nuits × 5 min et se termine seul.
-4. « Encaisser » la commission (20 % du prix du séjour).
+2. **Plantation d'ananas** : « Lancer » la récolte (30 s, gratuite, 3 ananas).
+3. **Atelier** : tresser un panier d'accueil (3 ananas, 1 min).
+4. Toucher le **Bungalow Hibiscus** : « Faire le ménage » (2 min, 1 panier).
+5. « Accueillir les voyageurs » : le séjour dure nuits × 5 min et se termine seul.
+6. « Encaisser » la commission (20 % du prix du séjour).
+
+Pendant le séjour, on peut déjà récolter et tresser le panier suivant.
 
 Les durées sont réglables dans `data/balance/timings.tres` et les fichiers de recettes.
 

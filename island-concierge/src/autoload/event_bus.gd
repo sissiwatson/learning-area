@@ -22,3 +22,11 @@ signal booking_accepted(booking_id: StringName, lodging_uid: StringName)
 signal stay_completed(lodging_uid: StringName, booking_id: StringName, commission: int)
 ## Une commission a été versée à la conciergerie.
 signal commission_collected(lodging_uid: StringName, booking_id: StringName, amount: int)
+## Une production a été lancée.
+signal production_started(building_uid: StringName, recipe_id: StringName)
+## Une production terminée a été livrée à l'inventaire.
+signal production_completed(building_uid: StringName, recipe_id: StringName)
+## Des objets ont été récoltés ou fabriqués (objectifs de quête « item_collected »).
+signal item_collected(item_id: StringName, amount: int)
+## Une production terminée attend de la place dans l'inventaire (ou n'attend plus).
+signal production_blocked_changed(building_uid: StringName, blocked: bool)
