@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/defs/building_def.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/buildings/bungalow_corail.png" id="2_texture"]
+[ext_resource type="Script" path="res://src/defs/lodging_def.gd" id="3_lodging"]
+
+[sub_resource type="Resource" id="Resource_lodging"]
+script = ExtResource("3_lodging")
+capacity = 4
+commission_percent = 20
+prepare_items = Dictionary[StringName, int]({})
+
+[resource]
+script = ExtResource("1_script")
+id = &"bungalow_corail"
+name_key = "BUILDING_BUNGALOW_CORAIL"
+role = 1
+footprint = Vector2i(2, 2)
+texture = ExtResource("2_texture")
+texture_anchor = Vector2(128, 192)
+lodging = SubResource("Resource_lodging")

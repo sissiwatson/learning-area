@@ -148,6 +148,6 @@ func _refresh_zones() -> void:
 					zone_overlay.set_cell(Vector2i(x, y), TERRAIN_SOURCE, LOCKED_TILE)
 		var badge := LockBadge.new()
 		badge.text = tr(zone.name_key)
-		badge.position = to_local(cell_center(zone.rect.get_center()))
+		badge.position = to_local(cell_center(zone.badge_position()))
 		_badge_root.add_child(badge)
 		_badges[zone.id] = badge

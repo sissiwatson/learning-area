@@ -337,7 +337,7 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 3  | **Bungalow interactif** | Bungalow Hibiscus, sélection au tap, panneau (nom, propriétaire, état, actions), `Lodging`, `GameState` | Tests de la machine à états et du tap simulé ; captures | ✅ (non testé sur appareil) |
 | 4  | **Export Android debug** | `export_presets.cfg`, `ANDROID_EXPORT.md`, `tools/export_android_debug.sh` | APK construit et signature vérifiée ; recette sur appareil réel n°1 réussie | ✅ 📱 |
 | 5  | **Économie de base** | `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché | ✅ (non testé sur appareil) |
-| 6  | **Données** | `Database` + validation de toutes les références de `data/` | `test_data_integrity` | à faire |
+| 6  | **Données** | `Database`, `DataValidator`, données de tous les bâtiments de Mahana, recettes, PNJ, quêtes du tutoriel (données seules) | `test_data_validator` (données manquantes, invalides, incohérentes), `test_data_integrity` | ✅ (non testé sur appareil) |
 | 7  | **Réservations** | `BookingSystem`, bureau de conciergerie, durée de séjour, commission | Tests ; boucle réservation jouable | à faire |
 | R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |
 | 8  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier) | Tests minuteurs / hors-ligne ; boucle complète jouable | à faire |
@@ -424,3 +424,22 @@ simulation). Logique pure dans `src/core/destinies/`, réutilise le moteur de
 conditions et d'effets du lot N ; la carte d'origine n'est jamais réécrite
 (superposition de modifications sauvegardée). Première quête : « L'avenir de
 la baie ».
+
+---
+
+## 14. Validation des données (étape 6)
+
+`Database` (autoload) charge tous les fichiers de `data/` (y compris les
+fichiers `.remap` des exports) et les fait valider par `DataValidator`,
+une classe pure testée avec des catalogues construits en mémoire. En
+développement, chaque problème est signalé au lancement ; en test,
+`test_data_integrity` exige zéro erreur.
+
+| Famille | Règles vérifiées |
+|---------|------------------|
+| Identifiants | format `snake_case`, uniques par type |
+| Textes | chaque clé de traduction existe |
+| Références | recettes → objets ; bâtiments → recettes, PNJ, modèles de réservation, bâtiment cible ; quêtes → PNJ, prérequis, objets et bâtiments cibles ; carte → bâtiments ; partie neuve → monnaies, objets, durées. Une ressource portant le bon identifiant mais absente du catalogue est refusée. |
+| Valeurs | quantités et durées strictement positives, commission 1..100 %, capacité ≥ 1, plan de carte valide |
+| Cohérence | paramètres conformes au rôle du bâtiment, emprise du chantier = emprise du bâtiment cible, placements sur des parcelles, sans chevauchement ni à cheval sur une zone, zones sans chevauchement, cadenas dans sa zone, carte avec un bureau, événements d'objectif connus avec le bon type de cible, prérequis de quêtes sans cycle |
+| Anti-blocage | tout objet exigé pour préparer un logement est productible gratuitement (chaîne de recettes sans coût) |

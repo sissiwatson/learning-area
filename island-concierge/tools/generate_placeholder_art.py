@@ -7,6 +7,9 @@ Sorties (dans assets/) :
   tiles/decor_atlas.png    2 décors 128×160 : palmier, buisson
   buildings/bungalow_hibiscus.png  bungalow sur 2×2 cellules (256×256, pied du
                            bâtiment = centre de l'emprise au pixel (128, 192))
+  buildings/<id>.png       autres bâtiments de Mahana (bureau, atelier, plantation 3×3,
+                           emplacement et tiki bar, Bungalow Corail) ; pied au pixel
+                           (fp × 64, 128 + fp × 32) pour une emprise fp × fp
   ui/icon_shells.png, ui/icon_pineapple.png, ui/icon_welcome_basket.png
                            icônes 96×96 de l'interface
 
@@ -198,6 +201,154 @@ def bungalow_hibiscus():
     return img
 
 
+class Canvas:
+    """Image pour un bâtiment d'emprise fp × fp, avec 128 px de hauteur libre."""
+
+    def __init__(self, fp=2, extra=128):
+        self.fp, self.extra = fp, extra
+        self.img = Image.new("RGBA", (fp * 128, extra + fp * 64), (0, 0, 0, 0))
+        self.d = ImageDraw.Draw(self.img)
+
+    def iso(self, x, y, z=0.0):
+        return (self.fp * 64 + (x - y) * 64, self.extra + (x + y) * 32 - z)
+
+    def box(self, x0, y0, x1, y1, z0, z1, top, right, left):
+        i, d = self.iso, self.d
+        d.polygon([i(x1, y0, z0), i(x1, y1, z0), i(x1, y1, z1), i(x1, y0, z1)], fill=right)
+        d.polygon([i(x0, y1, z0), i(x1, y1, z0), i(x1, y1, z1), i(x0, y1, z1)], fill=left)
+        d.polygon([i(x0, y0, z1), i(x1, y0, z1), i(x1, y1, z1), i(x0, y1, z1)], fill=top)
+
+    def shadow(self, m=0.1):
+        f = self.fp
+        self.d.polygon([self.iso(m, m), self.iso(f - m / 2, m), self.iso(f - m / 2, f - m / 2), self.iso(m, f - m / 2)], fill=(0, 0, 0, 45))
+
+    def hip_roof(self, e0, e1, ze, height, colors):
+        i, d = self.iso, self.d
+        c = (e0 + e1) / 2
+        apex = i(c, c, ze + height)
+        d.polygon([i(e0, e0, ze), i(e1, e0, ze), apex], fill=colors[0])
+        d.polygon([i(e0, e0, ze), i(e0, e1, ze), apex], fill=colors[0])
+        d.polygon([i(e1, e0, ze), i(e1, e1, ze), apex], fill=colors[1])
+        d.polygon([i(e0, e1, ze), i(e1, e1, ze), apex], fill=colors[2])
+        return apex
+
+
+def bungalow(walls, walls_dark, trim, roof):
+    c = Canvas()
+    c.shadow()
+    c.box(0.15, 0.15, 1.85, 1.85, 0, 10, (196, 150, 98, 255), (150, 108, 66, 255), (170, 124, 78, 255))
+    c.box(0.4, 0.4, 1.6, 1.6, 10, 80, walls, walls_dark, walls)
+    i, d = c.iso, c.d
+    d.polygon([i(0.85, 1.6, 10), i(1.15, 1.6, 10), i(1.15, 1.6, 54), i(0.85, 1.6, 54)], fill=trim)
+    d.polygon([i(1.6, 0.75, 34), i(1.6, 1.25, 34), i(1.6, 1.25, 62), i(1.6, 0.75, 62)], fill=trim)
+    d.polygon([i(1.6, 0.8, 37), i(1.6, 1.2, 37), i(1.6, 1.2, 59), i(1.6, 0.8, 59)], fill=(170, 225, 240, 255))
+    c.hip_roof(0.2, 1.8, 76, 70, roof)
+    return c.img
+
+
+def bungalow_corail():
+    return bungalow((244, 160, 140, 255), (214, 128, 110, 255), (250, 240, 220, 255),
+                    ((170, 120, 70, 255), (186, 134, 78, 255), (214, 160, 96, 255)))
+
+
+def concierge_office():
+    c = Canvas()
+    c.shadow()
+    c.box(0.2, 0.2, 1.8, 1.8, 0, 8, (210, 200, 180, 255), (170, 160, 140, 255), (190, 180, 160, 255))
+    c.box(0.35, 0.35, 1.65, 1.65, 8, 92, (246, 244, 236, 255), (214, 210, 200, 255), (236, 232, 222, 255))
+    i, d = c.iso, c.d
+    for k in range(4):  # auvent rayé sur la façade +y
+        x0, x1 = 0.45 + k * 0.3, 0.6 + k * 0.3
+        d.polygon([i(x0, 1.65, 70), i(x0 + 0.3, 1.65, 70), i(x0 + 0.3, 1.95, 52), i(x0, 1.95, 52)],
+                  fill=(30, 150, 160, 255) if k % 2 == 0 else (250, 250, 245, 255))
+    d.polygon([i(0.9, 1.65, 8), i(1.2, 1.65, 8), i(1.2, 1.65, 50), i(0.9, 1.65, 50)], fill=(30, 110, 130, 255))
+    for y0 in (0.6, 1.1):  # fenêtres façade +x
+        d.polygon([i(1.65, y0, 40), i(1.65, y0 + 0.3, 40), i(1.65, y0 + 0.3, 66), i(1.65, y0, 66)], fill=(150, 210, 230, 255))
+    c.hip_roof(0.25, 1.75, 90, 40, ((24, 120, 130, 255), (28, 136, 146, 255), (36, 156, 166, 255)))
+    sx, sy = i(1.8, 1.0, 120)  # enseigne : clé dorée
+    d.rounded_rectangle((sx - 26, sy - 18, sx + 26, sy + 18), 8, fill=(250, 246, 230, 255), outline=(30, 110, 130, 255), width=3)
+    d.ellipse((sx - 16, sy - 8, sx - 2, sy + 6), outline=(220, 170, 40, 255), width=4)
+    d.line((sx - 2, sy - 1, sx + 16, sy - 1), fill=(220, 170, 40, 255), width=4)
+    d.line((sx + 12, sy - 1, sx + 12, sy + 7), fill=(220, 170, 40, 255), width=3)
+    return c.img
+
+
+def amenities_workshop():
+    c = Canvas()
+    c.shadow()
+    c.box(0.15, 0.15, 1.85, 1.85, 0, 6, (190, 160, 120, 255), (150, 120, 84, 255), (170, 140, 100, 255))
+    i, d = c.iso, c.d
+    for px, py in ((0.3, 0.3), (1.7, 0.3), (0.3, 1.7), (1.7, 1.7)):  # poteaux
+        d.line((i(px, py, 6), i(px, py, 84)), fill=(120, 80, 44, 255), width=7)
+    c.box(0.55, 0.9, 1.45, 1.3, 6, 40, (160, 112, 64, 255), (130, 90, 52, 255), (146, 102, 58, 255))  # établi
+    for bx, by in ((0.7, 1.0), (1.05, 1.05), (1.3, 1.0)):  # paniers tressés
+        x, y = i(bx, by, 40)
+        d.ellipse((x - 12, y - 14, x + 12, y + 4), fill=(206, 160, 90, 255), outline=(150, 104, 52, 255), width=2)
+    x, y = i(1.6, 1.75, 0)
+    d.ellipse((x - 18, y - 30, x + 18, y + 2), fill=(206, 160, 90, 255), outline=(150, 104, 52, 255), width=2)
+    c.hip_roof(0.1, 1.9, 82, 66, ((196, 150, 60, 255), (206, 160, 66, 255), (232, 190, 92, 255)))
+    return c.img
+
+
+def pineapple_farm():
+    c = Canvas(fp=3, extra=96)
+    i, d = c.iso, c.d
+    d.polygon([i(0.05, 0.05), i(2.95, 0.05), i(2.95, 2.95), i(0.05, 2.95)], fill=(150, 104, 66, 255))
+    for row in range(5):  # rangées de plants
+        y = 0.35 + row * 0.55
+        for col in range(5):
+            x = 0.35 + col * 0.55
+            px, py = i(x, y, 0)
+            for a in (-60, -30, 0, 30, 60):
+                r = math.radians(a - 90)
+                d.line((px, py, px + math.cos(r) * 14, py + math.sin(r) * 16), fill=(56, 150, 64, 255), width=3)
+            d.ellipse((px - 5, py - 14, px + 5, py - 2), fill=(240, 186, 50, 255), outline=(176, 120, 30, 255))
+    for fx, fy in ((0, 0), (3, 0), (0, 3), (3, 3), (1.5, 0), (1.5, 3), (0, 1.5), (3, 1.5)):  # piquets
+        x, y = i(fx, fy, 0)
+        d.line((x, y, x, y - 22), fill=(120, 80, 44, 255), width=4)
+    return c.img
+
+
+def tiki_bar_site():
+    c = Canvas()
+    i, d = c.iso, c.d
+    d.polygon([i(0.15, 0.15), i(1.85, 0.15), i(1.85, 1.85), i(0.15, 1.85)], fill=(226, 200, 150, 255))
+    corners = [(0.25, 0.25), (1.75, 0.25), (1.75, 1.75), (0.25, 1.75)]
+    for (ax, ay), (bx, by) in zip(corners, corners[1:] + corners[:1]):  # corde
+        d.line((i(ax, ay, 18), i(bx, by, 18)), fill=(230, 120, 60, 255), width=3)
+    for px, py in corners:
+        d.line((i(px, py, 0), i(px, py, 26)), fill=(120, 80, 44, 255), width=5)
+    x, y = i(1.0, 1.0, 0)  # panneau
+    d.line((x, y, x, y - 60), fill=(120, 80, 44, 255), width=6)
+    d.rounded_rectangle((x - 34, y - 92, x + 34, y - 52), 6, fill=(196, 150, 98, 255), outline=(120, 80, 44, 255), width=3)
+    d.line((x - 20, y - 78, x + 20, y - 78), fill=(120, 80, 44, 255), width=3)
+    d.line((x - 20, y - 66, x + 10, y - 66), fill=(120, 80, 44, 255), width=3)
+    return c.img
+
+
+def tiki_bar():
+    c = Canvas()
+    c.shadow()
+    i, d = c.iso, c.d
+    d.polygon([i(0.15, 0.15), i(1.85, 0.15), i(1.85, 1.85), i(0.15, 1.85)], fill=(196, 150, 98, 255))
+    for px, py in ((0.35, 0.35), (1.65, 0.35), (0.35, 1.65), (1.65, 1.65)):
+        d.line((i(px, py, 0), i(px, py, 78)), fill=(110, 72, 40, 255), width=7)
+    c.box(0.5, 1.1, 1.5, 1.45, 0, 44, (150, 100, 56, 255), (120, 80, 44, 255), (136, 90, 50, 255))  # comptoir
+    for k in range(3):  # bambou du comptoir
+        x0 = 0.6 + k * 0.32
+        d.line((i(x0, 1.45, 4), i(x0, 1.45, 40)), fill=(190, 160, 90, 255), width=3)
+    for sx in (0.7, 1.05, 1.4):  # tabourets
+        x, y = i(sx, 1.75, 0)
+        d.line((x, y, x, y - 22), fill=(110, 72, 40, 255), width=4)
+        d.ellipse((x - 10, y - 28, x + 10, y - 18), fill=(232, 60, 100, 255))
+    for tx, ty in ((1.95, 0.4), (0.4, 1.95)):  # torches
+        x, y = i(tx, ty, 0)
+        d.line((x, y, x, y - 70), fill=(110, 72, 40, 255), width=4)
+        d.polygon([(x - 7, y - 70), (x, y - 92), (x + 7, y - 70)], fill=(250, 150, 40, 255))
+    c.hip_roof(0.15, 1.85, 76, 60, ((196, 150, 60, 255), (206, 160, 66, 255), (232, 190, 92, 255)))
+    return c.img
+
+
 def icon_shells():
     img = Image.new("RGBA", (96, 96), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -260,6 +411,8 @@ def main():
     buildings = ROOT.parent / "buildings"
     buildings.mkdir(parents=True, exist_ok=True)
     bungalow_hibiscus().save(buildings / "bungalow_hibiscus.png")
+    for fn in (bungalow_corail, concierge_office, amenities_workshop, pineapple_farm, tiki_bar_site, tiki_bar):
+        fn().save(buildings / f"{fn.__name__}.png")
     ui = ROOT.parent / "ui"
     ui.mkdir(parents=True, exist_ok=True)
     icon_shells().save(ui / "icon_shells.png")

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="NpcDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/defs/npc_def.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"npc_kimo"
+display_name = "Kimo"
+job_key = "JOB_ARTISAN"

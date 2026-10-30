@@ -1,9 +1,14 @@
-[gd_resource type="Resource" script_class="MapDef" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="MapDef" load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://src/defs/map_def.gd" id="1_map"]
 [ext_resource type="Script" path="res://src/defs/zone_def.gd" id="2_zone"]
 [ext_resource type="Script" path="res://src/defs/placement_def.gd" id="3_placement"]
-[ext_resource type="Resource" path="res://data/buildings/bungalow_hibiscus.tres" id="4_hibiscus"]
+[ext_resource type="Resource" path="res://data/buildings/bungalow_hibiscus.tres" id="b_hibiscus_1"]
+[ext_resource type="Resource" path="res://data/buildings/concierge_office.tres" id="b_office_1"]
+[ext_resource type="Resource" path="res://data/buildings/amenities_workshop.tres" id="b_workshop_1"]
+[ext_resource type="Resource" path="res://data/buildings/pineapple_farm.tres" id="b_farm_1"]
+[ext_resource type="Resource" path="res://data/buildings/bungalow_corail.tres" id="b_corail_1"]
+[ext_resource type="Resource" path="res://data/buildings/tiki_bar_site.tres" id="b_tiki_site_1"]
 
 [sub_resource type="Resource" id="Resource_east_coast"]
 script = ExtResource("2_zone")
@@ -11,6 +16,7 @@ id = &"east_coast"
 name_key = "ZONE_EAST_COAST"
 rect = Rect2i(21, 12, 8, 12)
 starts_locked = true
+badge_cell = Vector2i(26, 14)
 
 [sub_resource type="Resource" id="Resource_west_jungle"]
 script = ExtResource("2_zone")
@@ -19,11 +25,41 @@ name_key = "ZONE_WEST_JUNGLE"
 rect = Rect2i(4, 12, 8, 10)
 starts_locked = true
 
-[sub_resource type="Resource" id="Resource_hibiscus_1"]
+[sub_resource type="Resource" id="P_hibiscus_1"]
 script = ExtResource("3_placement")
 uid = &"hibiscus_1"
-building = ExtResource("4_hibiscus")
+building = ExtResource("b_hibiscus_1")
 cell = Vector2i(6, 23)
+
+[sub_resource type="Resource" id="P_office_1"]
+script = ExtResource("3_placement")
+uid = &"office_1"
+building = ExtResource("b_office_1")
+cell = Vector2i(14, 14)
+
+[sub_resource type="Resource" id="P_workshop_1"]
+script = ExtResource("3_placement")
+uid = &"workshop_1"
+building = ExtResource("b_workshop_1")
+cell = Vector2i(18, 14)
+
+[sub_resource type="Resource" id="P_farm_1"]
+script = ExtResource("3_placement")
+uid = &"farm_1"
+building = ExtResource("b_farm_1")
+cell = Vector2i(12, 9)
+
+[sub_resource type="Resource" id="P_corail_1"]
+script = ExtResource("3_placement")
+uid = &"corail_1"
+building = ExtResource("b_corail_1")
+cell = Vector2i(23, 18)
+
+[sub_resource type="Resource" id="P_tiki_site_1"]
+script = ExtResource("3_placement")
+uid = &"tiki_site_1"
+building = ExtResource("b_tiki_site_1")
+cell = Vector2i(15, 22)
 
 [resource]
 script = ExtResource("1_map")
@@ -63,5 +99,5 @@ layout = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 zones = Array[ExtResource("2_zone")]([SubResource("Resource_east_coast"), SubResource("Resource_west_jungle")])
-placements = Array[ExtResource("3_placement")]([SubResource("Resource_hibiscus_1")])
+placements = Array[ExtResource("3_placement")]([SubResource("P_hibiscus_1"), SubResource("P_office_1"), SubResource("P_workshop_1"), SubResource("P_farm_1"), SubResource("P_corail_1"), SubResource("P_tiki_site_1")])
 decor_seed = 2026

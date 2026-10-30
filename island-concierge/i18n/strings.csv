@@ -36,3 +36,43 @@ ERR_INVALID_AMOUNT,Montant invalide
 ERR_INVENTORY_FULL,Inventaire plein
 ERR_MISSING_ITEMS,Objets manquants
 ERR_UNKNOWN_ITEM,Objet inconnu
+BUILDING_BUNGALOW_CORAIL,Bungalow Corail
+BUILDING_CONCIERGE_OFFICE,Bureau de conciergerie
+BUILDING_PINEAPPLE_FARM,Plantation d'ananas
+BUILDING_AMENITIES_WORKSHOP,Atelier de produits d'accueil
+BUILDING_TIKI_BAR_SITE,Emplacement du tiki bar
+BUILDING_TIKI_BAR,Tiki bar
+ROLE_OFFICE,Conciergerie
+ROLE_PRODUCER,Production
+ROLE_CONSTRUCTION,Emplacement constructible
+ROLE_DECORATION,Loisirs
+JOB_OWNER,Propriétaire
+JOB_FISHERMAN,Pêcheur et guide maritime
+JOB_COOK,Cuisinière et commerçante
+JOB_ARTISAN,Artisan décorateur
+RECIPE_HARVEST_PINEAPPLE,Récolter des ananas
+RECIPE_CRAFT_WELCOME_BASKET,Tresser un panier d'accueil
+QUEST_TUTORIAL_01,Arrivée au quai
+QUEST_TUTORIAL_02,Les clés du bungalow
+QUEST_TUTORIAL_03,Le panier de bienvenue
+QUEST_TUTORIAL_04,L'atelier de Kimo
+QUEST_TUTORIAL_05,Les retouches de Kimo
+QUEST_TUTORIAL_06,La visite d'Hina
+QUEST_TUTORIAL_07,Les premiers voyageurs
+QUEST_TUTORIAL_08,Une question de voyageurs
+QUEST_TUTORIAL_09,Le premier avis
+QUEST_TUTORIAL_10,Le tiki bar
+LODGING_STATE_LOCKED,Verrouillé
+OWNER_UNKNOWN,À découvrir
+PANEL_OPERATOR,Tenu par
+PANEL_RECIPE,Production
+PANEL_RECIPE_LINE,%s : %s en %s
+PANEL_COST,Coût
+PANEL_LEVEL,Niveau requis
+PANEL_BUILD_TIME,Durée
+PANEL_LOCKED_HINT,Débloquez la zone « %s » pour gérer ce logement.
+PANEL_SOON_PRODUCTION,La production sera disponible dans une prochaine version.
+PANEL_SOON_CONSTRUCTION,La construction sera disponible dans une prochaine version.
+PANEL_SOON_BOOKINGS,Les réservations arrivent ici.
+PANEL_DECORATION_INFO,Un lieu de détente pour les voyageurs.
+ERR_LODGING_LOCKED,Ce logement est dans une zone verrouillée

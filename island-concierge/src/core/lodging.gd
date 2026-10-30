@@ -21,10 +21,12 @@ const TRANSITIONS := {
 }
 
 var state := State.VACANT
+## Logement dans une zone pas encore débloquée : aucune action possible.
+var locked := false
 
 
 func can_perform(action: Action) -> bool:
-	return TRANSITIONS.has(action) and TRANSITIONS[action][0] == state
+	return not locked and TRANSITIONS.has(action) and TRANSITIONS[action][0] == state
 
 
 func available_actions() -> Array[Action]:
@@ -37,6 +39,8 @@ func available_actions() -> Array[Action]:
 
 ## Applique l'action si elle est permise ; sinon ne change rien.
 func perform(action: Action) -> Result:
+	if locked:
+		return Result.failure(&"lodging_locked")
 	if not can_perform(action):
 		return Result.failure(&"invalid_action")
 	state = TRANSITIONS[action][1]

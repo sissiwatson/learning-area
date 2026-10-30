@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/defs/building_def.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/buildings/tiki_bar.png" id="2_texture"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"tiki_bar"
+name_key = "BUILDING_TIKI_BAR"
+role = 4
+footprint = Vector2i(2, 2)
+texture = ExtResource("2_texture")
+texture_anchor = Vector2(128, 192)

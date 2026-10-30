@@ -15,8 +15,8 @@ valider sur appareil est indiqué explicitement. 📱 = validé sur Android rée
 | ✅ 🧪 📱 | 3 · Bungalow Hibiscus interactif | Sur appareil : tap sur le toit |
 | ✅ 🧪 📱 | 4 · Export Android debug | Sur appareil : encoche, mise en arrière-plan |
 | ✅ 🧪 | 5 · Économie de base (coquillages, inventaire, HUD) | Sur appareil : lisibilité de la barre de ressources (APK 0.1.1) |
-| 🔜 | 6 · Base de données et validation de `data/` | |
-| ⬜ | 7 · Réservations (bureau, durée de séjour, commission) | |
+| ✅ 🧪 | 6 · Base de données et validation de `data/` (tous les bâtiments de Mahana sur la carte) | Sur appareil : panneaux des nouveaux bâtiments |
+| 🔜 | 7 · Réservations (bureau, durée de séjour, commission) | |
 | ⬜ | R1–R2 · Réputation : calcul de note, registre d'avis, paliers | |
 | ⬜ | 8 · Productions (ananas, panier d'accueil) | |
 | ⬜ | R3–R4 · Réputation : journal de séjour, avis en fin de séjour | |

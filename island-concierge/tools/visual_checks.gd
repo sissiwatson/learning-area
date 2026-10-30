@@ -8,6 +8,7 @@ extends SceneTree
 const SCENARIOS := [
 	"zoom_initial", "zoom_min", "zoom_max", "pan_after_drag",
 	"bungalow_overview", "bungalow_selected", "bungalow_booked",
+	"buildings_overview", "corail_locked", "workshop_panel",
 ]
 
 var main: Node
@@ -129,3 +130,27 @@ func _scenario_bungalow_booked() -> void:
 	var view := _focus_hibiscus(1.3)
 	_tap(cam.rig.world_to_screen(view.global_position + Vector2(0, -60)))
 	main.panel.action_buttons()[0].pressed.emit()
+
+
+func _tap_building(uid: StringName, zoom := 1.2) -> void:
+	var view: BuildingView = main.map.buildings[uid]
+	cam.rig.set_zoom(zoom)
+	cam.rig.center_on(view.global_position + Vector2(240, -40))
+	cam.position = cam.rig.position
+	cam.zoom = Vector2.ONE * cam.rig.zoom
+	_tap(cam.rig.world_to_screen(view.global_position))
+
+
+func _scenario_buildings_overview() -> void:
+	cam.rig.set_zoom(0.62)
+	cam.rig.center_on(main.map.cell_center(Vector2i(15, 17)))
+	cam.position = cam.rig.position
+	cam.zoom = Vector2.ONE * cam.rig.zoom
+
+
+func _scenario_corail_locked() -> void:
+	_tap_building(&"corail_1")
+
+
+func _scenario_workshop_panel() -> void:
+	_tap_building(&"workshop_1")

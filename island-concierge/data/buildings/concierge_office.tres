@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://src/defs/building_def.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/buildings/concierge_office.png" id="2_texture"]
+[ext_resource type="Script" path="res://src/defs/office_def.gd" id="3_office"]
+[ext_resource type="Script" path="res://src/defs/booking_template_def.gd" id="4_tpl"]
+[ext_resource type="Resource" path="res://data/bookings/couple_camille_noe.tres" id="b0"]
+[ext_resource type="Resource" path="res://data/bookings/solo_lea.tres" id="b1"]
+[ext_resource type="Resource" path="res://data/bookings/friends_amaru.tres" id="b2"]
+[ext_resource type="Resource" path="res://data/bookings/family_morel.tres" id="b3"]
+
+[sub_resource type="Resource" id="Resource_office"]
+script = ExtResource("3_office")
+booking_templates = Array[ExtResource("4_tpl")]([ExtResource("b0"), ExtResource("b1"), ExtResource("b2"), ExtResource("b3")])
+max_offers = 2
+
+[resource]
+script = ExtResource("1_script")
+id = &"concierge_office"
+name_key = "BUILDING_CONCIERGE_OFFICE"
+role = 0
+footprint = Vector2i(2, 2)
+texture = ExtResource("2_texture")
+texture_anchor = Vector2(128, 192)
+office = SubResource("Resource_office")

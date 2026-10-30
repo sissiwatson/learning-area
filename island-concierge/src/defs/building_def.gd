@@ -5,6 +5,14 @@ extends Resource
 
 enum Role { OFFICE, LODGING, PRODUCER, CONSTRUCTION, DECORATION }
 
+const ROLE_KEYS := {
+	Role.OFFICE: "ROLE_OFFICE",
+	Role.LODGING: "ROLE_LODGING",
+	Role.PRODUCER: "ROLE_PRODUCER",
+	Role.CONSTRUCTION: "ROLE_CONSTRUCTION",
+	Role.DECORATION: "ROLE_DECORATION",
+}
+
 @export var id: StringName
 @export var name_key: String
 @export var role := Role.LODGING
@@ -13,5 +21,8 @@ enum Role { OFFICE, LODGING, PRODUCER, CONSTRUCTION, DECORATION }
 @export var texture: Texture2D
 ## Pixel de la texture placé au centre de l'emprise au sol.
 @export var texture_anchor := Vector2(128, 192)
-## Paramètres d'hébergement (rôle LODGING uniquement).
+## Paramètres propres au rôle (un seul renseigné, selon `role`).
 @export var lodging: LodgingDef
+@export var office: OfficeDef
+@export var producer: ProducerDef
+@export var construction: ConstructionDef

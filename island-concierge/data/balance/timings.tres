@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TimingsDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/defs/timings_def.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+night_seconds = 300
+cleaning_seconds = 120
+offer_refresh_seconds = 60
+excursion_min_seconds = 180
+excursion_max_seconds = 300

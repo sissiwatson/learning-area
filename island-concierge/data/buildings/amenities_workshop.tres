@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://src/defs/building_def.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/buildings/amenities_workshop.png" id="2_texture"]
+[ext_resource type="Script" path="res://src/defs/producer_def.gd" id="3_producer"]
+[ext_resource type="Script" path="res://src/defs/recipe_def.gd" id="4_recipe"]
+[ext_resource type="Resource" path="res://data/recipes/craft_welcome_basket.tres" id="5_r"]
+[ext_resource type="Resource" path="res://data/npcs/npc_kimo.tres" id="6_npc"]
+
+[sub_resource type="Resource" id="Resource_producer"]
+script = ExtResource("3_producer")
+recipes = Array[ExtResource("4_recipe")]([ExtResource("5_r")])
+slots = 1
+operator = ExtResource("6_npc")
+
+[resource]
+script = ExtResource("1_script")
+id = &"amenities_workshop"
+name_key = "BUILDING_AMENITIES_WORKSHOP"
+role = 2
+footprint = Vector2i(2, 2)
+texture = ExtResource("2_texture")
+texture_anchor = Vector2(128, 192)
+producer = SubResource("Resource_producer")

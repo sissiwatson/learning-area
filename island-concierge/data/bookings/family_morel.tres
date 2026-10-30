@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BookingTemplateDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/defs/booking_template_def.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"family_morel"
+guest_name = "Famille Morel"
+guests = 4
+nights = 2
+nightly_price = 450

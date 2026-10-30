@@ -14,3 +14,11 @@ extends Resource
 @export var placements: Array[PlacementDef] = []
 ## Graine du placement des palmiers et buissons (même graine = même décor).
 @export var decor_seed := 1
+
+
+## Zone contenant la cellule, ou null.
+func zone_at(cell: Vector2i) -> ZoneDef:
+	for zone in zones:
+		if zone.rect.has_point(cell):
+			return zone
+	return null

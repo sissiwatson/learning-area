@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/defs/building_def.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/buildings/tiki_bar_site.png" id="2_texture"]
+[ext_resource type="Script" path="res://src/defs/construction_def.gd" id="3_construction"]
+[ext_resource type="Resource" path="res://data/buildings/tiki_bar.tres" id="4_target"]
+
+[sub_resource type="Resource" id="Resource_construction"]
+script = ExtResource("3_construction")
+cost = Dictionary[StringName, int]({&"shells": 150})
+required_level = 2
+build_seconds = 300
+builds_into = ExtResource("4_target")
+
+[resource]
+script = ExtResource("1_script")
+id = &"tiki_bar_site"
+name_key = "BUILDING_TIKI_BAR_SITE"
+role = 3
+footprint = Vector2i(2, 2)
+texture = ExtResource("2_texture")
+texture_anchor = Vector2(128, 192)
+construction = SubResource("Resource_construction")

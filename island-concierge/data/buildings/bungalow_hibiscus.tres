@@ -1,20 +1,23 @@
-[gd_resource type="Resource" script_class="BuildingDef" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://src/defs/building_def.gd" id="1_building"]
-[ext_resource type="Script" path="res://src/defs/lodging_def.gd" id="2_lodging"]
-[ext_resource type="Texture2D" path="res://assets/buildings/bungalow_hibiscus.png" id="3_texture"]
+[ext_resource type="Script" path="res://src/defs/building_def.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/buildings/bungalow_hibiscus.png" id="2_texture"]
+[ext_resource type="Script" path="res://src/defs/lodging_def.gd" id="3_lodging"]
+[ext_resource type="Resource" path="res://data/npcs/npc_hina.tres" id="4_owner"]
 
 [sub_resource type="Resource" id="Resource_lodging"]
-script = ExtResource("2_lodging")
-owner_name = "Hina Tehani"
+script = ExtResource("3_lodging")
+owner = ExtResource("4_owner")
 capacity = 2
+commission_percent = 20
+prepare_items = Dictionary[StringName, int]({})
 
 [resource]
-script = ExtResource("1_building")
+script = ExtResource("1_script")
 id = &"bungalow_hibiscus"
 name_key = "BUILDING_BUNGALOW_HIBISCUS"
 role = 1
 footprint = Vector2i(2, 2)
-texture = ExtResource("3_texture")
+texture = ExtResource("2_texture")
 texture_anchor = Vector2(128, 192)
 lodging = SubResource("Resource_lodging")

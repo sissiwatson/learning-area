@@ -14,10 +14,13 @@ var currency_defs := {}
 var item_defs := {}
 ## uid du placement -> Lodging
 var lodgings := {}
+## Carte de la partie en cours.
+var map: MapDef
 
 
 ## Démarre une partie neuve sur une carte. (La sauvegarde arrive à l'étape 10.)
-func new_game(map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
+func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
+	map = new_map
 	currency_defs.clear()
 	for def in setup.currencies:
 		currency_defs[def.id] = def
@@ -33,7 +36,10 @@ func new_game(map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 	lodgings.clear()
 	for placement in map.placements:
 		if placement.building.role == BuildingDef.Role.LODGING:
-			lodgings[placement.uid] = Lodging.new()
+			var lodging := Lodging.new()
+			var zone := map.zone_at(placement.cell)
+			lodging.locked = zone != null and zone.starts_locked
+			lodgings[placement.uid] = lodging
 	for id in currency_defs:
 		EventBus.currency_changed.emit(id, wallet.balance(id))
 	for id in item_defs:
@@ -65,6 +71,14 @@ func remove_items(items: Dictionary) -> Result:
 
 
 # --- Logements ------------------------------------------------------------
+
+## Zone contenant un placement, ou null.
+func zone_of(uid: StringName) -> ZoneDef:
+	for placement in map.placements:
+		if placement.uid == uid:
+			return map.zone_at(placement.cell)
+	return null
+
 
 func get_lodging(uid: StringName) -> Lodging:
 	return lodgings.get(uid)

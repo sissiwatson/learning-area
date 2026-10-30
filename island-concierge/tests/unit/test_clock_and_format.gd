@@ -23,3 +23,14 @@ func test_thousands_separator() -> void:
 	assert_eq(NumberFormat.thousands(1000), "1 000")
 	assert_eq(NumberFormat.thousands(1234567), "1 234 567")
 	assert_eq(NumberFormat.thousands(-4500), "-4 500")
+
+
+func test_duration_format() -> void:
+	assert_eq(NumberFormat.duration(0), "0 s")
+	assert_eq(NumberFormat.duration(30), "30 s")
+	assert_eq(NumberFormat.duration(60), "1 min")
+	assert_eq(NumberFormat.duration(90), "1 min 30 s")
+	assert_eq(NumberFormat.duration(300), "5 min")
+	assert_eq(NumberFormat.duration(3600), "1 h")
+	assert_eq(NumberFormat.duration(3900), "1 h 05 min")
+	assert_eq(NumberFormat.duration(-5), "0 s")
