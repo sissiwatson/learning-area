@@ -240,7 +240,7 @@ Conception : `GAME_VISION.md` §4.10 ; fiches `NARRATIVE.md` §12.
 
 | Statut | Étape | Dépend de | Version |
 |--------|-------|-----------|---------|
-| ⬜ | F1 · Marché de Malia : achat de matières (prix, stock quotidien) | E1, D1 | V0.2 |
+| ⬜ | F1 · Marché de Malia : achat de matières (prix, stock renouvelé en temps réel comme les offres) | E1 | V0.2 |
 | ⬜ | F2 · Délégation à un habitant (rémunération, capacité, qualité, relation) | F1, N2 | V0.3 |
 | ⬜ | F3 · Comparateur dans le panneau : coût, temps, qualité, effets | F1–F2 | V0.3 |
 | ⬜ | F4 · Partenariats locaux (contrats à prix fixe) | F3, X3 | V0.4 |
@@ -284,8 +284,8 @@ réputation achetée, accélérations plafonnées, transparence).
 |---------|---------|----------------------|
 | **V0.1** « Premier séjour » | Étapes 0–12 ci-dessus : boucle simple, XP et niveaux, quêtes de Hina, animation de production, tiki bar | Tests verts + recette Android |
 | **V0.2** « Le métier de concierge » | O1–O3, A1–A3, C1, F1, T1–T2, V1b–V1c, S1–S3, I1, E1–E2 (charges par séjour, marge), R1–R6, B1–B4, décoration, N6–N7 | Tests verts (294 tests V0.1 compris) + simulation « un tiers d'actions de production au plus » + recette Android |
-| **V0.3** « L'entreprise » | A4–A6, C2, C4, F2–F3, T3–T4, T6, V1d, P1–P4, M1–M4, E3–E4 (charges fixes, trésorerie, tableau de bord), I2–I5, Bungalow Corail | Tests verts + recette Android |
-| **V0.4** « L'investisseur et l'île vivante » | C3, C5, F4, T5, O4, X2–X4, V2–V3, D1–D10 (« L'avenir de la baie »), R7–R13, N8–N10 | Tests verts dont non-dominance + recette Android |
+| **V0.3** « L'entreprise » | A4–A6, C2, C4, F2–F3, T3–T4, T6, V1d, P1–P4, M1–M4, E3–E4 (charges fixes, trésorerie, tableau de bord), I2–I5, D1 (calendrier de simulation, requis par E3 et V1d), Bungalow Corail | Tests verts + recette Android |
+| **V0.4** « L'investisseur et l'île vivante » | C3, C5, F4, T5, O4, X2–X4, V2–V3, D2–D10 (« L'avenir de la baie »), R7–R13, N8–N10 | Tests verts dont non-dominance + recette Android |
 | **V0.5** « L'archipel » | N11–N12, R14 | Relecture culturelle des fiches |
 | **V1.0** | Équilibrage, accessibilité, monétisation éthique ($1–$4) si décidée | Simulation sans achat validée |
 

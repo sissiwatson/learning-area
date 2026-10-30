@@ -152,7 +152,7 @@ de sauvegarde testée (version 1 → 2).
 |-------|------|-----------------|---------|---------------|
 | Faire soi-même | matières seulement | minuteur + taps | standard | XP |
 | Déléguer (ex. Kimo) | rémunération à l'unité | aucun | supérieure | relation + ; capacité limitée par jour |
-| Acheter (ex. marché de Malia) | prix de vente | aucun | standard | stock limité par jour ; économie locale + |
+| Acheter (ex. marché de Malia) | prix de vente | aucun | standard | stock limité, renouvelé avec le temps ; économie locale + |
 
   Introduction progressive : matériel, rémunérations, stocks, capacités de
   production, bénéfices, partenariats locaux (contrats à prix fixe).
