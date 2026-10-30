@@ -196,7 +196,7 @@ des faits du séjour (tableau du §5), puis :
 > cousin. Avec tes coquillages, tu pourrais le rouvrir.
 
 Le joueur lance la construction (**150 coquillages**, niveau 2 requis). Fin du
-tutoriel : le carnet s'ouvre sur 3 fiches.
+tutoriel (V0.1 : la construction dure 5 min ; le carnet de fiches arrive en V0.2).
 
 > **Tao** : Un jour, je t'emmènerai voir le Grand Banc. Le récif a besoin
 > qu'on s'en occupe.

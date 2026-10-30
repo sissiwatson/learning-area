@@ -150,6 +150,13 @@ func refresh_production_visuals() -> void:
 		var producer: Producer = GameState.producers[uid]
 		var state := producer.slot_state(0, at)
 		buildings[uid].show_progress(producer.progress(0, at) if state == Producer.SlotState.RUNNING else -1.0)
+	for uid in GameState.constructions:
+		if not buildings.has(uid):
+			continue
+		var site: ConstructionSite = GameState.constructions[uid]
+		var view: BuildingView = buildings[uid]
+		view.set_def(GameState.building_def_of(uid))
+		view.show_progress(site.progress(at) if site.state == ConstructionSite.State.BUILDING else -1.0)
 
 
 ## Fait monter « +texte » au-dessus d'un bâtiment.

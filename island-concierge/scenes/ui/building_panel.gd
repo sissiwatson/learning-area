@@ -71,6 +71,10 @@ func _ready() -> void:
 	EventBus.production_started.connect(_on_production_changed)
 	EventBus.production_completed.connect(_on_production_changed)
 	EventBus.production_blocked_changed.connect(_on_production_changed)
+	EventBus.construction_started.connect(_on_production_changed)
+	EventBus.building_built.connect(_on_production_changed)
+	EventBus.currency_changed.connect(func(_id, _v): if visible and placement and _def().role == BuildingDef.Role.CONSTRUCTION: _refresh())
+	EventBus.level_up.connect(func(_l): if visible and placement: _refresh())
 	EventBus.action_failed.connect(_on_action_failed)
 	# Rafraîchit les comptes à rebours une fois par seconde, panneau ouvert seulement.
 	var timer := Timer.new()
@@ -102,8 +106,13 @@ func action_buttons() -> Array[Button]:
 	return result
 
 
+## Définition effective (le tiki bar remplace son chantier une fois construit).
+func _def() -> BuildingDef:
+	return GameState.building_def_of(placement.uid)
+
+
 func _refresh() -> void:
-	var def := placement.building
+	var def := _def()
 	title.text = tr(def.name_key)
 	role.text = tr(BuildingDef.ROLE_KEYS[def.role])
 	_clear(details)
@@ -123,7 +132,7 @@ func _refresh() -> void:
 		BuildingDef.Role.CONSTRUCTION:
 			_show_construction(def.construction)
 		BuildingDef.Role.DECORATION:
-			info.text = tr("PANEL_DECORATION_INFO")
+			info.text = tr(def.description_key if def.description_key != "" else "PANEL_DECORATION_INFO")
 	info.visible = info.text != ""
 	var has_actions := actions.get_child_count() > 0
 	info.visible = info.text != ""
@@ -245,10 +254,18 @@ func offer_buttons() -> Array[Button]:
 func _update_progress() -> void:
 	if placement == null:
 		return
-	if placement.building.role == BuildingDef.Role.PRODUCER:
+	var role := _def().role
+	if role == BuildingDef.Role.PRODUCER:
 		_update_producer_progress()
 		return
-	if placement.building.role != BuildingDef.Role.LODGING:
+	if role == BuildingDef.Role.CONSTRUCTION:
+		var site: ConstructionSite = GameState.constructions[placement.uid]
+		var at := GameState.now()
+		%ProgressRow.visible = site.state == ConstructionSite.State.BUILDING
+		progress.value = site.progress(at) * 100.0
+		progress_label.text = tr("PANEL_BUILD_PROGRESS") % NumberFormat.duration(site.remaining(at))
+		return
+	if role != BuildingDef.Role.LODGING:
 		return
 	var lodging := GameState.get_lodging(placement.uid)
 	var now := GameState.now()
@@ -314,7 +331,22 @@ func _show_construction(construction: ConstructionDef) -> void:
 	_add_detail(&"cost", tr("PANEL_COST"), ", ".join(costs))
 	_add_detail(&"level", tr("PANEL_LEVEL"), str(construction.required_level))
 	_add_detail(&"build_time", tr("PANEL_BUILD_TIME"), NumberFormat.duration(construction.build_seconds))
-	info.text = tr("PANEL_SOON_CONSTRUCTION")
+	var site: ConstructionSite = GameState.constructions[placement.uid]
+	if site.state == ConstructionSite.State.BUILDING:
+		_add_button(&"Build", tr("PANEL_BUILDING_UNDERWAY"), func(): pass).disabled = true
+		_update_progress()
+		return
+	var price: int = construction.cost.get(GameState.COMMISSION_CURRENCY, 0)
+	var text := tr("ACTION_BUILD") % NumberFormat.thousands(price)
+	var enabled := true
+	if GameState.level() < construction.required_level:
+		text = tr("PANEL_LEVEL_REQUIRED") % construction.required_level
+		enabled = false
+	elif not GameState.wallet.can_afford(construction.cost):
+		var lack: int = price - GameState.wallet.balance(GameState.COMMISSION_CURRENCY)
+		text = tr("PANEL_MISSING_COINS") % NumberFormat.thousands(lack)
+		enabled = false
+	_add_button(&"Build", text, _on_build_pressed).disabled = not enabled
 
 
 ## Le panneau ne dépasse jamais de l'écran : au-delà, son contenu défile.
@@ -386,13 +418,18 @@ func _on_action_pressed(action: Lodging.Action) -> void:
 	GameState.perform_lodging_action(placement.uid, action)
 
 
+func _on_build_pressed() -> void:
+	error_label.hide()
+	GameState.start_construction(placement.uid)
+
+
 func _on_start_pressed(recipe_id: StringName) -> void:
 	error_label.hide()
 	GameState.start_production(placement.uid, recipe_id)
 
 
 func _on_inventory_changed(_id: StringName, _count: int) -> void:
-	if visible and placement and placement.building.role in [BuildingDef.Role.PRODUCER, BuildingDef.Role.LODGING]:
+	if visible and placement and _def().role in [BuildingDef.Role.PRODUCER, BuildingDef.Role.LODGING]:
 		_refresh()
 
 
@@ -414,19 +451,19 @@ func _on_open_office() -> void:
 
 
 func _on_lodging_state_changed(uid: StringName, _state: int) -> void:
-	if visible and placement and (placement.uid == uid or placement.building.role == BuildingDef.Role.OFFICE):
+	if visible and placement and (placement.uid == uid or _def().role == BuildingDef.Role.OFFICE):
 		_refresh()
 
 
 func _on_offers_changed() -> void:
-	if visible and placement and placement.building.role == BuildingDef.Role.OFFICE:
+	if visible and placement and _def().role == BuildingDef.Role.OFFICE:
 		_refresh()
 
 
 func _on_second() -> void:
 	if not visible or placement == null:
 		return
-	if placement.building.role == BuildingDef.Role.OFFICE:
+	if _def().role == BuildingDef.Role.OFFICE:
 		var wait := GameState.bookings.seconds_to_next_offer(GameState.now())
 		if wait > 0:
 			info.text = tr("PANEL_NEXT_OFFER") % NumberFormat.duration(wait)

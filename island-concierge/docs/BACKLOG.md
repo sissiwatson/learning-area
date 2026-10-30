@@ -26,8 +26,8 @@ personnel sont en V0.2 et au-delà.
 | ✅ 🧪 | 10a · XP et niveaux (gains par action en données, paliers, badge et barre d'XP, message « Niveau atteint », sauvegarde) | Sur appareil : lisibilité du badge |
 | ✅ 🧪 | 10b · Quêtes de Hina : moteur de conditions et d'effets (N1), quêtes et dialogues passables (N3–N4), tutoriel guidé par les actions — version allégée (séquences 1–4, 6–7, 9–10 de `SCENARIO_TUTORIEL.md`) ; personnages visibles, phrases d'ambiance, bateau de Tao et arrivée des voyageurs | Sur appareil : lisibilité des dialogues, taille des personnages, « Passer » |
 | ✅ 🧪 | 10c · Première animation de production (plantation en 3 stades, anneau de progression, « +3 » et « +120 » flottants, rebond) | Sur appareil : fluidité et lisibilité |
-| 🔜 | 11 · Tiki bar (construction, niveau 2, 150 coquillages) | |
-| ⬜ | 12 · Finitions V0.1 (cadrage initial U1, crédits, équilibrage, recette Android) | |
+| ✅ 🧪 | 11 · Tiki bar (niveau 2, 150 coquillages, 5 min, chantier remplacé par le tiki bar, fin du tutoriel) | Sur appareil : parcours complet du tutoriel |
+| 🔜 | 12 · Finitions V0.1 (cadrage initial U1, crédits, équilibrage après plusieurs sessions, recette Android) | |
 
 Reporté en V0.2 : réputation R1–R6, carnet N6–N7, décision de décoration,
 demande de voyageurs et avis détaillé du tutoriel (séquences 5 et 8).

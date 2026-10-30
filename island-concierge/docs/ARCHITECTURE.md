@@ -583,3 +583,15 @@ données, chaque règle testée.
 - Tests : `tools/run_tests.sh` échoue aussi sur toute erreur de script ou test
   « risqué » ; les captures (`tools/visual_checks.gd`) n'utilisent jamais la
   sauvegarde du joueur.
+
+## 22. Constructions (étape 11)
+
+- `ConstructionSite` : IDLE → BUILDING (horodatage de fin) → BUILT, une seule
+  fois. `GameState.start_construction` vérifie dans l'ordre : chantier libre,
+  niveau requis, paiement (tout ou rien) ; émet `construction_started` et
+  l'événement de quête du même nom.
+- À la fin du minuteur : `building_built`, XP de construction,
+  `GameState.building_def_of(uid)` renvoie désormais le bâtiment construit
+  (le panneau et la carte l'affichent ; la carte d'origine n'est pas
+  modifiée). L'état des chantiers est sauvegardé ; une construction terminée
+  application fermée est rattrapée au chargement.

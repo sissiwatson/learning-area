@@ -15,6 +15,8 @@ const ROLE_KEYS := {
 
 @export var id: StringName
 @export var name_key: String
+## Description affichée dans le panneau (clé i18n, facultative).
+@export var description_key: String
 @export var role := Role.LODGING
 ## Emprise en cellules (x, y).
 @export var footprint := Vector2i(2, 2)

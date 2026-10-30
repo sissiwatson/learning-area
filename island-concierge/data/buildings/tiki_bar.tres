@@ -7,6 +7,7 @@
 script = ExtResource("1_script")
 id = &"tiki_bar"
 name_key = "BUILDING_TIKI_BAR"
+description_key = "PANEL_TIKI_INFO"
 role = 4
 footprint = Vector2i(2, 2)
 texture = ExtResource("2_texture")

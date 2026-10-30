@@ -34,14 +34,10 @@ unique_name_in_owner = true
 
 [node name="Toasts" type="VBoxContainer" parent="HUD"]
 unique_name_in_owner = true
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -360.0
-offset_top = 140.0
-offset_right = 360.0
-offset_bottom = 140.0
-grow_horizontal = 2
+offset_left = 32.0
+offset_top = 360.0
+offset_right = 592.0
+offset_bottom = 360.0
 mouse_filter = 2
 theme = ExtResource("8_theme")
 script = ExtResource("7_toasts")

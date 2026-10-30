@@ -166,3 +166,13 @@ func test_building_footprint_wins_over_a_nearby_npc() -> void:
 	_tap_world(workshop.global_position)
 	assert_true(main.panel.visible)
 	assert_eq(main.panel.title.text, "Atelier de produits d'accueil")
+
+
+func test_toasts_never_cover_the_building_panel_or_dialogue() -> void:
+	main.toasts.show_message("Quête terminée : Les clés du bungalow")
+	main.select_building(main.map.buildings[&"office_1"])
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var toast_rect: Rect2 = main.toasts.get_child(0).get_global_rect()
+	assert_false(toast_rect.intersects(main.panel.get_global_rect()), "toast %s / panneau %s" % [toast_rect, main.panel.get_global_rect()])
+	assert_false(toast_rect.intersects(main.dialogue_box.get_global_rect()))

@@ -14,6 +14,7 @@ const SCENARIOS := [
 	"farm_running", "workshop_missing", "workshop_crafting", "hibiscus_needs_basket",
 	"story_start", "story_banner", "story_hina", "story_arrival",
 	"farm_growing", "farm_harvested",
+	"tiki_ready", "tiki_building", "tiki_built",
 ]
 const FakeClock := preload("res://tests/helpers/fake_clock.gd")
 
@@ -327,3 +328,30 @@ func _scenario_farm_harvested() -> void:
 	for f in main.map.get_node("Objects").get_children():
 		if f is FloatingReward:
 			f._tween.custom_step(0.45)
+
+
+func _tiki_setup(step: int) -> void:
+	var gs := _game_state()
+	gs.gain_xp(55)
+	gs.earn(&"shells", 120)
+	if step >= 1:
+		gs.start_construction(&"tiki_site_1")
+		_advance(130)
+	if step >= 2:
+		_advance(200)
+	_tap_building(&"tiki_site_1", 1.3)
+	_advance(0)
+	for i in 70:
+		await process_frame
+
+
+func _scenario_tiki_ready() -> void:
+	await _tiki_setup(0)
+
+
+func _scenario_tiki_building() -> void:
+	await _tiki_setup(1)
+
+
+func _scenario_tiki_built() -> void:
+	await _tiki_setup(2)

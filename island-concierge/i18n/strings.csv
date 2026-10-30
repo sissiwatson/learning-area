@@ -131,3 +131,12 @@ TOAST_LEVEL_UP,Niveau %d atteint !
 DIALOGUE_SKIP,Passer
 QUEST_GO,Y aller
 TOAST_QUEST_DONE,Quête terminée : %s
+ACTION_BUILD,Construire (%s coquillages)
+PANEL_LEVEL_REQUIRED,Niveau %d requis
+PANEL_MISSING_COINS,Il manque %s coquillages
+PANEL_BUILD_PROGRESS,Construction : encore %s
+PANEL_BUILDING_UNDERWAY,Construction en cours
+PANEL_TIKI_INFO,"Le tiki bar est ouvert ! Bientôt, les voyageurs pourront y prendre un cocktail au coucher du soleil."
+TOAST_BUILT,Construction terminée : %s
+ERR_ALREADY_STARTED,La construction est déjà lancée
+ERR_LEVEL_TOO_LOW,Niveau insuffisant

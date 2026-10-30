@@ -28,6 +28,8 @@ var bookings: BookingSystem
 var paid_bookings := {}
 ## uid du placement -> Producer
 var producers := {}
+## uid de l'emplacement constructible -> ConstructionSite
+var constructions := {}
 ## Recettes de la carte par identifiant.
 var recipe_defs := {}
 ## Productions terminées mais en attente de place dans l'inventaire
@@ -81,6 +83,7 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 		inventory.add(setup.starting_items)
 	lodgings.clear()
 	producers.clear()
+	constructions.clear()
 	recipe_defs.clear()
 	blocked_producers.clear()
 	_placements.clear()
@@ -100,6 +103,8 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 			producers[placement.uid] = Producer.new(def.producer.slots)
 			for recipe in def.producer.recipes:
 				recipe_defs[recipe.id] = recipe
+		elif def.role == BuildingDef.Role.CONSTRUCTION:
+			constructions[placement.uid] = ConstructionSite.new()
 		elif def.role == BuildingDef.Role.OFFICE and office == null:
 			office = def.office
 	var templates: Array[BookingTemplateDef] = []
@@ -126,6 +131,9 @@ func tick() -> void:
 				EventBus.game_event.emit(&"stay_completed", get_placement(uid).building.id, 1)
 	for uid in producers:
 		_deliver(uid, at)
+	for uid in constructions:
+		if constructions[uid].update(at):
+			_on_construction_finished(uid)
 	if bookings.update(at, _max_free_capacity()):
 		EventBus.offers_changed.emit()
 	EventBus.ticked.emit()
@@ -150,6 +158,7 @@ func to_save_dict() -> Dictionary:
 		"inventory": {"counts": inventory.to_dict().counts},
 		"lodgings": lodging_data,
 		"producers": producer_data,
+		"constructions": _constructions_dict(),
 		"bookings": bookings.to_dict(),
 		"paid_bookings": paid_bookings.keys(),
 		"stay_history": stay_history.duplicate(true),
@@ -181,6 +190,10 @@ func load_save_dict(data: Dictionary, new_map: MapDef, setup: NewGameDef = DEFAU
 			var placement := get_placement(uid)
 			var ids := recipes_of(uid).map(func(r): return r.id)
 			producers[uid] = Producer.from_dict(saved_producers[uid], placement.building.producer.slots, ids)
+	var saved_sites := _dict(data, "constructions")
+	for uid in constructions:
+		if saved_sites.get(uid) is Dictionary:
+			constructions[uid] = ConstructionSite.from_dict(saved_sites[uid])
 	bookings.load_dict(_dict(data, "bookings"))
 	paid_bookings.clear()
 	var paid: Variant = data.get("paid_bookings", [])
@@ -349,6 +362,55 @@ func _deliver(uid: StringName, at: int) -> void:
 		else:
 			blocked_producers.erase(uid)
 		EventBus.production_blocked_changed.emit(uid, blocked)
+
+
+# --- Constructions ---------------------------------------------------------
+
+## Définition effective d'un placement : le bâtiment construit si le chantier
+## est terminé, sinon le bâtiment posé sur la carte.
+func building_def_of(uid: StringName) -> BuildingDef:
+	var placement := get_placement(uid)
+	if placement == null:
+		return null
+	var site: ConstructionSite = constructions.get(uid)
+	if site and site.state == ConstructionSite.State.BUILT:
+		return placement.building.construction.builds_into
+	return placement.building
+
+
+## Lance une construction : niveau requis, puis paiement, puis minuteur.
+## Tout ou rien : aucun coquillage dépensé en cas de refus.
+func start_construction(uid: StringName) -> Result:
+	var site: ConstructionSite = constructions.get(uid)
+	if site == null:
+		return _report(Result.failure(&"unknown_building"), Callable(), {"uid": uid})
+	if site.state != ConstructionSite.State.IDLE:
+		return _report(Result.failure(&"already_started"), Callable(), {"uid": uid})
+	var def := get_placement(uid).building.construction
+	if level() < def.required_level:
+		return _report(Result.failure(&"level_too_low"), Callable(), {"uid": uid, "level": def.required_level})
+	var paid := spend(def.cost, StringName("construction:" + uid))
+	if not paid.ok:
+		return paid
+	site.start(now(), def.build_seconds)
+	EventBus.construction_started.emit(uid)
+	EventBus.game_event.emit(&"construction_started", get_placement(uid).building.id, 1)
+	tick()
+	return Result.success()
+
+
+func _on_construction_finished(uid: StringName) -> void:
+	var def := get_placement(uid).building.construction
+	EventBus.building_built.emit(uid, def.builds_into.id)
+	EventBus.game_event.emit(&"building_built", def.builds_into.id, 1)
+	gain_xp(def.xp, StringName("construction:" + uid))
+
+
+func _constructions_dict() -> Dictionary:
+	var out := {}
+	for uid in constructions:
+		out[uid] = constructions[uid].to_dict()
+	return out
 
 
 # --- Réservations et logements -----------------------------------------

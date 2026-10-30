@@ -34,7 +34,8 @@ func _ready() -> void:
 	panel.closed.connect(_clear_selection)
 	panel.open_requested.connect(func(uid): select_building(map.buildings[uid]))
 	for signal_ref in [EventBus.lodging_state_changed, EventBus.offers_changed,
-			EventBus.production_blocked_changed, EventBus.inventory_changed]:
+			EventBus.production_blocked_changed, EventBus.inventory_changed,
+			EventBus.currency_changed, EventBus.xp_changed, EventBus.construction_started]:
 		signal_ref.connect(func(_a = null, _b = null): refresh_attention())
 	refresh_attention()
 	EventBus.level_up.connect(func(lvl): toasts.show_message(tr("TOAST_LEVEL_UP") % lvl, ResourceBar.LEVEL_ICON))
@@ -50,6 +51,8 @@ func _ready() -> void:
 	EventBus.production_completed.connect(_on_production_completed)
 	EventBus.commission_collected.connect(func(uid, _b, amount):
 		map.float_reward(uid, "+%s" % NumberFormat.thousands(amount), GameState.currency_defs[GameState.COMMISSION_CURRENCY].icon))
+	EventBus.construction_started.connect(func(_u): map.refresh_production_visuals())
+	EventBus.building_built.connect(_on_building_built)
 	map.refresh_production_visuals()
 	director.setup(dialogue_box, toasts, map)
 	quest_banner.refresh()
@@ -74,6 +77,14 @@ func focus_building(building_id: StringName) -> void:
 			camera.zoom = Vector2.ONE * camera.rig.zoom
 			select_building(view)
 			return
+
+
+func _on_building_built(uid: StringName, _building_id: StringName) -> void:
+	map.refresh_production_visuals()
+	var def := GameState.building_def_of(uid)
+	map.buildings[uid].bounce()
+	toasts.show_message(tr("TOAST_BUILT") % tr(def.name_key))
+	refresh_attention()
 
 
 func _on_production_completed(uid: StringName, recipe_id: StringName) -> void:
@@ -117,12 +128,16 @@ func _clear_selection() -> void:
 func refresh_attention() -> void:
 	for uid in map.buildings:
 		var view: BuildingView = map.buildings[uid]
-		var def := view.placement.building
+		var def := GameState.building_def_of(uid)
 		var needs := false
 		if def.role == BuildingDef.Role.LODGING:
 			needs = not GameState.get_lodging(uid).available_actions().is_empty()
 		elif def.role == BuildingDef.Role.PRODUCER:
 			needs = GameState.blocked_producers.has(uid)
+		elif def.role == BuildingDef.Role.CONSTRUCTION:
+			var c := def.construction
+			needs = GameState.constructions[uid].state == ConstructionSite.State.IDLE \
+					and GameState.level() >= c.required_level and GameState.wallet.can_afford(c.cost)
 		elif def.role == BuildingDef.Role.OFFICE:
 			for offer in GameState.bookings.offers:
 				needs = needs or GameState.find_lodging_for(offer.template.guests) != &""

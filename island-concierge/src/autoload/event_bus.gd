@@ -46,3 +46,7 @@ signal quest_progressed(quest_id: StringName)
 signal quest_completed(quest_id: StringName)
 ## Fin d'une mise à jour du temps (chaque seconde) : rafraîchir les animations.
 signal ticked
+## Une construction démarre sur un emplacement.
+signal construction_started(site_uid: StringName)
+## Une construction est terminée : l'emplacement devient le bâtiment `building_id`.
+signal building_built(site_uid: StringName, building_id: StringName)

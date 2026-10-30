@@ -39,6 +39,7 @@ func setup(new_placement: PlacementDef, map_local: Callable) -> void:
 		left + Vector2(-64, 0) - position,
 	])
 	sprite.texture = def.texture
+	current_def = def
 	_hit_image = null
 	sprite.centered = false
 	sprite.offset = -def.texture_anchor
@@ -52,6 +53,22 @@ func setup(new_placement: PlacementDef, map_local: Callable) -> void:
 		show_stage(0)
 
 
+## Bâtiment affiché (le tiki bar remplace son chantier une fois construit).
+var current_def: BuildingDef
+
+
+func set_def(def: BuildingDef) -> void:
+	if def == current_def:
+		return
+	current_def = def
+	sprite.texture = def.texture
+	sprite.offset = -def.texture_anchor
+	stage = -1
+	_hit_image = null
+	_badge.position = Vector2(0, top_y() - 8)
+	ring.position = Vector2(0, top_y() - 8)
+
+
 ## Met à jour l'anneau et le stade visuel ; `ratio` < 0 = rien en cours.
 func show_progress(ratio: float) -> void:
 	var running := ratio >= 0.0
@@ -62,7 +79,7 @@ func show_progress(ratio: float) -> void:
 		# Glisse jusqu'à la nouvelle valeur pendant la seconde suivante.
 		_ring_tween = create_tween()
 		_ring_tween.tween_property(ring, "value", ratio, 0.9 if ratio > ring.value else 0.0)
-	var stages := placement.building.stage_textures
+	var stages := current_def.stage_textures
 	if not stages.is_empty():
 		if not running:
 			show_stage(0)
@@ -72,7 +89,7 @@ func show_progress(ratio: float) -> void:
 
 
 func show_stage(index: int) -> void:
-	var stages := placement.building.stage_textures
+	var stages := current_def.stage_textures
 	if stages.is_empty() or index == stage:
 		return
 	stage = clampi(index, 0, stages.size() - 1)
@@ -98,7 +115,7 @@ func top_y() -> float:
 	var image := sprite.texture.get_image() if sprite.texture else null
 	if image == null:
 		return -placement.building.texture_anchor.y
-	return image.get_used_rect().position.y - placement.building.texture_anchor.y
+	return image.get_used_rect().position.y - (current_def if current_def else placement.building).texture_anchor.y
 
 
 func set_selected(value: bool) -> void:

@@ -114,6 +114,8 @@ func _check_booking(def: BookingTemplateDef) -> void:
 func _check_building(def: BuildingDef) -> void:
 	var id := def.id
 	_check_key("buildings", id, def.name_key)
+	if def.description_key != "":
+		_check_key("buildings", id, def.description_key)
 	if def.texture == null:
 		_err("buildings", id, "texture manquante")
 	if def.footprint.x <= 0 or def.footprint.y <= 0:
