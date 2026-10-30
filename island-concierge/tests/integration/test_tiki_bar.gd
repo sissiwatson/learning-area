@@ -117,6 +117,7 @@ func test_panel_states() -> void:
 	assert_false(build.disabled)
 	assert_eq(build.text, "Construire (150 coquillages)")
 	build.pressed.emit()
+	await get_tree().process_frame
 	_advance(60)
 	panel._on_second()
 	assert_eq(panel.progress_label.text, "Construction : encore 4 min")

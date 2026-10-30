@@ -55,6 +55,7 @@ func _press(button_name: String) -> void:
 	var button := main.panel.actions.get_node(button_name) as Button
 	assert_not_null(button, "bouton %s" % button_name)
 	button.pressed.emit()
+	await get_tree().process_frame  # actions du panneau différées après le toucher
 
 
 func test_vacant_bungalow_panel() -> void:
@@ -81,10 +82,11 @@ func test_tap_next_to_building_selects_nothing() -> void:
 
 func test_full_loop_through_the_panels() -> void:
 	var panel := _tap_building(&"hibiscus_1")
-	_press("Action_OPEN_OFFICE")
+	await _press("Action_OPEN_OFFICE")
 	assert_eq(panel.title.text, "Bureau de conciergerie", "le bouton ouvre le bureau")
 	assert_true(_view(&"office_1").attention, "pastille : une offre attend")
 	panel.offer_buttons()[0].pressed.emit()
+	await get_tree().process_frame
 	assert_eq(GameState.get_lodging(&"hibiscus_1").state, Lodging.State.BOOKED)
 
 	panel = _tap_building(&"hibiscus_1")
@@ -100,7 +102,7 @@ func test_full_loop_through_the_panels() -> void:
 	assert_false(panel.action_buttons()[0].disabled, "le panneau se met à jour avec l'inventaire")
 	assert_eq(panel.action_buttons()[0].text, "Faire le ménage (2 min)")
 	assert_true(_view(&"hibiscus_1").attention)
-	_press("Action_PREPARE")
+	await _press("Action_PREPARE")
 
 	assert_eq(panel.state_chip.text, "Ménage en cours")
 	assert_false(_view(&"hibiscus_1").attention, "rien à faire pendant le ménage")
@@ -110,7 +112,7 @@ func test_full_loop_through_the_panels() -> void:
 	assert_almost_eq(panel.progress.value, 25.0, 0.01)
 	_advance(90)
 	assert_eq(panel.state_chip.text, "Prêt à accueillir")
-	_press("Action_WELCOME_GUESTS")
+	await _press("Action_WELCOME_GUESTS")
 
 	_advance(330)
 	panel._on_second()
@@ -119,7 +121,7 @@ func test_full_loop_through_the_panels() -> void:
 	assert_eq(panel.state_chip.text, "Séjour terminé")
 	assert_true(_view(&"hibiscus_1").attention)
 	assert_eq(panel.action_buttons()[0].text, "Encaisser 120 coquillages")
-	_press("Action_COLLECT_COMMISSION")
+	await _press("Action_COLLECT_COMMISSION")
 
 	assert_eq(main.resource_bar.amount_labels[&"shells"].text, "170")
 	assert_eq(panel.state_chip.text, "Libre")
@@ -231,3 +233,17 @@ func test_offer_shows_the_real_commission_even_when_everything_is_booked() -> vo
 	var panel := _tap_building(&"office_1")
 	var amounts: Label = panel.offers_box.get_child(1).get_child(1)
 	assert_eq(amounts.text, "250 coquillages · commission 50", "pas « commission 0 »")
+
+
+## Les actions du panneau sont différées après le toucher (sinon le moteur
+## livre la fin du toucher à un bouton retiré). Si le panneau se ferme dans la
+## même image (dialogue qui démarre, croix), l'action demandée est quand même faite.
+func test_action_still_applies_when_the_panel_closes_in_the_same_frame() -> void:
+	GameState.accept_offer(GameState.bookings.offers[0].id)
+	GameState.add_items({&"welcome_basket": 1})
+	var panel := _tap_building(&"hibiscus_1")
+	panel.actions.get_node("Action_PREPARE").pressed.emit()
+	panel.close_panel()
+	assert_eq(GameState.get_lodging(&"hibiscus_1").state, Lodging.State.BOOKED, "pas encore : différé")
+	await get_tree().process_frame
+	assert_eq(GameState.get_lodging(&"hibiscus_1").state, Lodging.State.PREPARING)

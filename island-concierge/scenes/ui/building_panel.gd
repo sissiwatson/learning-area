@@ -189,7 +189,7 @@ func _show_lodging(def: BuildingDef) -> void:
 					enabled = false
 		elif action == Lodging.Action.COLLECT_COMMISSION:
 			text = tr("ACTION_COLLECT_AMOUNT") % NumberFormat.thousands(booking.commission())
-		var button := _add_button(StringName("Action_" + Lodging.Action.keys()[action]), text, _on_action_pressed.bind(action))
+		var button := _add_button(StringName("Action_" + Lodging.Action.keys()[action]), text, _on_action_pressed.bind(placement.uid, action))
 		button.disabled = not enabled
 	_update_progress()
 
@@ -239,7 +239,7 @@ func _make_offer_card(offer: Dictionary) -> Control:
 	else:
 		card.add_child(_make_label(tr("PANEL_OFFER_TARGET") % tr(GameState.get_placement(target).building.name_key), 28))
 		button.text = tr("ACTION_ACCEPT")
-		button.pressed.connect(_on_accept_pressed.bind(offer.id))
+		button.pressed.connect(_on_accept_pressed.bind(offer.id), CONNECT_DEFERRED)
 	card.add_child(button)
 	return card
 
@@ -304,7 +304,7 @@ func _show_producer(producer: ProducerDef) -> void:
 			button_text = tr("PANEL_PRODUCTION_BUSY")
 		elif not missing.is_empty():
 			button_text = tr("PANEL_MISSING") % _items_text(missing)
-		var button := _add_button(StringName("Start_" + recipe.id), button_text, _on_start_pressed.bind(recipe.id))
+		var button := _add_button(StringName("Start_" + recipe.id), button_text, _on_start_pressed.bind(placement.uid, recipe.id))
 		button.disabled = not enabled
 	_update_progress()
 
@@ -349,7 +349,7 @@ func _show_construction(construction: ConstructionDef) -> void:
 		var lack: int = price - GameState.wallet.balance(GameState.COMMISSION_CURRENCY)
 		text = tr("PANEL_MISSING_COINS") % NumberFormat.thousands(lack)
 		enabled = false
-	_add_button(&"Build", text, _on_build_pressed).disabled = not enabled
+	_add_button(&"Build", text, _on_build_pressed.bind(placement.uid)).disabled = not enabled
 
 
 ## Le panneau ne dépasse jamais de l'écran : au-delà, son contenu défile.
@@ -374,7 +374,10 @@ func _add_button(button_name: StringName, text: String, callback: Callable) -> B
 	button.name = String(button_name)
 	button.text = text
 	button.custom_minimum_size.y = ACTION_BUTTON_HEIGHT
-	button.pressed.connect(callback)
+	# Différé : l'action reconstruit le panneau et retire ce bouton ; le faire
+	# pendant le toucher laisserait le moteur livrer la fin du toucher à un
+	# bouton sorti de l'arbre (erreur moteur, trouvée par l'endurance).
+	button.pressed.connect(callback, CONNECT_DEFERRED)
 	actions.add_child(button)
 	return button
 
@@ -421,19 +424,21 @@ func _clear(container: Node) -> void:
 		child.queue_free()
 
 
-func _on_action_pressed(action: Lodging.Action) -> void:
+# Les boutons gardent le bâtiment pour lequel ils ont été créés : l'action,
+# différée, s'applique même si le panneau a été fermé entre-temps.
+func _on_action_pressed(uid: StringName, action: Lodging.Action) -> void:
 	error_label.hide()
-	GameState.perform_lodging_action(placement.uid, action)
+	GameState.perform_lodging_action(uid, action)
 
 
-func _on_build_pressed() -> void:
+func _on_build_pressed(uid: StringName) -> void:
 	error_label.hide()
-	GameState.start_construction(placement.uid)
+	GameState.start_construction(uid)
 
 
-func _on_start_pressed(recipe_id: StringName) -> void:
+func _on_start_pressed(uid: StringName, recipe_id: StringName) -> void:
 	error_label.hide()
-	GameState.start_production(placement.uid, recipe_id)
+	GameState.start_production(uid, recipe_id)
 
 
 func _on_inventory_changed(_id: StringName, _count: int) -> void:

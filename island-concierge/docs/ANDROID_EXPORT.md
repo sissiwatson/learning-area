@@ -126,3 +126,20 @@ simulées).
 | 9 | Tiki bar | 150 coquillages, 5 min, le chantier devient un tiki bar ; solde final 20 | |
 | 10 | Sauvegarde | Fermer pendant un séjour ou une construction, rouvrir : tout est rattrapé, rien n'est payé deux fois | |
 | 11 | Fluidité | Pas de ralentissement avec les animations | |
+
+## Recette n°4 — APK 0.1.5 (fin de la V0.1, étape 12)
+
+Reprend la recette n°3 (toujours à faire sur appareil) et ajoute les points
+corrigés par l'audit UX et la recette de stabilité de l'étape 12
+(`STABILITY_V0.1.md`). Rien n'est encore validé sur téléphone.
+
+| # | Vérification | Résultat attendu | Appareil réel |
+|---|--------------|------------------|---------------|
+| 1 | Recette n°3, points 1 à 11 | Comme décrit ci-dessus | |
+| 2 | Cadrage au lancement | Toute l'île visible, centrée, quel que soit le format du téléphone | |
+| 3 | Étiquettes et pastilles | « Jungle de l'Ouest », cadenas, « ! », anneaux, bulles : même taille à l'écran en zoomant et dézoomant, et après « Y aller » | |
+| 4 | Panneau et dialogue | Un dialogue qui commence ferme le panneau de bâtiment ; jamais les deux à l'écran | |
+| 5 | Panneau long | Le panneau du bungalow occupé tient dans l'écran ; s'il défile, aucun blocage ni plantage en ouvrant / fermant vite plusieurs bâtiments | |
+| 6 | Offres du bureau | La commission affichée est la vraie (jamais « 0 »), même si le bungalow est déjà réservé | |
+| 7 | Ancienne sauvegarde | Installer 0.1.5 par-dessus 0.1.4 ou 0.1.3 : la partie continue (solde, séjour en cours), le tutoriel reprend | |
+| 8 | Session longue | 15 min de jeu sans ralentissement ni fermeture inattendue | |

@@ -14,6 +14,10 @@ func before_each() -> void:
 	main = load("res://scenes/main.tscn").instantiate()
 	add_child_autofree(main)
 	main.camera.setup(main.map.world_bounds(), main.map.world_bounds().get_center(), Vector2(1920, 1080))
+	# Le dialogue d'ouverture démarre à la frame suivante et fermerait le panneau.
+	await get_tree().process_frame
+	while main.dialogue_box.visible:
+		main.dialogue_box.skip()
 
 
 func after_each() -> void:
@@ -44,6 +48,7 @@ func test_farm_panel_harvest() -> void:
 	var button: Button = panel.actions.get_node("Start_harvest_pineapple")
 	assert_eq(button.text, "Lancer (30 s)")
 	button.pressed.emit()
+	await get_tree().process_frame
 	button = panel.actions.get_node("Start_harvest_pineapple")
 	assert_true(button.disabled)
 	assert_eq(button.text, "Production en cours")

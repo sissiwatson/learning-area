@@ -45,7 +45,17 @@ tools/run_tests.sh                 # depuis island-concierge/, headless
 GODOT=/chemin/vers/godot tools/run_tests.sh
 ```
 
-Le script renvoie un code non nul si un test échoue. Les tests peuvent aussi
+Le script renvoie un code non nul si un test échoue, si un script ne compile
+pas ou si le moteur signale une erreur (`ERROR:`) pendant les tests.
+
+Les tests de `tests/stability/` forment la recette de stabilité (voir
+[`docs/STABILITY_V0.1.md`](docs/STABILITY_V0.1.md)) : joueur aléatoire sur
+l'économie (avec sauvegardes et sauts d'horloge) et « singe » sur l'interface.
+La recette d'endurance, en temps réel, se lance à part :
+
+```bash
+tools/endurance_run.sh 600 endurance.csv   # 10 min, mesures toutes les 10 s
+``` Les tests peuvent aussi
 être lancés depuis l'éditeur via le panneau **GUT** en bas de l'écran.
 
 ## Captures d'écran (Linux, xvfb)

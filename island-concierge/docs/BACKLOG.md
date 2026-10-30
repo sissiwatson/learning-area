@@ -27,7 +27,7 @@ personnel sont en V0.2 et au-delà.
 | ✅ 🧪 | 10b · Quêtes de Hina : moteur de conditions et d'effets (N1), quêtes et dialogues passables (N3–N4), tutoriel guidé par les actions — version allégée (séquences 1–4, 6–7, 9–10 de `SCENARIO_TUTORIEL.md`) ; personnages visibles, phrases d'ambiance, bateau de Tao et arrivée des voyageurs | Sur appareil : lisibilité des dialogues, taille des personnages, « Passer » |
 | ✅ 🧪 | 10c · Première animation de production (plantation en 3 stades, anneau de progression, « +3 » et « +120 » flottants, rebond) | Sur appareil : fluidité et lisibilité |
 | ✅ 🧪 | 11 · Tiki bar (niveau 2, 150 coquillages, 5 min, chantier remplacé par le tiki bar, fin du tutoriel) | Sur appareil : parcours complet du tutoriel |
-| 🔜 | 12 · Finitions V0.1 (cadrage initial U1, crédits, équilibrage après plusieurs sessions, recette Android) | |
+| ✅ 🧪 | 12 · Finitions V0.1 : audit UX (3 formats d'écran), recette de stabilité (aléatoire, singe, endurance), cadrage initial U1, crédits — voir `STABILITY_V0.1.md` | Sur appareil : recette n°4 (APK 0.1.5) ; équilibrage après plusieurs vraies sessions |
 
 Reporté en V0.2 : réputation R1–R6, carnet N6–N7, décision de décoration,
 demande de voyageurs et avis détaillé du tutoriel (séquences 5 et 8).
@@ -38,7 +38,7 @@ Non bloquants pour les étapes 6 à 9 ; à traiter dans une passe UX dédiée.
 
 | Statut | Amélioration | Notes |
 |--------|--------------|-------|
-| ⬜ | U1 · Cadrage initial mettant en valeur l'île et le bungalow | zoom et centre de départ en données ; capture avant/après |
+| ✅ 🧪 | U1 · Cadrage initial mettant en valeur l'île et le bungalow | toute l'île visible en 16:9, 20:9 et 4:3 (étape 12, testé) |
 | ⬜ | U2 · Panneau de bâtiment plus compact, avec miniature du bâtiment et portrait du propriétaire | portraits : dépend de N2 |
 | ⬜ | U3 · Vraie carte de demande de réservation (voyageurs, durée, prix total, commission attendue, message) | = lot B, étape B4 |
 | ⬜ | U4 · Apparition progressive des personnages et éléments narratifs dans les interactions | dépend de N2–N3 |
@@ -279,6 +279,8 @@ réputation achetée, accélérations plafonnées, transparence).
 | ⬜ | $4 · Simulation : progression complète atteignable sans achat | $2–$3 |
 
 ## Feuille de route des versions (validée)
+
+Plan détaillé de la V0.2 en lots testables (proposition) : [`PLAN_V0.2.md`](PLAN_V0.2.md).
 
 | Version | Thème | Contenu | Condition de passage |
 |---------|-------|---------|----------------------|

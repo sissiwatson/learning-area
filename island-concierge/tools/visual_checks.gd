@@ -15,7 +15,7 @@ const SCENARIOS := [
 	"story_start", "story_banner", "story_hina", "story_arrival",
 	"farm_growing", "farm_harvested",
 	"tiki_ready", "tiki_building", "tiki_built",
-	"audit_panel_and_dialogue",
+	"audit_panel_and_dialogue", "touch_panel_action",
 ]
 const FakeClock := preload("res://tests/helpers/fake_clock.gd")
 
@@ -374,3 +374,26 @@ func _scenario_audit_panel_and_dialogue() -> void:
 	for i in 3:
 		await process_frame
 	main.dialogue_box.on_tap()
+
+
+## Vrai toucher (souris émulée puis toucher, comme Android) sur un bouton du
+## panneau qui reconstruit le panneau : aucune erreur moteur (le script
+## visual_checks.sh échoue sinon) et l'action est bien faite.
+func _scenario_touch_panel_action() -> void:
+	_game_state().accept_offer(_game_state().bookings.offers[0].id)
+	_game_state().add_items({&"welcome_basket": 1})
+	_tap_building(&"hibiscus_1", 1.0)
+	for i in 3:
+		await process_frame
+	var button: Button = main.panel.actions.get_node("Action_PREPARE")
+	var pos := root.get_final_transform() * button.get_global_rect().get_center()
+	for pressed in [true, false]:
+		var e := InputEventScreenTouch.new()
+		e.index = 0; e.pressed = pressed; e.position = pos
+		Input.parse_input_event(e)
+		Input.flush_buffered_events()
+	for i in 3:
+		await process_frame
+	var state: int = _game_state().get_lodging(&"hibiscus_1").state
+	if state != Lodging.State.PREPARING:
+		push_error("le toucher sur « Faire le ménage » n'a pas lancé le ménage")

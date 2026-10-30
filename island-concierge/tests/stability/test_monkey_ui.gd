@@ -22,7 +22,8 @@ func before_each() -> void:
 	add_child_autofree(main)
 	main.camera.setup(main.map.world_bounds(), main.map.world_bounds().get_center(), VIEW)
 	await get_tree().process_frame
-	stats = {"taps": 0, "buttons": 0, "drags": 0, "pinches": 0, "panels": 0, "dialogues": 0}
+	main.camera.tapped_world.connect(func(_w): stats.map_taps += 1)
+	stats = {"map_taps": 0, "taps": 0, "buttons": 0, "drags": 0, "pinches": 0, "panels": 0, "dialogues": 0}
 
 
 func after_each() -> void:
@@ -34,15 +35,21 @@ func _send(event: InputEvent) -> void:
 	Input.flush_buffered_events()
 
 
+## Les positions sont données dans la scène ; Input attend celles de la
+## fenêtre (en headless, fenêtre 0×0 : l'étirement n'est pas l'identité).
+func _to_window(pos: Vector2) -> Vector2:
+	return get_tree().root.get_final_transform() * pos
+
+
 func _touch(index: int, pressed: bool, pos: Vector2) -> void:
 	var e := InputEventScreenTouch.new()
-	e.index = index; e.pressed = pressed; e.position = pos
+	e.index = index; e.pressed = pressed; e.position = _to_window(pos)
 	_send(e)
 
 
 func _drag(index: int, from: Vector2, to: Vector2) -> void:
 	var e := InputEventScreenDrag.new()
-	e.index = index; e.position = to; e.relative = to - from
+	e.index = index; e.position = _to_window(to); e.relative = _to_window(to) - _to_window(from)
 	_send(e)
 
 
