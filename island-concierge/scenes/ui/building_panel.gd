@@ -33,6 +33,11 @@ const ACTION_KEYS := {
 const ACTION_BUTTON_HEIGHT := 104.0
 const DETAIL_LABEL_COLOR := Color(0.4, 0.45, 0.5)
 const DETAIL_FONT_SIZE := 30
+## Largeur minimale des valeurs renvoyées à la ligne : un libellé tout juste
+## créé (largeur 1) annoncerait sinon une hauteur immense le temps d'une mise
+## en page. La boucle de mise en page trouvée par la recette « singe » est
+## corrigée par la barre de défilement réservée (Scroll, mode « Reserve »).
+const DETAIL_VALUE_MIN_WIDTH := 200.0
 ## Marge gardée libre au-dessus et au-dessous du panneau.
 const SCREEN_MARGIN := 32.0
 
@@ -397,6 +402,7 @@ func _add_detail(key: StringName, label_text: String, value_text: String) -> voi
 	value.text = value_text
 	value.add_theme_font_size_override(&"font_size", DETAIL_FONT_SIZE)
 	value.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	value.custom_minimum_size.x = DETAIL_VALUE_MIN_WIDTH
 	value.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	details.add_child(value)
 	detail_values[key] = value

@@ -203,11 +203,26 @@ func load_save_dict(data: Dictionary, new_map: MapDef, setup: NewGameDef = DEFAU
 	var history: Variant = data.get("stay_history", [])
 	for entry in (history if history is Array else []):
 		if entry is Dictionary and stay_history.size() < HISTORY_LIMIT:
-			stay_history.append(entry)
+			stay_history.append(_whole_numbers_as_int(entry))
 	_announce_everything()
 	_refresh_quests()
 	tick()
 	return Result.success()
+
+
+## JSON relit tous les nombres en flottants : on rend leurs entiers aux
+## valeurs entières, pour que l'historique garde le même type qu'en jeu.
+static func _whole_numbers_as_int(value: Variant) -> Variant:
+	if value is float and is_finite(value) and value == floorf(value):
+		return int(value)
+	if value is Dictionary:
+		var copy := {}
+		for key in value:
+			copy[key] = _whole_numbers_as_int(value[key])
+		return copy
+	if value is Array:
+		return value.map(_whole_numbers_as_int)
+	return value
 
 
 func _dict(data: Dictionary, key: String) -> Dictionary:

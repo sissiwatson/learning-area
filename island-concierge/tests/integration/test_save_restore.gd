@@ -156,6 +156,42 @@ func test_invalid_or_foreign_data_is_sanitized() -> void:
 	assert_eq(GameState.paid_bookings.size(), 0, "liste invalide ignorée")
 
 
+## Trouvé par la recette de stabilité : après un rechargement, l'historique
+## des séjours gardait des flottants (120.0) et la sauvegarde suivante différait.
+func test_stay_history_keeps_integers_across_several_reloads() -> void:
+	_busy_state()
+	_advance(30 * GameState.timings.night_seconds)
+	assert_true(GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.COLLECT_COMMISSION).ok)
+	_save_and_reload()
+	var first := JSON.stringify(GameState.to_save_dict())
+	_save_and_reload()
+	assert_eq(JSON.stringify(GameState.to_save_dict()), first, "deuxième rechargement identique")
+	assert_typeof(GameState.stay_history[0].commission, TYPE_INT)
+	assert_typeof(GameState.stay_history[0].booking.guests, TYPE_INT)
+
+
+## Sauvegarde au format de l'APK 0.1.3 (avant progression, quêtes et
+## chantiers) : elle doit se charger sans perte de l'état existant.
+func test_save_from_0_1_3_without_progression_quests_or_constructions_loads() -> void:
+	_busy_state()
+	var data: Dictionary = JSON.parse_string(JSON.stringify(GameState.to_save_dict()))
+	data.erase("progression")
+	data.erase("quests")
+	data.erase("constructions")
+	GameState.new_game(map)
+	assert_true(GameState.load_save_dict(data, map).ok)
+	assert_eq(GameState.wallet.balance(&"shells"), 1284, "solde conservé")
+	assert_eq(GameState.inventory.count(&"pineapple"), 2, "inventaire conservé")
+	assert_eq(GameState.get_lodging(&"hibiscus_1").state, Lodging.State.OCCUPIED, "séjour conservé")
+	assert_eq(GameState.progression.xp, 0, "progression absente : départ à zéro")
+	assert_eq(GameState.constructions[&"tiki_site_1"].state, ConstructionSite.State.IDLE, "chantier absent : non commencé")
+	assert_gt(GameState.quest_log.with_status(QuestLog.Status.ACTIVE).size()
+			+ GameState.quest_log.with_status(QuestLog.Status.AVAILABLE).size(), 0, "tutoriel disponible")
+	var again := GameState.to_save_dict()
+	assert_true(again.has("progression") and again.has("quests") and again.has("constructions"),
+			"la sauvegarde suivante passe au format complet")
+
+
 func test_save_of_another_map_is_refused() -> void:
 	var data := GameState.to_save_dict()
 	data.map = "zanzibar"

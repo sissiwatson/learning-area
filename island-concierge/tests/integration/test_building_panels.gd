@@ -69,3 +69,21 @@ func test_locked_corail() -> void:
 	assert_false(panel.no_action.visible)
 	var r := GameState.perform_lodging_action(&"corail_1", Lodging.Action.PREPARE)
 	assert_eq(r.error, &"lodging_locked")
+
+
+## Trouvé par la recette « singe » : la barre de défilement qui apparaît et
+## disparaît changeait la largeur des textes renvoyés à la ligne, donc leur
+## hauteur, donc la barre… boucle de mise en page sans fin (plantage).
+## La place de la barre est désormais toujours réservée.
+func test_panel_scrollbar_space_is_reserved_to_avoid_layout_loops() -> void:
+	var panel := _open(&"hibiscus_1")
+	assert_eq(panel._scroll.vertical_scroll_mode, ScrollContainer.SCROLL_MODE_RESERVE)
+	for child in panel.details.get_children():
+		if child is Label and child.autowrap_mode != TextServer.AUTOWRAP_OFF:
+			assert_gte(child.custom_minimum_size.x, BuildingPanel.DETAIL_VALUE_MIN_WIDTH, "valeur jamais réduite à 1 px")
+	# Réouvertures rapides dans la même image : la hauteur se stabilise à l'écran.
+	for i in 3:
+		_open(&"hibiscus_1")
+		_open(&"office_1")
+	await wait_process_frames(3)
+	assert_lte(panel.size.y, panel.get_viewport_rect().size.y, "panneau dans l'écran")

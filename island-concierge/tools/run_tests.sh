@@ -26,5 +26,11 @@ if grep -qE "SCRIPT ERROR|Risky/Pending" "$log"; then
 	echo "ÉCHEC : erreur de script ou test risqué (voir ci-dessus)." >&2
 	status=1
 fi
+# Une erreur moteur (nœud libéré trop tôt, ressource manquante…) est un défaut
+# même si aucune assertion n'échoue.
+if grep -qE "^(USER )?ERROR:" "$log"; then
+	echo "ÉCHEC : erreur moteur pendant les tests (voir ci-dessus)." >&2
+	status=1
+fi
 rm -f "$log"
 exit "$status"
