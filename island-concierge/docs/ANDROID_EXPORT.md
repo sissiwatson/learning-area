@@ -106,3 +106,23 @@ du SDK Android. Le « SDK » y était un dossier minimal pointant vers les paque
 Ubuntu `apksigner`, `zipalign` et `adb` ; la signature a été vérifiée par
 `apksigner verify`. Pour vos propres builds, utilisez la méthode 1 ou 2 avec un
 SDK officiel.
+
+## Recette n°3 — APK 0.1.4 (V0.1 presque complète)
+
+À vérifier sur appareil réel ; rien de cette liste n'est encore validé sur
+téléphone (tout est couvert par les tests automatisés et des captures
+simulées).
+
+| # | Vérification | Résultat attendu | Appareil réel |
+|---|--------------|------------------|---------------|
+| 1 | Ouverture | Tao parle dès le lancement (portrait, texte qui s'écrit) | |
+| 2 | Dialogues | Toucher : texte complet puis réplique suivante ; « Passer » fonctionne | |
+| 3 | Bandeau d'objectif | Lisible ; « Y aller » ouvre le bon bâtiment | |
+| 4 | Tutoriel complet | 8 quêtes : caméra, réservation, ananas, panier, ménage, accueil, encaissement, tiki bar | |
+| 5 | Personnages | Visibles, se balancent ; toucher = bulle de phrase | |
+| 6 | Arrivée des voyageurs | Le bateau de Tao accoste, deux voyageurs marchent jusqu'au bungalow | |
+| 7 | Animation de production | Plantation : pousses → plants → ananas ; anneau ; « +3 » | |
+| 8 | Niveau | Badge « Niv. 2 » et message après le premier encaissement | |
+| 9 | Tiki bar | 150 coquillages, 5 min, le chantier devient un tiki bar ; solde final 20 | |
+| 10 | Sauvegarde | Fermer pendant un séjour ou une construction, rouvrir : tout est rattrapé, rien n'est payé deux fois | |
+| 11 | Fluidité | Pas de ralentissement avec les animations | |
