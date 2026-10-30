@@ -30,3 +30,9 @@ signal production_completed(building_uid: StringName, recipe_id: StringName)
 signal item_collected(item_id: StringName, amount: int)
 ## Une production terminée attend de la place dans l'inventaire (ou n'attend plus).
 signal production_blocked_changed(building_uid: StringName, blocked: bool)
+## Expérience totale et niveau après un gain.
+signal xp_changed(xp: int, level: int)
+## Un gain d'expérience (pour les retours visuels).
+signal xp_gained(amount: int, reason: StringName)
+## Le joueur passe au niveau `level`.
+signal level_up(level: int)

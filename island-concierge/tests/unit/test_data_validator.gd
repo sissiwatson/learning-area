@@ -221,3 +221,21 @@ func test_zone_badge_outside_zone() -> void:
 func test_no_booking_fits_an_available_lodging_is_a_softlock() -> void:
 	f.booking.guests = 6
 	_assert_error("aucune réservation possible au départ")
+
+
+func test_level_thresholds_must_increase_from_zero() -> void:
+	f.new_game.progression.level_thresholds = [0, 50, 50]
+	_assert_error("paliers non strictement croissants")
+	f.new_game.progression.level_thresholds = [10, 50]
+	_assert_error("le niveau 1 doit commencer à 0 XP")
+
+
+func test_unreachable_required_level() -> void:
+	f.new_game.progression.level_thresholds = [0, 50]
+	f.site.construction.required_level = 3
+	_assert_error("niveau requis 3 inatteignable (max 2)")
+
+
+func test_missing_progression() -> void:
+	f.new_game.progression = null
+	_assert_error("progression manquante")

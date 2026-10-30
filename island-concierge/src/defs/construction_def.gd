@@ -7,3 +7,5 @@ extends Resource
 @export_range(1, 604800) var build_seconds := 300
 ## Bâtiment obtenu une fois la construction terminée.
 @export var builds_into: BuildingDef
+## XP gagnée à la fin de la construction.
+@export var xp := 20

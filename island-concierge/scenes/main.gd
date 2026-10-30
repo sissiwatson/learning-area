@@ -9,6 +9,7 @@ var selected: BuildingView
 @onready var hud: CanvasLayer = $HUD
 @onready var panel: BuildingPanel = %BuildingPanel
 @onready var resource_bar: ResourceBar = %ResourceBar
+@onready var toasts: ToastStack = %Toasts
 
 
 func _ready() -> void:
@@ -30,6 +31,7 @@ func _ready() -> void:
 			EventBus.production_blocked_changed, EventBus.inventory_changed]:
 		signal_ref.connect(func(_a = null, _b = null): refresh_attention())
 	refresh_attention()
+	EventBus.level_up.connect(func(lvl): toasts.show_message(tr("TOAST_LEVEL_UP") % lvl, ResourceBar.LEVEL_ICON))
 
 
 func select_building(view: BuildingView) -> void:

@@ -23,8 +23,8 @@ personnel sont en V0.2 et au-delà.
 | ✅ 🧪 | 7 · Réservations (bureau, ménage, accueil, fin automatique, commission, versement) | Sur appareil : parcours complet, pastilles « ! » |
 | ✅ 🧪 | 8 · Productions (ananas 30 s, panier 1 min, panier exigé pour préparer, livraison automatique, inventaire plein sans perte) | Sur appareil : parcours production → ménage ; boutons désactivés |
 | ✅ 🧪 | 9 · Sauvegarde locale versionnée (arrière-plan, rattrapage, corruption, migrations, horloge modifiée) | Sur appareil : fermeture pendant un séjour, arrêt forcé, changement d'heure |
-| 🔜 | 10a · XP et niveaux (gains en données, niveau requis pour le tiki bar, affichage dans le HUD) | |
-| ⬜ | 10b · Quêtes de Hina : moteur de conditions et d'effets (N1), quêtes et dialogues passables (N3–N4), tutoriel guidé par les actions — version allégée (séquences 1–4, 6–7, 9–10 de `SCENARIO_TUTORIEL.md`) | |
+| ✅ 🧪 | 10a · XP et niveaux (gains par action en données, paliers, badge et barre d'XP, message « Niveau atteint », sauvegarde) | Sur appareil : lisibilité du badge |
+| 🔜 | 10b · Quêtes de Hina : moteur de conditions et d'effets (N1), quêtes et dialogues passables (N3–N4), tutoriel guidé par les actions — version allégée (séquences 1–4, 6–7, 9–10 de `SCENARIO_TUTORIEL.md`) | |
 | ⬜ | 10c · Première animation de production (plants qui poussent, « +3 ananas » flottant, anneau de progression) | |
 | ⬜ | 11 · Tiki bar (construction, niveau 2, 150 coquillages) | |
 | ⬜ | 12 · Finitions V0.1 (cadrage initial U1, crédits, équilibrage, recette Android) | |

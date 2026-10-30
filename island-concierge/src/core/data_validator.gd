@@ -12,6 +12,7 @@ const ID_PATTERN := "^[a-z][a-z0-9_]*$"
 var errors := PackedStringArray()
 var _ids := {}  # type -> { id: def }
 var _id_regex := RegEx.create_from_string(ID_PATTERN)
+var _max_level := 0
 
 
 static func validate(catalog: Dictionary) -> PackedStringArray:
@@ -46,6 +47,10 @@ func _run(catalog: Dictionary) -> void:
 		_check_new_game(def)
 	for def in catalog.get("timings", []):
 		_check_timings(def)
+	if _max_level > 0:
+		for def in catalog.get("buildings", []):
+			if def and def.construction and def.construction.required_level > _max_level:
+				_err("buildings", def.id, "niveau requis %d inatteignable (max %d)" % [def.construction.required_level, _max_level])
 	_check_free_preparation(catalog.get("buildings", []))
 
 
@@ -147,6 +152,8 @@ func _check_building(def: BuildingDef) -> void:
 			_err("buildings", id, "bâtiment cible inconnu")
 		elif c.builds_into == def:
 			_err("buildings", id, "se construit en lui-même")
+		elif c.xp < 0:
+			_err("buildings", id, "XP négative")
 		elif c.builds_into.footprint != def.footprint:
 			_err("buildings", id, "emprise différente du bâtiment cible")
 
@@ -280,6 +287,23 @@ func _check_new_game(def: NewGameDef) -> void:
 	_check_amounts("new_game", &"new_game", "stock de départ", def.starting_items, "items", true)
 	if def.timings == null:
 		_err("new_game", &"new_game", "durées (timings) manquantes")
+	if def.progression == null:
+		_err("new_game", &"new_game", "progression manquante")
+	else:
+		_check_progression(def.progression)
+
+
+func _check_progression(def: ProgressionDef) -> void:
+	var t := def.level_thresholds
+	if t.is_empty() or t[0] != 0:
+		_err("progression", &"progression", "le niveau 1 doit commencer à 0 XP")
+	for i in range(1, t.size()):
+		if t[i] <= t[i - 1]:
+			_err("progression", &"progression", "paliers non strictement croissants")
+	for field in ["xp_booking_accepted", "xp_lodging_prepared", "xp_guests_welcomed", "xp_stay_completed"]:
+		if int(def.get(field)) < 0:
+			_err("progression", &"progression", "%s négatif" % field)
+	_max_level = t.size()
 
 
 func _check_timings(def: TimingsDef) -> void:

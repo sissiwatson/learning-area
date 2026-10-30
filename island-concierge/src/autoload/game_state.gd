@@ -19,6 +19,8 @@ var lodgings := {}
 ## Carte de la partie en cours.
 var map: MapDef
 var timings: TimingsDef
+var progression_def: ProgressionDef
+var progression := Progression.new()
 var bookings: BookingSystem
 ## Réservations déjà payées (identifiant -> true) : garde-fou contre tout
 ## double versement, même avec une sauvegarde incohérente.
@@ -60,6 +62,8 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 	map = new_map
 	last_seen = 0
 	timings = setup.timings
+	progression_def = setup.progression
+	progression = Progression.new(progression_def.level_thresholds)
 	currency_defs.clear()
 	for def in setup.currencies:
 		currency_defs[def.id] = def
@@ -135,6 +139,7 @@ func to_save_dict() -> Dictionary:
 		"map": map.id,
 		"last_seen": last_seen,
 		"wallet": wallet.to_dict(),
+		"progression": progression.to_dict(),
 		"inventory": {"counts": inventory.to_dict().counts},
 		"lodgings": lodging_data,
 		"producers": producer_data,
@@ -154,6 +159,7 @@ func load_save_dict(data: Dictionary, new_map: MapDef, setup: NewGameDef = DEFAU
 	new_game(new_map, setup)
 	last_seen = maxi(last_seen, int(data.get("last_seen", 0)))
 	wallet = Wallet.from_dict(_dict(data, "wallet"), currency_defs.keys())
+	progression = Progression.from_dict(_dict(data, "progression"), progression_def.level_thresholds)
 	inventory = Inventory.from_dict({"capacity": setup.inventory_capacity, "counts": _dict(data, "inventory").get("counts", {})},
 			item_defs.keys(), setup.inventory_capacity)
 	var saved_lodgings := _dict(data, "lodgings")
@@ -189,6 +195,7 @@ func _dict(data: Dictionary, key: String) -> Dictionary:
 
 ## Signale à l'interface l'état complet (après un chargement).
 func _announce_everything() -> void:
+	EventBus.xp_changed.emit(progression.xp, progression.level())
 	for id in currency_defs:
 		EventBus.currency_changed.emit(id, wallet.balance(id))
 	for id in item_defs:
@@ -196,6 +203,23 @@ func _announce_everything() -> void:
 	for uid in lodgings:
 		EventBus.lodging_state_changed.emit(uid, lodgings[uid].state)
 	EventBus.offers_changed.emit()
+
+
+# --- Progression -----------------------------------------------------------
+
+func level() -> int:
+	return progression.level()
+
+
+## Ajoute de l'XP et annonce un éventuel passage de niveau.
+func gain_xp(amount: int, reason := &"") -> void:
+	if amount <= 0:
+		return
+	var result := progression.add_xp(amount)
+	EventBus.xp_changed.emit(progression.xp, progression.level())
+	EventBus.xp_gained.emit(amount, reason)
+	if result.ok and result.value > 0:
+		EventBus.level_up.emit(progression.level())
 
 
 # --- Économie -------------------------------------------------------------
@@ -269,6 +293,7 @@ func _deliver(uid: StringName, at: int) -> void:
 			for id in recipe.outputs:
 				EventBus.item_collected.emit(id, recipe.outputs[id])
 			EventBus.production_completed.emit(uid, recipe.id)
+			gain_xp(recipe.xp, StringName("recipe:" + recipe.id))
 		else:
 			blocked = true
 	if blocked != blocked_producers.has(uid):
@@ -324,6 +349,7 @@ func accept_offer(offer_id: StringName, lodging_uid := &"") -> Result:
 	var booking: Booking = bookings.take_offer(offer_id, percent, now()).value
 	lodging.book(booking)
 	EventBus.booking_accepted.emit(booking.id, uid)
+	gain_xp(progression_def.xp_booking_accepted, &"booking_accepted")
 	EventBus.lodging_state_changed.emit(uid, lodging.state)
 	tick()  # une offre peut réapparaître aussitôt (anti-blocage)
 	EventBus.offers_changed.emit()
@@ -339,7 +365,9 @@ func perform_lodging_action(uid: StringName, action: Lodging.Action) -> Result:
 			return _prepare(uid, lodging)
 		Lodging.Action.WELCOME_GUESTS:
 			var result := lodging.welcome_guests(now(), timings.night_seconds)
-			return _report(result, func(): EventBus.lodging_state_changed.emit(uid, lodging.state), {"uid": uid})
+			return _report(result, func():
+				EventBus.lodging_state_changed.emit(uid, lodging.state)
+				gain_xp(progression_def.xp_guests_welcomed, &"guests_welcomed"), {"uid": uid})
 		Lodging.Action.COLLECT_COMMISSION:
 			return _collect(uid, lodging)
 	return _report(Result.failure(&"invalid_action"), Callable(), {"uid": uid})
@@ -356,7 +384,9 @@ func _prepare(uid: StringName, lodging: Lodging) -> Result:
 			return _report(Result.failure(&"missing_items"), Callable(), {"uid": uid})
 		remove_items(items)
 	var result := lodging.start_preparing(now(), timings.cleaning_seconds)
-	return _report(result, func(): EventBus.lodging_state_changed.emit(uid, lodging.state), {"uid": uid})
+	return _report(result, func():
+		EventBus.lodging_state_changed.emit(uid, lodging.state)
+		gain_xp(progression_def.xp_lodging_prepared, &"lodging_prepared"), {"uid": uid})
 
 
 ## Encaisse la commission d'un séjour terminé, une seule fois par réservation.
@@ -380,6 +410,7 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 		"owner_share": booking.owner_share(), "paid_at": now(),
 	})
 	EventBus.commission_collected.emit(uid, booking.id, amount)
+	gain_xp(progression_def.xp_stay_completed, &"stay_completed")
 	EventBus.lodging_state_changed.emit(uid, lodging.state)
 	tick()
 	return Result.success(amount)

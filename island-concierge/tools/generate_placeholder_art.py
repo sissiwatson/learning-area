@@ -395,6 +395,19 @@ def icon_welcome_basket():
     return img
 
 
+def icon_level():
+    img = Image.new("RGBA", (96, 96), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    pts = []
+    for k in range(10):
+        r = 44 if k % 2 == 0 else 19
+        a = math.radians(-90 + k * 36)
+        pts.append((48 + math.cos(a) * r, 50 + math.sin(a) * r))
+    d.polygon(pts, fill=(250, 196, 50, 255), outline=(190, 120, 20, 255))
+    d.line(pts + [pts[0]], fill=(190, 120, 20, 255), width=3)
+    return img
+
+
 def main():
     ROOT.mkdir(parents=True, exist_ok=True)
     rng = random.Random(1987)
@@ -418,6 +431,7 @@ def main():
     icon_shells().save(ui / "icon_shells.png")
     icon_pineapple().save(ui / "icon_pineapple.png")
     icon_welcome_basket().save(ui / "icon_welcome_basket.png")
+    icon_level().save(ui / "icon_level.png")
     print("Écrit : assets/tiles/*.png, assets/buildings/*.png, assets/ui/icon_*.png")
 
 

@@ -55,6 +55,7 @@ func _init() -> void:
 	map.placements = [_placement(&"office_1", office, Vector2i(1, 1)), _placement(&"bungalow_1", bungalow, Vector2i(3, 1))]
 	new_game.currencies = [shells]; new_game.items = [pineapple, basket]
 	new_game.starting_balances = {&"shells": 50}; new_game.timings = timings
+	new_game.progression = ProgressionDef.new()
 
 
 func catalog() -> Dictionary:

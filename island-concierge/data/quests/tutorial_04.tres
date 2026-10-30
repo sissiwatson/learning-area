@@ -17,6 +17,6 @@ title_key = "QUEST_TUTORIAL_04"
 giver = ExtResource("2_giver")
 prerequisites = Array[StringName]([&"tutorial_03"])
 objectives = Array[ExtResource("3_objective")]([SubResource("Resource_obj0")])
-reward_xp = 10
+reward_xp = 0
 reward_currencies = Dictionary[StringName, int]({})
 reward_items = Dictionary[StringName, int]({})

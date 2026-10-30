@@ -243,6 +243,10 @@ toujours au moins 150 coquillages au moment de construire (vérifié par test).
 
 ### Expérience (niveau 2 à 50 XP)
 
+V0.1 : l'XP vient des **actions** (`data/progression/progression.tres` et
+recettes), les quêtes n'en donnent pas en plus. Sans les séquences 5 et 8
+(V0.2), le total est **55 XP** ⇒ niveau 2 (testé : 5, 10, 20, 25, 30, 55).
+
 | Événement | XP | Cumul |
 |-----------|---:|------:|
 | Réservation acceptée | 5 | 5 |

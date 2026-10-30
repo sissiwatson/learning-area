@@ -125,3 +125,6 @@ PANEL_PREPARE_NEEDS,Le ménage demande : %s
 ERR_PRODUCER_BUSY,Ce bâtiment produit déjà
 ERR_UNKNOWN_RECIPE,Recette inconnue
 ERR_UNKNOWN_BUILDING,Bâtiment inconnu
+HUD_LEVEL,Niv. %d
+HUD_XP,%d / %d XP
+TOAST_LEVEL_UP,Niveau %d atteint !
