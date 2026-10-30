@@ -9,7 +9,12 @@ const SCENARIOS := [
 	"zoom_initial", "zoom_min", "zoom_max", "pan_after_drag",
 	"bungalow_overview", "bungalow_selected", "bungalow_booked",
 	"buildings_overview", "corail_locked", "workshop_panel",
+	"office_offers", "hibiscus_booked", "hibiscus_cleaning", "hibiscus_stay",
+	"hibiscus_complete", "hibiscus_collected",
 ]
+const FakeClock := preload("res://tests/helpers/fake_clock.gd")
+
+var fake_clock
 
 var main: Node
 var cam: MapCamera
@@ -34,6 +39,8 @@ func _initialize() -> void:
 
 
 func _reset() -> void:
+	fake_clock = FakeClock.new()
+	_game_state().clock = fake_clock
 	if main:
 		main.queue_free()
 		await process_frame
@@ -154,3 +161,59 @@ func _scenario_corail_locked() -> void:
 
 func _scenario_workshop_panel() -> void:
 	_tap_building(&"workshop_1")
+
+
+func _advance(seconds: int) -> void:
+	fake_clock.advance(seconds)
+	_game_state().tick()
+	main.panel._on_second()
+
+
+func _to_hibiscus_state(step: int) -> void:
+	_advance(60)  # deux offres au bureau
+	if step == 0:
+		_tap_building(&"office_1")
+		return
+	_game_state().accept_offer(_game_state().bookings.offers[0].id)
+	if step >= 2:
+		_game_state().perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+		_advance(45)
+	if step >= 3:
+		_advance(75)
+		_game_state().perform_lodging_action(&"hibiscus_1", Lodging.Action.WELCOME_GUESTS)
+		_advance(400)
+	if step >= 4:
+		_advance(200)
+	if step >= 5:
+		_game_state().perform_lodging_action(&"hibiscus_1", Lodging.Action.COLLECT_COMMISSION)
+	_tap_building(&"hibiscus_1", 1.3)
+	_advance(0)
+
+
+func _scenario_office_offers() -> void:
+	_to_hibiscus_state(0)
+
+
+func _scenario_hibiscus_booked() -> void:
+	_to_hibiscus_state(1)
+
+
+func _scenario_hibiscus_cleaning() -> void:
+	_to_hibiscus_state(2)
+
+
+func _scenario_hibiscus_stay() -> void:
+	_to_hibiscus_state(3)
+
+
+func _scenario_hibiscus_complete() -> void:
+	_to_hibiscus_state(4)
+
+
+func _scenario_hibiscus_collected() -> void:
+	_to_hibiscus_state(5)
+
+
+## Autoload GameState (pas d'accès direct par son nom dans un script -s).
+func _game_state() -> Node:
+	return root.get_node("GameState")

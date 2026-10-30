@@ -16,8 +16,8 @@ valider sur appareil est indiqué explicitement. 📱 = validé sur Android rée
 | ✅ 🧪 📱 | 4 · Export Android debug | Sur appareil : encoche, mise en arrière-plan |
 | ✅ 🧪 | 5 · Économie de base (coquillages, inventaire, HUD) | Sur appareil : lisibilité de la barre de ressources (APK 0.1.1) |
 | ✅ 🧪 | 6 · Base de données et validation de `data/` (tous les bâtiments de Mahana sur la carte) | Sur appareil : panneaux des nouveaux bâtiments |
-| 🔜 | 7 · Réservations (bureau, durée de séjour, commission) | |
-| ⬜ | R1–R2 · Réputation : calcul de note, registre d'avis, paliers | |
+| ✅ 🧪 | 7 · Réservations (bureau, ménage, accueil, fin automatique, commission, versement) | Sur appareil : parcours complet, lisibilité du panneau, pastilles « ! » ; état perdu si Android ferme l'app (avant l'étape 10) |
+| 🔜 | R1–R2 · Réputation : calcul de note, registre d'avis, paliers (période d'essai : 5 avis) | |
 | ⬜ | 8 · Productions (ananas, panier d'accueil) | |
 | ⬜ | R3–R4 · Réputation : journal de séjour, avis en fin de séjour | |
 | ⬜ | 9 · Progression et tutoriel narratif avec Hina (N1–N5) — scénario v2 : progression par actions, dialogues passables, décision de décoration | |

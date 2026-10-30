@@ -26,8 +26,10 @@
   bouton « Y aller » qui centre la caméra sur la cible.
 - Si le joueur ne fait rien pendant 20 s, une **aide contextuelle** (flèche,
   pulsation du bâtiment) apparaît. Elle n'avance jamais l'histoire à sa place.
-- Les minuteurs de production sont **raccourcis** pendant le tutoriel
-  (récolte 5 s, panier 8 s, construction 10 s) et aucun dialogue n'attend la
+- Les minuteurs sont **raccourcis** pendant le tutoriel seulement
+  (récolte 5 s, panier 8 s, construction 10 s) ; hors tutoriel, ce sont les
+  durées du prototype (`data/balance/timings.tres`, recettes, chantier : ananas
+  30 s, panier 1 min, ménage 2 min, nuit 5 min, tiki bar 5 min). Aucun dialogue n'attend la
   fin d'un minuteur.
 - Le séjour des voyageurs se termine quand le joueur a traité la demande puis
   touché « Deux nuits plus tard… » (transition), pas après un délai.
@@ -146,8 +148,8 @@ confort 450, annonce 500, expérience 475 ⇒
 
 Il n'y a pas de meilleur choix absolu : la lampe pénalise un peu ce premier
 avis mais attire davantage de réservations ensuite ; le bouquet protège ce
-séjour seulement ; les coussins améliorent tous les séjours futurs. Les trois
-premiers avis sont de toute façon en période d'essai (aucune pénalité).
+séjour seulement ; les coussins améliorent tous les séjours futurs. Les cinq
+premiers avis sont de toute façon en période d'essai (aucune pénalité commerciale).
 
 ### 6. La visite d'Hina
 

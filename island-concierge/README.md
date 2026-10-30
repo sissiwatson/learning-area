@@ -87,7 +87,7 @@ Les zones verrouillées sont des rectangles de cellules (`zones`).
 
 ![Mahana](docs/screenshots/current_map.png)
 
-![Bungalow Hibiscus sélectionné, barre de ressources](docs/screenshots/step5_hud_resources.png)
+![Réservation en cours](docs/screenshots/step7_hibiscus_stay.png)
 
 ## Économie (V0.1)
 
@@ -97,6 +97,15 @@ Les zones verrouillées sont des rectangles de cellules (`zones`).
 - Règles (`src/core/wallet.gd`, `src/core/inventory.gd`) : montants entiers
   positifs, jamais de solde négatif, opérations atomiques, journal des
   mouvements, sauvegarde/restauration avec correction des valeurs invalides.
+
+## Boucle jouable (V0.1, étape 7)
+
+1. Toucher le **bureau de conciergerie** (pastille « ! ») et accepter une réservation.
+2. Toucher le **Bungalow Hibiscus** : « Faire le ménage » (2 min).
+3. « Accueillir les voyageurs » : le séjour dure nuits × 5 min et se termine seul.
+4. « Encaisser » la commission (20 % du prix du séjour).
+
+Les durées sont réglables dans `data/balance/timings.tres` et les fichiers de recettes.
 
 ## Organisation
 

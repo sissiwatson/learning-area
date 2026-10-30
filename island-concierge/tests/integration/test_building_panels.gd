@@ -39,6 +39,7 @@ func test_every_building_opens_its_own_panel() -> void:
 func test_office_panel() -> void:
 	var panel := _open(&"office_1")
 	assert_eq(panel.role.text, "Conciergerie")
+	assert_eq(panel.offer_buttons().size(), GameState.bookings.offers.size())
 
 
 func test_producer_panel_lists_recipe_and_operator() -> void:
@@ -65,5 +66,6 @@ func test_locked_corail() -> void:
 	assert_string_contains(panel.info.text, "Côte Est")
 	assert_eq(panel.action_buttons().size(), 0)
 	assert_false(panel.actions_title.visible, "pas de section Actions pour un logement verrouillé")
-	var r := GameState.perform_lodging_action(&"corail_1", Lodging.Action.ACCEPT_BOOKING)
+	assert_false(panel.no_action.visible)
+	var r := GameState.perform_lodging_action(&"corail_1", Lodging.Action.PREPARE)
 	assert_eq(r.error, &"lodging_locked")

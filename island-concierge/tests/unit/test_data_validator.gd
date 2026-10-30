@@ -216,3 +216,8 @@ func test_zone_badge_outside_zone() -> void:
 	zone.badge_cell = Vector2i(5, 3)
 	f.map.zones = [zone]
 	_assert_error("cadenas de la zone « east » hors de la zone")
+
+
+func test_no_booking_fits_an_available_lodging_is_a_softlock() -> void:
+	f.booking.guests = 6
+	_assert_error("aucune réservation possible au départ")

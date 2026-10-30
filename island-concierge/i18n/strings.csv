@@ -76,3 +76,40 @@ PANEL_SOON_CONSTRUCTION,La construction sera disponible dans une prochaine versi
 PANEL_SOON_BOOKINGS,Les réservations arrivent ici.
 PANEL_DECORATION_INFO,Un lieu de détente pour les voyageurs.
 ERR_LODGING_LOCKED,Ce logement est dans une zone verrouillée
+LODGING_STATE_PREPARING,Ménage en cours
+ACTION_PREPARE_TIMED,Faire le ménage (%s)
+ACTION_COLLECT_AMOUNT,Encaisser %s coquillages
+ACTION_ACCEPT,Accepter
+ACTION_OPEN_OFFICE,Voir les réservations
+PANEL_GUESTS_NAMED,%s (%d)
+PANEL_STAY,Séjour
+PANEL_NIGHTS,%d nuit(s)
+PANEL_PRICE,Prix du séjour
+PANEL_COMMISSION,Commission
+PANEL_COMMISSION_VALUE,%s coquillages (%d %%)
+PANEL_OWNER_SHARE,Part du propriétaire
+PANEL_COINS,%s coquillages
+PANEL_VACANT_HINT,Libre : acceptez une réservation au bureau de conciergerie.
+PANEL_READY_HINT,Tout est prêt : accueillez les voyageurs.
+PANEL_COMPLETE_HINT,Séjour terminé : la commission vous attend.
+PANEL_CLEANING_PROGRESS,Ménage : encore %s
+PANEL_STAY_PROGRESS,Nuit %d/%d : encore %s
+PANEL_OFFERS,Réservations proposées
+PANEL_NO_OFFER,Aucune réservation pour le moment.
+PANEL_NEXT_OFFER,Prochaine demande dans %s
+PANEL_OFFER_LINE,%s · %s · %s
+PANEL_OFFER_AMOUNTS,%s coquillages · commission %s
+PANEL_OFFER_TARGET,Pour : %s
+PANEL_OFFER_NO_LODGING,Aucun logement libre adapté
+PANEL_HISTORY,Séjours terminés
+ERR_LODGING_NOT_VACANT,Ce logement n'est pas libre
+ERR_CAPACITY_EXCEEDED,Trop de voyageurs pour ce logement
+ERR_UNKNOWN_OFFER,Cette réservation n'est plus disponible
+ERR_NO_VACANT_LODGING,Aucun logement libre adapté
+ERR_ALREADY_PAID,Cette commission a déjà été versée
+PANEL_TRAVELERS,Voyageurs
+PANEL_STAY_VALUE,%s · %s coquillages
+NIGHTS_ONE,1 nuit
+NIGHTS_MANY,%d nuits
+TRAVELERS_ONE,1 voyageur
+TRAVELERS_MANY,%d voyageurs

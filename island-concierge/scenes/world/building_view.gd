@@ -10,7 +10,10 @@ var selected := false: set = set_selected
 ## Contour de l'emprise au sol, en coordonnées locales.
 var footprint_polygon := PackedVector2Array()
 var sprite := Sprite2D.new()
+var _badge := AttentionBadge.new()
 var _hit_image: Image  # chargée au premier tap sur le dessin, puis réutilisée
+## Pastille « une action vous attend » au-dessus du bâtiment.
+var attention := false: set = set_attention
 
 
 ## Place le bâtiment sur la carte. `map_local` convertit une cellule en
@@ -36,6 +39,13 @@ func setup(new_placement: PlacementDef, map_local: Callable) -> void:
 	sprite.offset = -def.texture_anchor
 	if sprite.get_parent() == null:
 		add_child(sprite)
+		_badge.position = Vector2(0, -def.texture_anchor.y + 24)
+		add_child(_badge)
+
+
+func set_attention(value: bool) -> void:
+	attention = value
+	_badge.visible = value
 
 
 func set_selected(value: bool) -> void:
@@ -63,9 +73,25 @@ func _opaque_at(local: Vector2) -> bool:
 
 
 func _draw() -> void:
-	if not selected:
-		return
-	draw_colored_polygon(footprint_polygon, SELECT_FILL)
-	var closed := footprint_polygon.duplicate()
-	closed.append(footprint_polygon[0])
-	draw_polyline(closed, SELECT_COLOR, 6.0, true)
+	if selected:
+		draw_colored_polygon(footprint_polygon, SELECT_FILL)
+		var closed := footprint_polygon.duplicate()
+		closed.append(footprint_polygon[0])
+		draw_polyline(closed, SELECT_COLOR, 6.0, true)
+
+
+
+## Pastille ronde avec un point d'exclamation.
+class AttentionBadge:
+	extends Node2D
+
+	func _init() -> void:
+		visible = false
+		z_index = 5
+
+	func _draw() -> void:
+		draw_circle(Vector2.ZERO, 30, Color(0.1, 0.1, 0.1, 0.25))
+		draw_circle(Vector2(0, -3), 28, Color(1.0, 0.8, 0.2))
+		draw_circle(Vector2(0, -3), 28, Color(0.55, 0.35, 0.05), false, 4.0)
+		draw_rect(Rect2(-5, -22, 10, 26), Color(0.3, 0.18, 0.02))
+		draw_circle(Vector2(0, 12), 6, Color(0.3, 0.18, 0.02))

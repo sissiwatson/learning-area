@@ -24,6 +24,10 @@ func _ready() -> void:
 	camera.ui_hit_test = hud.is_point_over_ui
 	camera.tapped_world.connect(_on_map_tapped)
 	panel.closed.connect(_clear_selection)
+	panel.open_requested.connect(func(uid): select_building(map.buildings[uid]))
+	for signal_ref in [EventBus.lodging_state_changed, EventBus.offers_changed]:
+		signal_ref.connect(func(_a = null, _b = null): refresh_attention())
+	refresh_attention()
 
 
 func select_building(view: BuildingView) -> void:
@@ -46,3 +50,18 @@ func _clear_selection() -> void:
 	if selected:
 		selected.selected = false
 	selected = null
+
+
+## Pastilles « ! » : logements où le joueur doit agir, bureau quand une offre
+## peut être acceptée.
+func refresh_attention() -> void:
+	for uid in map.buildings:
+		var view: BuildingView = map.buildings[uid]
+		var def := view.placement.building
+		var needs := false
+		if def.role == BuildingDef.Role.LODGING:
+			needs = not GameState.get_lodging(uid).available_actions().is_empty()
+		elif def.role == BuildingDef.Role.OFFICE:
+			for offer in GameState.bookings.offers:
+				needs = needs or GameState.find_lodging_for(offer.template.guests) != &""
+		view.attention = needs

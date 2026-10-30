@@ -14,3 +14,11 @@ signal action_failed(error_code: StringName, params: Dictionary)
 signal currency_changed(currency_id: StringName, balance: int)
 ## La quantité d'un objet a changé.
 signal inventory_changed(item_id: StringName, count: int)
+## La liste des offres de réservation du bureau a changé.
+signal offers_changed
+## Une offre a été acceptée pour un logement.
+signal booking_accepted(booking_id: StringName, lodging_uid: StringName)
+## Un séjour vient de se terminer (automatiquement) ; commission à encaisser.
+signal stay_completed(lodging_uid: StringName, booking_id: StringName, commission: int)
+## Une commission a été versée à la conciergerie.
+signal commission_collected(lodging_uid: StringName, booking_id: StringName, amount: int)

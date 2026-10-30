@@ -250,6 +250,21 @@ func _check_map(def: MapDef) -> void:
 			builds[placement.building.role] = true
 	if not builds.has(BuildingDef.Role.OFFICE):
 		_err("maps", id, "aucun bureau de conciergerie")
+	# Anti-blocage : au moins un modèle de réservation doit convenir à un
+	# logement disponible dès le départ.
+	var best_capacity := 0
+	for placement in def.placements:
+		if placement and placement.building and placement.building.lodging:
+			var zone := def.zone_at(placement.cell)
+			if zone == null or not zone.starts_locked:
+				best_capacity = maxi(best_capacity, placement.building.lodging.capacity)
+	for placement in def.placements:
+		if placement and placement.building and placement.building.office:
+			var fits := false
+			for tpl in placement.building.office.booking_templates:
+				fits = fits or (tpl != null and tpl.guests <= best_capacity)
+			if not fits:
+				_err("maps", id, "aucune réservation possible au départ (aucun logement libre adapté)")
 
 
 func _check_new_game(def: NewGameDef) -> void:

@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=8 format=3]
+[gd_resource type="Theme" load_steps=10 format=3]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 40.0
@@ -70,6 +70,20 @@ corner_radius_bottom_left = 40
 shadow_color = Color(0, 0, 0, 0.2)
 shadow_size = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress_bg"]
+bg_color = Color(0.86, 0.84, 0.78, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress_fill"]
+bg_color = Color(0.11, 0.55, 0.6, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 
 [resource]
@@ -78,6 +92,8 @@ Button/colors/font_color = Color(1, 1, 1, 1)
 Button/colors/font_hover_color = Color(1, 1, 1, 1)
 Button/colors/font_pressed_color = Color(1, 1, 1, 1)
 Button/colors/font_focus_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.95, 0.95, 0.95, 1)
+Button/styles/disabled = SubResource("StyleBoxFlat_progress_bg")
 Button/styles/focus = SubResource("StyleBoxEmpty_focus")
 Button/styles/hover = SubResource("StyleBoxFlat_button_hover")
 Button/styles/normal = SubResource("StyleBoxFlat_button")
@@ -85,6 +101,8 @@ Button/styles/pressed = SubResource("StyleBoxFlat_button_pressed")
 HudPanel/base_type = &"PanelContainer"
 HudPanel/styles/panel = SubResource("StyleBoxFlat_hud")
 Label/colors/font_color = Color(0.13, 0.17, 0.22, 1)
+ProgressBar/styles/background = SubResource("StyleBoxFlat_progress_bg")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_progress_fill")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
 StateChip/base_type = &"Label"
 StateChip/colors/font_color = Color(1, 1, 1, 1)

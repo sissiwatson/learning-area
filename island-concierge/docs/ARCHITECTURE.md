@@ -338,7 +338,7 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 4  | **Export Android debug** | `export_presets.cfg`, `ANDROID_EXPORT.md`, `tools/export_android_debug.sh` | APK construit et signature vérifiée ; recette sur appareil réel n°1 réussie | ✅ 📱 |
 | 5  | **Économie de base** | `Clock`, `Wallet` (coquillages, extensible), `Inventory`, HUD | Tests unitaires ; HUD affiché | ✅ (non testé sur appareil) |
 | 6  | **Données** | `Database`, `DataValidator`, données de tous les bâtiments de Mahana, recettes, PNJ, quêtes du tutoriel (données seules) | `test_data_validator` (données manquantes, invalides, incohérentes), `test_data_integrity` | ✅ (non testé sur appareil) |
-| 7  | **Réservations** | `BookingSystem`, bureau de conciergerie, durée de séjour, commission | Tests ; boucle réservation jouable | à faire |
+| 7  | **Réservations** | `Booking`, `BookingSystem`, `Lodging` avec minuteurs, bureau, ménage, accueil, fin automatique, commission, versement, pastilles « ! » | Tests des montants, durées, transitions, doubles paiements, réservations invalides, anti-blocage | ✅ (non testé sur appareil) |
 | R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |
 | 8  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier) | Tests minuteurs / hors-ligne ; boucle complète jouable | à faire |
 | R3–R4 | **Réputation : séjours notés** | journal de séjour, règles, avis publié en fin de séjour | Séjour parfait = 5,00 ; sans panier = note attendue | à faire |
@@ -364,6 +364,14 @@ Le détail des tâches à venir est dans [`BACKLOG.md`](BACKLOG.md).
    comme une colonne `en`.
 5. **Graphismes** : assets provisoires originaux, mais vraie carte isométrique
    navigable dès l'étape 1.
+6. **Temps de jeu hybride** : minuteurs en temps réel pour productions,
+   constructions et séjours (ils avancent application fermée) ; horloge de
+   simulation distincte pour le calendrier touristique, les saisons et les
+   conséquences narratives (§15).
+7. **Réputation** : période d'essai de 5 avis, puis activation progressive
+   des effets commerciaux (`REPUTATION.md` §2).
+8. **Anti-blocage économique** : il existe toujours une action gratuite pour
+   regagner des ressources ; garanti par des règles de données et des tests.
 
 ---
 
@@ -443,3 +451,51 @@ développement, chaque problème est signalé au lancement ; en test,
 | Valeurs | quantités et durées strictement positives, commission 1..100 %, capacité ≥ 1, plan de carte valide |
 | Cohérence | paramètres conformes au rôle du bâtiment, emprise du chantier = emprise du bâtiment cible, placements sur des parcelles, sans chevauchement ni à cheval sur une zone, zones sans chevauchement, cadenas dans sa zone, carte avec un bureau, événements d'objectif connus avec le bon type de cible, prérequis de quêtes sans cycle |
 | Anti-blocage | tout objet exigé pour préparer un logement est productible gratuitement (chaîne de recettes sans coût) |
+
+---
+
+## 15. Temps de jeu (hybride)
+
+| Horloge | Sert à | Source | Fermeture de l'application |
+|---------|--------|--------|----------------------------|
+| **Temps réel** (`Clock`) | productions, constructions, ménage, séjours, nouvelles offres | heure système (secondes Unix) | les minuteurs sont des horodatages de fin : le temps écoulé est rattrapé à la reprise (`GameState.tick`, appelé chaque seconde et au retour au premier plan) |
+| **Simulation** (`SimCalendar`, lot D1) | calendrier touristique, saisons, conséquences narratives | jours de jeu dérivés du temps de jeu actif (durée configurable) | à définir avec D1 |
+
+Durées du prototype (toutes en données, `data/balance/timings.tres`,
+recettes et chantier) :
+
+| Élément | Durée | Fichier |
+|---------|-------|---------|
+| Ananas | 30 s | `data/recipes/harvest_pineapple.tres` |
+| Panier de bienvenue | 1 min | `data/recipes/craft_welcome_basket.tres` |
+| Ménage | 2 min | `timings.tres` (`cleaning_seconds`) |
+| Une nuit touristique | 5 min | `timings.tres` (`night_seconds`) |
+| Excursion courte | 3 à 5 min | `timings.tres` (`excursion_min/max_seconds`) |
+| Tiki bar | 5 min | `data/buildings/tiki_bar_site.tres` |
+| Nouvelle offre de réservation | 1 min | `timings.tres` (`offer_refresh_seconds`) |
+
+Les tests remplacent `GameState.clock` par une horloge simulée
+(`tests/helpers/fake_clock.gd`) et avancent le temps sans attendre.
+
+**Limite actuelle** : le temps réel avance bien pendant que le jeu est en
+arrière-plan ; mais si Android **ferme** l'application, l'état est perdu
+jusqu'à l'étape Sauvegarde (le format `to_dict` des logements et des offres
+est déjà prêt et testé).
+
+## 16. Réservations (étape 7)
+
+```
+Bureau : offres (rotation déterministe, 1 nouvelle / min, max 2, jamais vide si un logement peut accueillir)
+   │ accepter (le premier logement libre et adapté)
+   ▼
+VACANT ─► BOOKED ─(ménage 2 min)─► PREPARING ─► READY ─(accueil)─► OCCUPIED ─(nuits × 5 min)─► STAY_COMPLETE ─(encaisser)─► VACANT
+```
+
+- La réservation fige ses montants à l'acceptation (`Booking`) : prix =
+  nuits × prix par nuit ; commission = prix × taux / 100 (arrondi inférieur) ;
+  part du propriétaire = prix − commission.
+- La fin du séjour est automatique ; la commission est versée **une seule
+  fois**, au toucher « Encaisser » (garde-fou par identifiant de réservation).
+- Refus explicites : offre inconnue ou déjà prise, logement inconnu,
+  verrouillé, occupé, trop petit, aucun logement libre, transition invalide.
+- Pastille « ! » sur les bâtiments qui attendent une action.

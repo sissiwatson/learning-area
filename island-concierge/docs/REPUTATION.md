@@ -68,8 +68,13 @@ réputation = floor( moyenne des notes globales des N derniers avis publiés )
 
 - **Fenêtre glissante** `N = 20` avis : une mauvaise note finit toujours par
   sortir de la fenêtre, ce qui garantit mathématiquement la récupération.
-- **Période d'essai** : tant que moins de `3` avis sont publiés, statut
-  « Nouvelle conciergerie », effets neutres (pas de pénalité).
+- **Période d'essai** (décision produit) : les **5 premiers avis** sont
+  enregistrés et comptent dans la moyenne, mais **aucun effet commercial**
+  ne s'applique (statut « Nouvelle conciergerie », effets neutres).
+- **Activation progressive** : du 6ᵉ au 10ᵉ avis, les effets du palier
+  s'appliquent à 20 %, 40 %, 60 %, 80 % puis 100 % (interpolation entre
+  l'effet neutre et l'effet du palier). Exemple : au palier *Correct*
+  (visibilité ×0,8), le 7ᵉ avis donne ×(1 − 0,4 × 0,2) = ×0,92.
 - Le tableau de bord affiche aussi la moyenne historique (tous les avis) et la
   moyenne par critère, à titre d'information.
 
@@ -83,7 +88,7 @@ Il faut `k` avis à 5,00 tels que (2 200 + 500k) / (5 + k) ≥ 480, soit
 
 | Palier | Réputation | Visibilité (offres/jour) | Offres simultanées | Profils proposés | Confiance propriétaires / séjour |
 |--------|-----------|--------------------------|--------------------|------------------|----------------------------------|
-| Nouvelle conciergerie | < 3 avis | ×1,0 | 2 | standard | +1 |
+| Nouvelle conciergerie | ≤ 5 avis | ×1,0 | 2 | standard | +1 |
 | **Excellence** | ≥ 4,80 | ×1,3 | 4 | standard + premium | +2 |
 | Très bien | 4,50 – 4,79 | ×1,0 | 3 | standard | +1 |
 | Correct | 4,00 – 4,49 | ×0,8 | 2 | standard (petits budgets) | 0 |
@@ -164,7 +169,7 @@ Configuration (`data/reputation/`, lecture seule) :
 | Ressource | Champs principaux |
 |-----------|-------------------|
 | `ReviewCriterionDef` | `id`, `name_key`, `weight_percent` |
-| `ReputationConfig` | `criteria[]`, `excellence_threshold = 480`, `window_size = 20`, `min_reviews = 3`, `tiers[]`, `rules_version` |
+| `ReputationConfig` | `criteria[]`, `excellence_threshold = 480`, `window_size = 20`, `trial_reviews = 5`, `ramp_reviews = 5`, `tiers[]`, `rules_version` |
 | `ReputationTierDef` | `id`, `min_score`, `visibility_percent`, `max_offers`, `profile_pool[]`, `owner_trust_delta` |
 | `CriterionRuleDef` | `criterion_id`, `fact_id`, seuils, `delta` (centièmes) |
 | `GuestProfileDef` | `id`, `name_key`, sensibilités par critère, attente de confort |
@@ -206,7 +211,7 @@ Classes du cœur (logique pure, `src/core/reputation/`) : `ReviewScoring`,
 - **Frontières du seuil** : 479 ⇒ pas d'excellence ; 480 ⇒ excellence ;
   481 ⇒ excellence ; moyenne 479,99 ⇒ 479 (troncature).
 - Paliers à leurs bornes exactes (400, 450, 480).
-- Fenêtre glissante : le 21ᵉ avis fait sortir le 1ᵉʳ ; période d'essai.
+- Fenêtre glissante : le 21ᵉ avis fait sortir le 1ᵉʳ ; période d'essai : aucun effet jusqu'au 5ᵉ avis inclus, effet à 20 % au 6ᵉ, 100 % au 10ᵉ.
 - **Récupération** : scénario du §2 (k = 10) ; après une note de 1,00, la
   réputation remonte à 4,80 en un nombre fini de séjours parfaits.
 - Immuabilité : changer les poids après publication ne change aucun avis
@@ -233,7 +238,7 @@ Chaque étape = un commit, avec ses critères d'acceptation vérifiables.
 | # | Étape | Critères d'acceptation |
 |---|-------|------------------------|
 | R1 | **Configuration et note d'un séjour** : `ReviewCriterionDef`, `ReputationConfig`, `ReviewScoring` | Les 5 critères et poids sont en données ; un test échoue si Σ poids ≠ 100 ; exemple 485 exact ; troncature testée ; aucun flottant dans le calcul |
-| R2 | **Registre d'avis et réputation** : `Review`, `ReviewLedger`, fenêtre, paliers | Tests 479/480/481 et bornes de paliers ; fenêtre de 20 ; période d'essai ; pas d'API de modification ; changer la config ne change pas les avis publiés |
+| R2 | **Registre d'avis et réputation** : `Review`, `ReviewLedger`, fenêtre, paliers | Tests 479/480/481 et bornes de paliers ; fenêtre de 20 ; période d'essai de 5 avis et activation progressive ; pas d'API de modification ; changer la config ne change pas les avis publiés |
 | R3 | **Journal de séjour et règles** : `StayLog`, `CriterionRuleDef` | Chaque règle a son test ; notes bornées [1 ; 5] ; mêmes faits ⇒ même note |
 | R4 | **Branchement sur la boucle de réservation** | En fin de séjour un avis est publié ; séjour parfait (ménage, panier, accueil) ⇒ 5,00 ; sans panier ⇒ note exacte attendue |
 | R5 | **Effets de la réputation** sur les offres | Nombre et fréquence d'offres par palier testés ; jamais 0 offre ; profils premium seulement en excellence |
