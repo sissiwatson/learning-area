@@ -2,6 +2,8 @@
 
 > Statut : **document de référence du game design.** Les systèmes décrits
 > ici ne sont pas développés ; leur découpage est au §8 et dans `BACKLOG.md`.
+> Ajouts après la recette 0.1.5 : direction artistique 3D (§4.12),
+> décoration (§4.13), rythme et accélérations (§4.14), monétisation (§6).
 
 ## 1. Promesse
 
@@ -176,6 +178,52 @@ Toutes les valeurs sont des données à équilibrer ; les activités réutilisen
 les services des PNJ (`NARRATIVE.md` §3) et le moteur de réservation (une
 option s'ajoute à une réservation, pas de système parallèle).
 
+### 4.12 Direction artistique et modes de jeu (validée, prototype à faire)
+- **3D tropicale stylisée, semi-réaliste** : la richesse des
+  environnements tropicaux, des personnages aux proportions naturelles,
+  expressifs, avec une vie quotidienne visible. L'identité est originale,
+  sans asset ni personnage repris d'un autre jeu. Détails :
+  [`ART_DIRECTION.md`](ART_DIRECTION.md).
+- **Mode Île** : caméra 3D isométrique (déplacement, zoom, rotation) pour
+  gérer réservations, personnel, propriétaires, activités et développement ;
+  habitants et voyageurs se déplacent, discutent, arrivent et repartent.
+- **Mode Intérieur** : entrer dans certains logements pour les visiter, les
+  aménager et les décorer ; caméra en orbite, murs en coupe, commandes
+  tactiles simples.
+- **Transition progressive** : le cœur métier est conservé. Un prototype 3D
+  isolé est testé sur Android avant toute migration
+  ([`TRANSITION_3D.md`](TRANSITION_3D.md)).
+
+### 4.13 Décoration et rentabilité (proposition)
+Deux modes aux **mêmes résultats possibles** :
+- **libre et gratuit** : choisir, placer, pivoter, colorer, sauvegarder et
+  réutiliser ses créations ;
+- **express** : style prédéfini, aperçu, devis, application en un toucher.
+  Il est débloqué en jouant, ou en premium.
+
+Les meubles et les travaux sont toujours payés avec les ressources du jeu.
+L'aménagement agit sur :
+- le budget du propriétaire ;
+- le confort (critère de réputation) ;
+- l'attractivité, les photos d'annonce et le tarif recommandé ;
+- l'entretien et le retour sur investissement.
+
+Détails et exemple chiffré (budget de 500 coquillages confié par Hina) :
+[`DECORATION.md`](DECORATION.md). Un marché communautaire de créations est
+une évolution future, non développée (`BACKLOG.md`, lot K).
+
+### 4.14 Rythme et accélérations (proposition)
+- **Objectif** : jamais plus de 90 s sans action utile sur les
+  30 premières minutes. Pendant les séjours, des activités utiles
+  apparaissent progressivement : demandes des voyageurs, expériences,
+  préparation des séjours suivants, découverte, prestataires.
+- **Accélérations facultatives**, payées en coquillages :
+  - « Avancer le temps » pour les séjours ;
+  - « renfort de ménage » et « équipe renforcée » pour les chantiers.
+  - Tarifs en données ; jamais de solde négatif ni de double commission ;
+    anti-blocage préservé.
+- Détails : [`PACING_AND_SPEEDUPS.md`](PACING_AND_SPEEDUPS.md).
+
 ## 5. Situations réalistes à plusieurs solutions
 
 Moteur unique de **situations** (données) : déclencheur, contexte, options
@@ -208,11 +256,17 @@ Aucune monétisation dans la V0.x de prototype. Quand elle viendra :
    sans payer, à un rythme raisonnable (vérifié par simulation).
 2. **Jamais de réputation achetée** : aucun achat ne modifie une note, un
    avis, la confiance d'un propriétaire ou une relation.
-3. **Perles premium** : gagnées en jeu aussi ; utilisables pour des
-   **accélérations limitées** (plafond quotidien, jamais sur les décisions ni
-   les conséquences narratives), des **packs décoratifs** (esthétique),
-   des **conforts** (emplacements de production supplémentaires, raccourcis
-   d'interface) et des **extensions** (destinations, histoires).
+3. **Perles premium**, sur un compte **séparé de la trésorerie** de la
+   conciergerie (coquillages) et **jamais convertibles en coquillages**.
+   - Elles se gagnent aussi en jeu.
+   - Utilisables pour :
+     - les plans du mode express de décoration (jamais les meubles) ;
+     - des variantes purement visuelles, aux effets identiques ;
+     - des **conforts** d'interface ;
+     - des **extensions** (destinations, histoires).
+   - Les accélérations se paient en **coquillages**
+     (`PACING_AND_SPEEDUPS.md`) ; en perles, seulement si cela est décidé
+     plus tard, avec un plafond quotidien.
 4. **Transparence** : prix affichés en monnaie réelle, pas de coffres
    aléatoires payants, pas de compte à rebours pressant.
 5. **Mineurs et dépenses** : contrôle parental et limites de dépense

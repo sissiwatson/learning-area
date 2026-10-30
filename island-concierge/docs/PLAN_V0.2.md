@@ -1,7 +1,8 @@
 # Plan de développement — V0.2 « Immersion et découverte »
 
-> Statut : **proposition à valider**. Rien n'est commencé ; la V0.2 démarre
-> seulement après validation de l'étape 12 (fin de la V0.1, APK 0.1.5).
+> Statut : **orientations validées** (décisions au §6). Rien n'est commencé.
+> Avant la V0.2 : 0.1.6 « Rythme » (`PACING_AND_SPEEDUPS.md`), à valider.
+> Ordre ajusté pour tenir compte du prototype 3D : `TRANSITION_3D.md` §8.
 
 Références : feuille de route validée (`BACKLOG.md`), introduction
 (`GAME_VISION.md` §4.8, `NARRATIVE.md` §11), paniers (§4.9), ressources et
@@ -118,18 +119,23 @@ préférez voir l'île s'animer d'abord.
 | Retour d'une ferme (trop de production) | Simulation 0.2 dès le jalon 0, vérifiée à chaque jalon |
 | Contenu culturel non sourcé | Fiches FACT et INSPIRED bloquées en `DRAFT` tant que les sources ne sont pas vérifiées |
 
-## 6. Questions à trancher avant le jalon 3
+## 6. Décisions prises (votre retour après la recette 0.1.5)
 
-1. **Origine de la corbeille** : proposition — Kimo la tresse gratuitement à
-   l'atelier à partir de fibres qu'il prépare lui-même (1 min, aucune matière
-   à acheter), ou on l'achète au marché pour gagner du temps. La boucle
-   reste ainsi jouable à 0 coquillage. Autre option : fibres achetées au
-   marché (plus « gestion », mais il faut alors un filet de sécurité
-   anti-blocage).
-2. **Effet de la gamme « Bienvenue » avant la réputation** : commentaire et
-   historique seulement (proposition), ou petit pourboire dès la V0.2 ?
-3. **Fiches FACT / INSPIRED** (botanique, vannerie) : je ne livre aucune
-   source inventée. Souhaitez-vous fournir ou valider des sources, ou
-   limiter la V0.2 aux fiches de fiction (badge « Fiction du jeu ») ?
-4. **Ordre des jalons 1 et 2** : introduction d'abord (proposition) ou île
-   animée d'abord ?
+1. **V0.1** : validation technique provisoire, sous réserve de la recette
+   Android 0.1.5.
+2. **Corbeille tressée** : fabriquée gratuitement chez Kimo **ou** achetée au
+   marché de Malia. La boucle reste jouable à 0 coquillage (test anti-blocage).
+3. **Panier « Bienvenue »** : commentaire du voyageur et historique du
+   séjour, **sans pourboire automatique**.
+4. **Carnet pédagogique** : priorité aux **faits réels et sourcés**, avec une
+   distinction claire entre fiction et réalité.
+   - Je rechercherai des sources vérifiables (institutions, flores, musées,
+     ouvrages) et les citerai précisément.
+   - Chaque fiche reste en `DRAFT`, non livrée, jusqu'à votre relecture des
+     sources.
+   - Aucune source n'est inventée.
+5. **Introduction en premier**, puis la vie sur l'île.
+   - La vie de l'île (jalon 2) : sa logique peut être développée tôt, mais
+     son affichage attend la décision sur la 3D, pour ne pas être fait deux
+     fois (`TRANSITION_3D.md` §8).
+6. **Livraisons progressives** : un APK de recette à chaque jalon.

@@ -144,3 +144,14 @@ corrigés par l'audit UX et la recette de stabilité de l'étape 12
 | 7 | Ancienne sauvegarde | Installer 0.1.5 par-dessus 0.1.4 ou 0.1.3 : la partie continue (solde, séjour en cours), le tutoriel reprend | |
 | 8 | Session longue | 15 min de jeu sans ralentissement ni fermeture inattendue | |
 | 9 | Boutons d'action | Un toucher sur « Faire le ménage », « Encaisser », « Accepter » lance l'action une seule fois, sans délai perceptible | |
+
+### Résultats de la recette n°4 (APK 0.1.5) — votre retour
+
+| # | Résultat |
+|---|----------|
+| Général | ✅ 📱 Le jeu fonctionne |
+| Rythme | ❌ Attentes trop longues pendant les séjours (plus de 6 min d'attente, environ 5 min restantes) : analyse et propositions dans `PACING_AND_SPEEDUPS.md` (0.1.6 « Rythme ») |
+| Points 2 à 9 | non renseignés : à confirmer |
+
+Aucun défaut fonctionnel bloquant signalé. V0.1 : validation technique
+provisoire, sous réserve de cette recette.

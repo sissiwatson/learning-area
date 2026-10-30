@@ -595,3 +595,14 @@ données, chaque règle testée.
   (le panneau et la carte l'affichent ; la carte d'origine n'est pas
   modifiée). L'état des chantiers est sauvegardé ; une construction terminée
   application fermée est rattrapée au chargement.
+
+## 23. Évolutions proposées (non développées)
+
+- **Transition vers la 3D** : contrat de présentation `IslandView`, caméra
+  isométrique 3D, visuels en données, prototype isolé — voir
+  [`TRANSITION_3D.md`](TRANSITION_3D.md). La logique (`src/core`), les
+  données, l'interface et la sauvegarde sont conservées.
+- **Décoration** : modèle pur (catalogue, grille de pièce, effets, devis) et
+  documents d'aménagement versionnés — voir [`DECORATION.md`](DECORATION.md).
+- **Accélérations** : règles pures sur les minuteurs existants — voir
+  [`PACING_AND_SPEEDUPS.md`](PACING_AND_SPEEDUPS.md).

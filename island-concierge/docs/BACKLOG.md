@@ -27,7 +27,8 @@ personnel sont en V0.2 et au-delà.
 | ✅ 🧪 | 10b · Quêtes de Hina : moteur de conditions et d'effets (N1), quêtes et dialogues passables (N3–N4), tutoriel guidé par les actions — version allégée (séquences 1–4, 6–7, 9–10 de `SCENARIO_TUTORIEL.md`) ; personnages visibles, phrases d'ambiance, bateau de Tao et arrivée des voyageurs | Sur appareil : lisibilité des dialogues, taille des personnages, « Passer » |
 | ✅ 🧪 | 10c · Première animation de production (plantation en 3 stades, anneau de progression, « +3 » et « +120 » flottants, rebond) | Sur appareil : fluidité et lisibilité |
 | ✅ 🧪 | 11 · Tiki bar (niveau 2, 150 coquillages, 5 min, chantier remplacé par le tiki bar, fin du tutoriel) | Sur appareil : parcours complet du tutoriel |
-| ✅ 🧪 | 12 · Finitions V0.1 : audit UX (3 formats d'écran), recette de stabilité (aléatoire, singe, endurance), cadrage initial U1, crédits — voir `STABILITY_V0.1.md` | Sur appareil : recette n°4 (APK 0.1.5) ; équilibrage après plusieurs vraies sessions |
+| ✅ 🧪 | 12 · Finitions V0.1 : audit UX (3 formats d'écran), recette de stabilité (aléatoire, singe, endurance), cadrage initial U1, crédits — voir `STABILITY_V0.1.md` | **Validation technique provisoire** (votre décision), sous réserve de la recette n°4. Retour 0.1.5 : le jeu fonctionne ; attentes trop longues pendant les séjours → 0.1.6 « Rythme ». Points de la recette n°4 non encore renseignés |
+| ⬜ | 0.1.6 · Rythme : accélérations facultatives (lot Z1–Z4) — voir `PACING_AND_SPEEDUPS.md` | Proposition à valider avant le code |
 
 Reporté en V0.2 : réputation R1–R6, carnet N6–N7, décision de décoration,
 demande de voyageurs et avis détaillé du tutoriel (séquences 5 et 8).
@@ -273,10 +274,65 @@ réputation achetée, accélérations plafonnées, transparence).
 
 | Statut | Étape | Dépend de |
 |--------|-------|-----------|
-| ⬜ | $1 · Perles gagnées en jeu (monnaie déjà extensible) | 5 |
-| ⬜ | $2 · Accélérations limitées (plafond quotidien, exclues des décisions) | $1 |
+| ⬜ | $0 · Étude de boutique : packs de perles, caisse premium séparée de la trésorerie, faux fournisseur de paiement — `PACING_AND_SPEEDUPS.md` §3 | — |
+| ⬜ | $1 · Perles gagnées en jeu (monnaie déjà extensible), jamais convertibles en coquillages | 5 |
+| ⬜ | $2 · Accélérations en perles : seulement si décidé (plafond quotidien) ; les accélérations en coquillages sont le lot Z | $1, Z1 |
 | ⬜ | $3 · Packs décoratifs, conforts, extensions | $1 |
 | ⬜ | $4 · Simulation : progression complète atteignable sans achat | $2–$3 |
+
+### Rythme et accélérations (lot Z) — proposition, 0.1.6
+
+Conception : [`PACING_AND_SPEEDUPS.md`](PACING_AND_SPEEDUPS.md).
+
+| Statut | Étape | Dépend de | Version |
+|--------|-------|-----------|---------|
+| ⬜ | Z1 · Règles d'accélération pures (barème en données, paliers, refus, idempotence, sauvegarde, horloge) | 7, 9 | 0.1.6 |
+| ⬜ | Z2 · « Avancer le temps » dans le panneau du séjour ; accélération offerte une seule fois dans le tutoriel | Z1 | 0.1.6 |
+| ⬜ | Z3 · Renfort de ménage et équipe renforcée (chantiers) | Z1 | 0.1.6 |
+| ⬜ | Z4 · Mesure des temps morts (≤ 90 s sur 30 min) dans la simulation de session | 0.2 (V0.2) | V0.2 |
+| ⬜ | Z5 · Demandes des voyageurs pendant le séjour, version légère (commentaire et historique) | Z4, N1 | V0.2 |
+
+### Direction artistique 3D et prototype (lot G) — proposition
+
+Conception : [`ART_DIRECTION.md`](ART_DIRECTION.md), [`TRANSITION_3D.md`](TRANSITION_3D.md).
+Rien n'est commencé ; le jeu existant n'est pas modifié.
+
+| Statut | Étape | Critère principal |
+|--------|-------|-------------------|
+| ⬜ | G-P0 · Préparation : décisions, dossier isolé, export séparé, mesureur | APK du jeu inchangé, 310 tests verts |
+| ⬜ | G-P1 · Extérieur (bungalow, lagon, plage, végétation) 📱 | 30 i/s stables 10 min, < 500 Mo |
+| ⬜ | G-P2 · Caméra isométrique 3D (déplacer, zoomer, pivoter, toucher) | calculs testés sans écran |
+| ⬜ | G-P3 · Hina, Kimo, 2 voyageurs animés 📱 | 4 personnages sans perte de fluidité |
+| ⬜ | G-P4 · Intérieur et transition | pas de gel, pas de fuite mémoire |
+| ⬜ | G-P5 · Décoration libre : 5 meubles 📱 | 5 meubles placés en < 2 min |
+| ⬜ | G-P6 · Deux styles en un toucher, devis | mêmes effets qu'en mode libre |
+| ⬜ | G-P7 · Dialogue avec portrait illustré | lisible sur téléphone |
+| ⬜ | G-P8 · Bilan et décision 📱 | rapport chiffré |
+| ⬜ | G-M1 à G-M5 · Migration progressive (contrat `IslandView`, logique de la vie de l'île, parité 3D, 3D par défaut, retrait de la 2D) | après décision positive seulement |
+
+### Décoration et aménagement (lot DEC) — proposition
+
+Conception : [`DECORATION.md`](DECORATION.md) (§9 pour le découpage DEC1–DEC7).
+DEC1 (modèle pur) et DEC2 (décision d'aménagement depuis un panneau) ne
+dépendent pas de la 3D ; DEC3–DEC6 suivent le prototype.
+
+### Marché communautaire de créations (lot K) — fonctionnalité future, non développée
+
+Publier, consulter, prévisualiser, débloquer des modèles de décoration ;
+suivre des décorateurs.
+
+| Statut | Étape |
+|--------|-------|
+| ⬜ | K0 · Architecture compatible : documents d'aménagement autonomes, versionnés, avec auteur, licence et empreinte ; identifiants de catalogue stables ; validation à l'import (`DECORATION.md` §6) — **à respecter dès DEC1** (conception seulement) |
+| ⬜ | K1 · Service en ligne (comptes, stockage, modération) — étude à faire |
+| ⬜ | K2 · Publier et consulter des créations, favoris, décorateurs suivis |
+| ⬜ | K3 · Aperçu d'un modèle dans son logement (aucun meuble offert) |
+| ⬜ | K4 · Échange contre monnaie virtuelle |
+| ⬜ | K5 · Collections premium de créateurs |
+| 💡 | K6 · Rémunération réelle des créateurs : étude technique, juridique, fiscale, modération et règles des plateformes **obligatoire** avant toute décision |
+
+Trois notions à ne jamais confondre : monnaie virtuelle du jeu, achats
+réels, rémunération réelle éventuelle des créateurs.
 
 ## Feuille de route des versions (validée)
 
@@ -285,6 +341,8 @@ Plan détaillé de la V0.2 en lots testables (proposition) : [`PLAN_V0.2.md`](PL
 | Version | Thème | Contenu | Condition de passage |
 |---------|-------|---------|----------------------|
 | **V0.1** « Premier séjour » | Boucle simple et jouable | Étapes 0–12 | Tests verts + recette de stabilité + recette Android |
+| **0.1.6** « Rythme » (proposé) | Moins d'attente | Z1–Z3 | Tests verts + recette Android |
+| **Prototype 3D** (proposé, isolé) | Valider la direction artistique | G-P0 à G-P8 | Recette Android du prototype + décision |
 | **V0.2** « Immersion et découverte » | Donner envie de jouer, faire vivre l'île | O1–O3 (introduction, nom), V1b–V1c (habitants et voyageurs qui se déplacent), F1 (marché de Malia), A1–A3 (paniers réalistes, migration), C1 (ressources achetées au marché), T1–T2 (premières expériences), C4 partiel + N6 (premières fiches pédagogiques) | Tests verts (non-régression V0.1) + simulation « production ≤ un tiers des actions » + recette Android |
 | **V0.2.5** « Réalités du métier » | La gestion au centre | S1–S3 et I1 (premiers incidents), R1–R6 (avis et réputation), E1–E2 (charges par séjour), bilan financier (chiffre d'affaires propriétaires, commission, coûts, marge), premières décisions à conséquences (décoration, situations), B1–B4 | Tests verts + recette Android |
 | **V0.3** « Développement de l'entreprise » | Grandir | P1–P4 et F2–F3 (recrutement, délégation, prestataires), M1–M4 (mandats et négociations), A4–A6, C2, T3–T6 (artisanat et activités avancés), E3–E4, D1, V1d, I2–I5, Bungalow Corail | Tests verts + recette Android |
@@ -310,5 +368,5 @@ Exigences transverses (validées) :
 - 💡 Message au joueur après une sauvegarde récupérée ou réinitialisée (toast), quand le système de notifications existera.
 - 💡 Destinées : durée d'un jour de jeu (temps réel ou cycles d'activité) à décider avant D1.
 - 💡 Choix de la première destination réelle et des relecteurs culturels.
-- 💡 Portraits des PNJ : style graphique à définir (originaux).
+- 💡 Portraits des PNJ : semi-réalistes illustrés, 6 expressions (`ART_DIRECTION.md` §8) ; mode de production à décider.
 - 💡 Animation légère de l'eau (à mesurer en performances sur appareil d'entrée de gamme).
