@@ -91,6 +91,11 @@ Modèle de téléphone et version d'Android : non communiqués.
 
 Merci de noter le modèle de téléphone et la version d'Android.
 
+Recette n°1 bis — APK 0.1.1 (retours visuels de l'équipe produit) :
+barre de ressources lisible ✅ ; panneau du bungalow clair ✅ ; états
+« Libre » et « Réservé » correctement affichés ✅ ; bouton d'action visible ✅.
+Améliorations UX demandées : voir `BACKLOG.md`, section « UX ».
+
 À vérifier lors de la prochaine recette : n° 4, 7, 10, 11, l'inertie au lâcher
 et le tap sur le toit du bungalow.
 

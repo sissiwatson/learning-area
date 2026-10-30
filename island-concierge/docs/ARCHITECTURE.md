@@ -340,11 +340,11 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 6  | **Données** | `Database`, `DataValidator`, données de tous les bâtiments de Mahana, recettes, PNJ, quêtes du tutoriel (données seules) | `test_data_validator` (données manquantes, invalides, incohérentes), `test_data_integrity` | ✅ (non testé sur appareil) |
 | 7  | **Réservations** | `Booking`, `BookingSystem`, `Lodging` avec minuteurs, bureau, ménage, accueil, fin automatique, commission, versement, pastilles « ! » | Tests des montants, durées, transitions, doubles paiements, réservations invalides, anti-blocage | ✅ (non testé sur appareil) |
 | R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |
-| 8  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier) | Tests minuteurs / hors-ligne ; boucle complète jouable | à faire |
+| 8  | **Productions** | `ProductionSlot`, plantation d'ananas, atelier (panier), panier exigé pour préparer | Tests minuteurs, capacité, taps répétés ; boucle complète jouable | à faire |
+| 9  | **Sauvegarde** | JSON versionné, sauvegarde en arrière-plan, rattrapage des minuteurs, corruption, migrations, horloge système modifiée | Tests avec horloge simulée ; relance conserve l'état | à faire |
 | R3–R4 | **Réputation : séjours notés** | journal de séjour, règles, avis publié en fin de séjour | Séjour parfait = 5,00 ; sans panier = note attendue | à faire |
-| 9  | **Progression & tutoriel narratif** | XP, niveaux, toasts ; N1–N5 : conditions/effets, PNJ et relations, dialogues, quêtes narratives, tutoriel avec Hina (voir `NARRATIVE.md`) | Test de bout en bout du tutoriel ; partie jouée à la main | à faire |
+| 10 | **Progression & tutoriel narratif** | XP, niveaux, toasts ; N1–N5 : conditions/effets, PNJ et relations, dialogues, quêtes narratives, tutoriel avec Hina (voir `NARRATIVE.md`) | Test de bout en bout du tutoriel ; partie jouée à la main | à faire |
 | N6–N7 | **Carnet de voyage et validation de contenu** | 3 fiches de Mahana, test de cohérence des références | Récompenses uniques ; données cassées détectées | à faire |
-| 10 | **Sauvegarde** | JSON versionné (avis inclus), autosave, migration | `test_save_load` ; relance conserve l'état | à faire |
 | R5–R6 | **Réputation : effets et redressement** | offres par palier, missions | Jamais 0 offre ; scénario de récupération | à faire |
 | 11 | **Tiki bar** | Chantier → construction → bâtiment | `test_full_loop` jusqu'au tiki bar | à faire |
 | 12 | **Finitions V0.1** | `ADDING_CONTENT.md`, `CREDITS.md`, équilibrage, nouvel APK | Revue de la checklist du brief | à faire |
@@ -479,7 +479,7 @@ Les tests remplacent `GameState.clock` par une horloge simulée
 
 **Limite actuelle** : le temps réel avance bien pendant que le jeu est en
 arrière-plan ; mais si Android **ferme** l'application, l'état est perdu
-jusqu'à l'étape Sauvegarde (le format `to_dict` des logements et des offres
+jusqu'à l'étape 9, Sauvegarde (le format `to_dict` des logements et des offres
 est déjà prêt et testé).
 
 ## 16. Réservations (étape 7)
@@ -499,3 +499,20 @@ VACANT ─► BOOKED ─(ménage 2 min)─► PREPARING ─► READY ─(accueil
 - Refus explicites : offre inconnue ou déjà prise, logement inconnu,
   verrouillé, occupé, trop petit, aucun logement libre, transition invalide.
 - Pastille « ! » sur les bâtiments qui attendent une action.
+
+---
+
+## 17. Modèle économique (évolutions prévues)
+
+Le porte-monnaie ne contient que l'argent **de la conciergerie**. Le prix des
+séjours appartient aux propriétaires ; seule la commission est versée au
+joueur. Quatre grandeurs seront suivies (lot E, `BACKLOG.md`) : chiffre
+d'affaires des propriétaires, commissions encaissées, charges de
+conciergerie (ménage, linge, consommables, entretien, personnel,
+plateformes) et bénéfice net. Le journal du porte-monnaie (motif de chaque
+mouvement) et l'historique des séjours (`owner_share`, `commission`) en sont
+la base ; les charges seront des données, prélevées par des règles
+déterministes et testées.
+
+Demandes de réservation enrichies (statuts, expiration, profils voyageurs) :
+[`BOOKING_REQUESTS.md`](BOOKING_REQUESTS.md), même moteur que l'étape 7.
