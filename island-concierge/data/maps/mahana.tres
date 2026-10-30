@@ -1,8 +1,13 @@
-[gd_resource type="Resource" script_class="MapDef" load_steps=18 format=3]
+[gd_resource type="Resource" script_class="MapDef" load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://src/defs/map_def.gd" id="1_map"]
 [ext_resource type="Script" path="res://src/defs/zone_def.gd" id="2_zone"]
 [ext_resource type="Script" path="res://src/defs/placement_def.gd" id="3_placement"]
+[ext_resource type="Script" path="res://src/defs/npc_spot_def.gd" id="5_spot"]
+[ext_resource type="Resource" path="res://data/npcs/npc_hina.tres" id="n_npc_hina"]
+[ext_resource type="Resource" path="res://data/npcs/npc_tao.tres" id="n_npc_tao"]
+[ext_resource type="Resource" path="res://data/npcs/npc_malia.tres" id="n_npc_malia"]
+[ext_resource type="Resource" path="res://data/npcs/npc_kimo.tres" id="n_npc_kimo"]
 [ext_resource type="Resource" path="res://data/buildings/bungalow_hibiscus.tres" id="b_hibiscus_1"]
 [ext_resource type="Resource" path="res://data/buildings/concierge_office.tres" id="b_office_1"]
 [ext_resource type="Resource" path="res://data/buildings/amenities_workshop.tres" id="b_workshop_1"]
@@ -30,6 +35,7 @@ script = ExtResource("3_placement")
 uid = &"hibiscus_1"
 building = ExtResource("b_hibiscus_1")
 cell = Vector2i(6, 23)
+arrival_path = Array[Vector2i]([Vector2i(16, 26), Vector2i(16, 24), Vector2i(8, 24)])
 
 [sub_resource type="Resource" id="P_office_1"]
 script = ExtResource("3_placement")
@@ -60,6 +66,26 @@ script = ExtResource("3_placement")
 uid = &"tiki_site_1"
 building = ExtResource("b_tiki_site_1")
 cell = Vector2i(15, 22)
+
+[sub_resource type="Resource" id="S_npc_hina"]
+script = ExtResource("5_spot")
+npc = ExtResource("n_npc_hina")
+cell = Vector2i(9, 23)
+
+[sub_resource type="Resource" id="S_npc_tao"]
+script = ExtResource("5_spot")
+npc = ExtResource("n_npc_tao")
+cell = Vector2i(17, 26)
+
+[sub_resource type="Resource" id="S_npc_malia"]
+script = ExtResource("5_spot")
+npc = ExtResource("n_npc_malia")
+cell = Vector2i(13, 17)
+
+[sub_resource type="Resource" id="S_npc_kimo"]
+script = ExtResource("5_spot")
+npc = ExtResource("n_npc_kimo")
+cell = Vector2i(20, 15)
 
 [resource]
 script = ExtResource("1_map")
@@ -100,4 +126,6 @@ layout = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 zones = Array[ExtResource("2_zone")]([SubResource("Resource_east_coast"), SubResource("Resource_west_jungle")])
 placements = Array[ExtResource("3_placement")]([SubResource("P_hibiscus_1"), SubResource("P_office_1"), SubResource("P_workshop_1"), SubResource("P_farm_1"), SubResource("P_corail_1"), SubResource("P_tiki_site_1")])
+npc_spots = Array[ExtResource("5_spot")]([SubResource("S_npc_hina"), SubResource("S_npc_tao"), SubResource("S_npc_malia"), SubResource("S_npc_kimo")])
+pier_cell = Vector2i(16, 26)
 decor_seed = 2026

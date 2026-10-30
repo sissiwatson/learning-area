@@ -8,6 +8,7 @@ const DATA_ROOT := "res://data"
 const FOLDERS := {
 	"currencies": "currencies", "items": "items", "recipes": "recipes", "npcs": "npcs",
 	"bookings": "bookings", "buildings": "buildings", "quests": "quests", "maps": "maps",
+	"dialogues": "dialogues",
 }
 
 var catalog := {}

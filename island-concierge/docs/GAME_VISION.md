@@ -78,7 +78,14 @@ outillage, linge de qualité), puis **acquisition de biens** : le joueur
 devient propriétaire-investisseur (revenus locatifs complets, mais travaux,
 vacance et risques à sa charge).
 
-### 4.6 Vie de l'île (lot V)
+### 4.6 Vie de l'île (lot V) — dès la V0.1
+
+Décision produit : l'île doit sembler vivante dès les premières versions.
+V0.1 : personnages visibles, phrases d'ambiance, bateau de Tao, voyageurs qui
+débarquent et marchent jusqu'au logement. V0.2 : promeneurs, autres bateaux,
+étal de Malia, voyageurs visibles pendant leur séjour. Toutes ces animations
+sont purement visuelles (aucune règle de jeu) et peu coûteuses.
+
 Habitants avec leurs propres histoires (`NARRATIVE.md`), commerces qui
 ouvrent ou ferment, bateaux qui arrivent au quai, voyageurs qui se promènent,
 événements culturels (Fête des Lumières), activités ; conséquences des grandes
@@ -146,8 +153,8 @@ Aucune monétisation dans la V0.x de prototype. Quand elle viendra :
 
 | Version | Thème | Contenu | Ce qu'on garde hors champ |
 |---------|-------|---------|---------------------------|
-| **V0.1** « Premier séjour » | Une boucle simple et jouable | Fait : carte, caméra, bungalow, réservations, productions, sauvegarde. **À faire** : XP et niveaux ; quêtes de Hina (tutoriel guidé par les actions, dialogues passables) ; première **animation de production** (plants qui poussent, « +3 ananas » flottant, anneau de progression) ; tiki bar ; finitions (cadrage initial) | réputation, charges, incidents, personnel ; dans le tutoriel, la décoration, la demande de voyageurs et l'avis détaillé passent en V0.2 |
-| **V0.2** « Le métier de concierge » | Apprendre les réalités du terrain | Moteur de situations ; 3 premiers incidents (chauffe-eau, arrivée tardive, ménage en retard) ; charges par séjour (ménage, linge, consommables) et marge par séjour ; réputation (avis, période d'essai de 5 avis) ; décision de décoration ; cartes de demande de réservation | personnel, mandats, investissements |
+| **V0.1** « Premier séjour » | Une boucle simple et jouable, une île qui vit déjà | Carte, caméra, bungalow, réservations, productions, sauvegarde, XP et niveaux, quêtes de Hina (dialogues passables), **personnages visibles et bavards, bateau de Tao, voyageurs qui arrivent**, animation de production, tiki bar, finitions | réputation, charges, incidents, personnel ; dans le tutoriel, la décoration, la demande de voyageurs et l'avis détaillé passent en V0.2 |
+| **V0.2** « Le métier de concierge » | Apprendre les réalités du terrain | Île plus vivante (promeneurs, autres bateaux, étal de Malia, voyageurs sur la terrasse pendant le séjour) ; moteur de situations ; 3 premiers incidents (chauffe-eau, arrivée tardive, ménage en retard) ; charges par séjour (ménage, linge, consommables) et marge par séjour ; réputation (avis, période d'essai de 5 avis) ; décision de décoration ; cartes de demande de réservation | personnel, mandats, investissements |
 | **V0.3** « L'entreprise » | Développer une entreprise rentable | Personnel (recrutement, planning, qualité, paiements) ; relations propriétaires (prospection, négociation, mandats, fidélisation) ; charges fixes, trésorerie et tableau de bord ; services (excursion avec Tao, dîners chez Malia) ; Bungalow Corail et Côte Est | acquisition de biens, Destinées |
 | **V0.4** « L'investisseur et l'île vivante » | Devenir propriétaire-investisseur | Investissements et acquisition de biens ; partenariats ; vie de l'île (bateaux, habitants, événements) ; Destinées de l'archipel (« L'avenir de la baie ») | multi-destinations |
 | **V0.5** « L'archipel » | Plusieurs destinations | Seconde destination ; première destination inspirée d'un lieu réel (fiches sourcées) | — |

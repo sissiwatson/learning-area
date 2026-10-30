@@ -10,7 +10,7 @@ func test_game_data_has_no_error() -> void:
 func test_every_data_file_is_loaded() -> void:
 	var expected := {
 		"currencies": 1, "items": 2, "recipes": 2, "npcs": 4, "bookings": 4,
-		"buildings": 7, "quests": 8, "maps": 1,
+		"buildings": 7, "quests": 8, "maps": 1, "dialogues": 10,
 	}
 	for type in expected:
 		assert_eq(Database.catalog[type].size(), expected[type], "nombre de « %s »" % type)

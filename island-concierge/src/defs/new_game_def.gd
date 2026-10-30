@@ -10,3 +10,5 @@ extends Resource
 @export_range(1, 9999) var inventory_capacity := 50
 @export var timings: TimingsDef
 @export var progression: ProgressionDef
+## Quêtes de la partie, dans l'ordre de présentation.
+@export var quests: Array[QuestDef] = []

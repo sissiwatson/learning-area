@@ -239,3 +239,42 @@ func test_unreachable_required_level() -> void:
 func test_missing_progression() -> void:
 	f.new_game.progression = null
 	_assert_error("progression manquante")
+
+
+func test_dialogue_with_unknown_text_or_speaker() -> void:
+	f.dialogue.lines[0].text_key = "DLG_DOES_NOT_EXIST"
+	_assert_error("traduction manquante « DLG_DOES_NOT_EXIST »")
+	var stranger := NpcDef.new()
+	stranger.id = &"npc_stranger"
+	f.dialogue.lines[0].speaker = stranger
+	_assert_error("personnage inconnu « npc_stranger »")
+
+
+func test_quest_dialogue_outside_catalog() -> void:
+	var other := DialogueDef.new()
+	other.id = &"dlg_lost"
+	f.quest_b.intro_dialogue = other
+	_assert_error("dialogue hors catalogue « dlg_lost »")
+
+
+func test_quest_focus_on_unknown_building() -> void:
+	f.quest_a.focus_building = &"casino"
+	_assert_error("bâtiment « Y aller » inconnu « casino »")
+
+
+func test_npc_placed_in_the_sea() -> void:
+	var spot := NpcSpotDef.new()
+	spot.npc = f.hina
+	spot.cell = Vector2i(0, 0)
+	f.map.npc_spots = [spot]
+	_assert_error("placé hors de la terre ferme")
+
+
+func test_arrival_path_through_the_sea() -> void:
+	f.map.placements[1].arrival_path = [Vector2i(1, 1), Vector2i(0, 0)]
+	_assert_error("chemin des voyageurs de « bungalow_1 » hors de la terre")
+
+
+func test_npc_without_portrait() -> void:
+	f.hina.portrait = null
+	_assert_error("sprite ou portrait manquant")

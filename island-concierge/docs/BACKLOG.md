@@ -1,6 +1,6 @@
 # Backlog — Island Concierge
 
-Légende : ✅ fait · 🔜 prochaine étape · ⬜ à faire · 💡 idée à préciser.
+Légende : ✅ fait · 🟡 commencé · 🔜 prochaine étape · ⬜ à faire · 💡 idée à préciser.
 Une tâche n'est cochée que si elle a été exécutée ou testée ; ce qui reste à
 valider sur appareil est indiqué explicitement. 📱 = validé sur Android réel
 (recette n°1, APK 0.1.0) ; 🧪 = vérifié par tests automatisés ou simulation.
@@ -24,8 +24,8 @@ personnel sont en V0.2 et au-delà.
 | ✅ 🧪 | 8 · Productions (ananas 30 s, panier 1 min, panier exigé pour préparer, livraison automatique, inventaire plein sans perte) | Sur appareil : parcours production → ménage ; boutons désactivés |
 | ✅ 🧪 | 9 · Sauvegarde locale versionnée (arrière-plan, rattrapage, corruption, migrations, horloge modifiée) | Sur appareil : fermeture pendant un séjour, arrêt forcé, changement d'heure |
 | ✅ 🧪 | 10a · XP et niveaux (gains par action en données, paliers, badge et barre d'XP, message « Niveau atteint », sauvegarde) | Sur appareil : lisibilité du badge |
-| 🔜 | 10b · Quêtes de Hina : moteur de conditions et d'effets (N1), quêtes et dialogues passables (N3–N4), tutoriel guidé par les actions — version allégée (séquences 1–4, 6–7, 9–10 de `SCENARIO_TUTORIEL.md`) | |
-| ⬜ | 10c · Première animation de production (plants qui poussent, « +3 ananas » flottant, anneau de progression) | |
+| ✅ 🧪 | 10b · Quêtes de Hina : moteur de conditions et d'effets (N1), quêtes et dialogues passables (N3–N4), tutoriel guidé par les actions — version allégée (séquences 1–4, 6–7, 9–10 de `SCENARIO_TUTORIEL.md`) ; personnages visibles, phrases d'ambiance, bateau de Tao et arrivée des voyageurs | Sur appareil : lisibilité des dialogues, taille des personnages, « Passer » |
+| 🔜 | 10c · Première animation de production (plants qui poussent, « +3 ananas » flottant, anneau de progression) | |
 | ⬜ | 11 · Tiki bar (construction, niveau 2, 150 coquillages) | |
 | ⬜ | 12 · Finitions V0.1 (cadrage initial U1, crédits, équilibrage, recette Android) | |
 
@@ -196,7 +196,7 @@ situations/décisions D4–D5, calendrier D1, journal comptable E1).
 
 | Statut | Étape | Dépend de |
 |--------|-------|-----------|
-| ⬜ | V1 · Animations d'ambiance (bateaux au quai, promeneurs, eau) — mesurées sur appareil d'entrée de gamme | — |
+| 🟡 | V1 · Animations d'ambiance : **commencé en V0.1** (personnages qui se balancent, bateau de Tao, voyageurs qui marchent) ; à poursuivre en V0.2 (promeneurs, autres bateaux, eau) — mesurées sur appareil d'entrée de gamme | — |
 | ⬜ | V2 · Habitants et commerces qui évoluent selon les choix | N2, D3 |
 | ⬜ | V3 · Événements culturels (Fête des Lumières) et activités | D1, N10 |
 
@@ -228,6 +228,7 @@ réputation achetée, accélérations plafonnées, transparence).
 - 💡 Retour haptique au tap sur Android (`Input.vibrate_handheld`), à évaluer sur appareil.
 - 💡 Recentrer la caméra sur le bâtiment sélectionné quand le panneau le masque.
 - 💡 Mettre à l'échelle le seuil de tap selon la densité de l'écran (`DisplayServer.screen_get_dpi`).
+- 💡 Bulles des personnages : éviter qu'elles passent sous le bandeau d'objectif.
 - 💡 Message au joueur après une sauvegarde récupérée ou réinitialisée (toast), quand le système de notifications existera.
 - 💡 Destinées : durée d'un jour de jeu (temps réel ou cycles d'activité) à décider avant D1.
 - 💡 Choix de la première destination réelle et des relecteurs culturels.

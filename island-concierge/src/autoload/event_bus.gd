@@ -36,3 +36,11 @@ signal xp_changed(xp: int, level: int)
 signal xp_gained(amount: int, reason: StringName)
 ## Le joueur passe au niveau `level`.
 signal level_up(level: int)
+## Événement de jeu pouvant faire avancer une quête (voir GameEvents).
+signal game_event(event: StringName, target: StringName, amount: int)
+## Une quête devient disponible (son dialogue d'introduction peut être joué).
+signal quest_available(quest_id: StringName)
+## Une quête démarre / progresse / se termine.
+signal quest_started(quest_id: StringName)
+signal quest_progressed(quest_id: StringName)
+signal quest_completed(quest_id: StringName)

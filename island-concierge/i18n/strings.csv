@@ -128,3 +128,6 @@ ERR_UNKNOWN_BUILDING,Bâtiment inconnu
 HUD_LEVEL,Niv. %d
 HUD_XP,%d / %d XP
 TOAST_LEVEL_UP,Niveau %d atteint !
+DIALOGUE_SKIP,Passer
+QUEST_GO,Y aller
+TOAST_QUEST_DONE,Quête terminée : %s

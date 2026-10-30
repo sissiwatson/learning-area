@@ -12,6 +12,9 @@ extends Resource
 @export_multiline var layout: String
 @export var zones: Array[ZoneDef] = []
 @export var placements: Array[PlacementDef] = []
+@export var npc_spots: Array[NpcSpotDef] = []
+## Cellule du ponton où accostent les bateaux.
+@export var pier_cell := Vector2i(-1, -1)
 ## Graine du placement des palmiers et buissons (même graine = même décor).
 @export var decor_seed := 1
 

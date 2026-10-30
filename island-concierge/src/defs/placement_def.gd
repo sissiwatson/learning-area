@@ -7,6 +7,8 @@ extends Resource
 @export var building: BuildingDef
 ## Cellule du coin haut de l'emprise (plus petits x et y).
 @export var cell := Vector2i.ZERO
+## Chemin des voyageurs depuis le ponton jusqu'à la porte (cellules).
+@export var arrival_path: Array[Vector2i] = []
 
 
 func cells() -> Array[Vector2i]:

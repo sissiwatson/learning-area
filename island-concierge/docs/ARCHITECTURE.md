@@ -561,3 +561,25 @@ sur un **moteur unique de situations à options** partagé avec les grandes
 décisions des Destinées, sur le moteur de conditions et d'effets du lot N et
 sur un journal comptable catégorisé : aucun système parallèle, tout en
 données, chaque règle testée.
+
+## 21. Quêtes, dialogues et vie de l'île (étape 10b)
+
+- Données : `QuestDef` (prérequis, objectifs avec libellé, dialogues
+  d'introduction et de conclusion, bâtiment « Y aller »), `DialogueDef` /
+  `DialogueLineDef` (textes dans `i18n/dialogues.csv`), `NpcDef` (sprite,
+  portrait, phrases d'ambiance), `NpcSpotDef` et `pier_cell` dans `MapDef`,
+  `arrival_path` dans `PlacementDef`. Tout est validé par `DataValidator`.
+- Cœur : `QuestLog` (LOCKED → AVAILABLE → ACTIVE → COMPLETED ; seuls les
+  événements pendant ACTIVE comptent ; récompense marquée une fois),
+  `DialogueRunner`. Les commandes de `GameState` émettent
+  `EventBus.game_event(événement, cible, quantité)` ; la caméra émet
+  `camera_panned` / `camera_zoomed` une fois par geste.
+- Présentation : `QuestDirector` (file de dialogues, démarre la quête à la fin
+  de l'introduction, lue ou passée), `DialogueBox` (toucher = texte complet
+  puis réplique suivante ; « Passer » = mêmes effets), `QuestBanner`
+  (objectifs, « Y aller »), `NpcView` (balancement, pastille, bulle),
+  `ArrivalAnimation` (bateau + voyageurs, purement visuel ; jamais rejouée
+  au chargement d'une sauvegarde).
+- Tests : `tools/run_tests.sh` échoue aussi sur toute erreur de script ou test
+  « risqué » ; les captures (`tools/visual_checks.gd`) n'utilisent jamais la
+  sauvegarde du joueur.

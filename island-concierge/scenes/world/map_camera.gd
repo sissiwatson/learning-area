@@ -8,6 +8,9 @@ extends Camera2D
 
 ## Émis lors d'un tap sur la carte (hors interface), en coordonnées monde.
 signal tapped_world(world_pos: Vector2)
+## Émis une fois par geste du joueur (quêtes de prise en main).
+signal user_panned
+signal user_zoomed
 
 @export var max_zoom_level := 2.0
 @export var initial_zoom_level := 0.8
@@ -18,6 +21,7 @@ var rig := CameraRig.new()
 var gestures := TouchGestures.new()
 ## Callable(screen_pos: Vector2) -> bool : vrai si la position est sur l'interface.
 var ui_hit_test := Callable()
+var _reported := {}  # gestes déjà signalés pendant le contact en cours
 
 
 func _ready() -> void:
@@ -50,6 +54,8 @@ func handle_input(event: InputEvent, time_ms := -1) -> bool:
 	var t := Time.get_ticks_msec() if time_ms < 0 else time_ms
 	var touch := event as InputEventScreenTouch
 	if touch:
+		if not touch.pressed and gestures.finger_count() <= 1:
+			_reported.clear()
 		if touch.canceled:
 			gestures.cancel()
 		else:
@@ -87,6 +93,8 @@ func _apply() -> void:
 
 
 func _zoom_at(screen_pos: Vector2, factor: float) -> void:
+	_report(&"zoom")
+	_reported.erase(&"zoom")  # molette : chaque cran est un geste
 	rig.stop()
 	rig.zoom_at(screen_pos, factor)
 	_apply()
@@ -96,13 +104,26 @@ func _is_over_ui(screen_pos: Vector2) -> bool:
 	return ui_hit_test.is_valid() and bool(ui_hit_test.call(screen_pos))
 
 
+func _report(kind: StringName) -> void:
+	if _reported.has(kind):
+		return
+	_reported[kind] = true
+	if kind == &"pan":
+		user_panned.emit()
+	else:
+		user_zoomed.emit()
+
+
 func _on_panned(delta: Vector2) -> void:
+	_report(&"pan")
 	rig.stop()
 	rig.pan_screen(delta)
 	_apply()
 
 
 func _on_pinched(old_center: Vector2, new_center: Vector2, factor: float) -> void:
+	if not is_equal_approx(factor, 1.0):
+		_report(&"zoom")
 	rig.stop()
 	rig.pinch(old_center, new_center, factor)
 	_apply()

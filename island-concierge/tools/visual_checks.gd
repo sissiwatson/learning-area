@@ -12,6 +12,7 @@ const SCENARIOS := [
 	"office_offers", "hibiscus_booked", "hibiscus_cleaning", "hibiscus_stay",
 	"hibiscus_complete", "hibiscus_collected",
 	"farm_running", "workshop_missing", "workshop_crafting", "hibiscus_needs_basket",
+	"story_start", "story_banner", "story_hina", "story_arrival",
 ]
 const FakeClock := preload("res://tests/helpers/fake_clock.gd")
 
@@ -30,16 +31,20 @@ func _initialize() -> void:
 		quit(2)
 		return
 	out_dir = args[0]
+	# Les captures ne lisent ni n'écrivent jamais la sauvegarde du joueur.
+	root.get_node("SaveManager").enabled = false
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var wanted: Array = args.slice(1) if args.size() > 1 else SCENARIOS
 	for name in wanted:
-		await _reset()
+		await _reset(String(name).begins_with("story_"))
 		await call("_scenario_" + name)
 		await _capture(name)
 	quit()
 
 
-func _reset() -> void:
+## `keep_story` : garder les dialogues du tutoriel (sinon ils sont passés pour
+## que les captures montrent la carte et les panneaux).
+func _reset(keep_story := false) -> void:
 	fake_clock = FakeClock.new()
 	_game_state().clock = fake_clock
 	if main:
@@ -48,7 +53,12 @@ func _reset() -> void:
 	main = load("res://scenes/main.tscn").instantiate()
 	root.add_child(main)
 	await process_frame
+	await process_frame
 	cam = main.camera
+	if not keep_story:
+		while main.dialogue_box.visible:
+			main.dialogue_box.skip()
+			await process_frame
 
 
 func _capture(name: String) -> void:
@@ -244,3 +254,50 @@ func _scenario_workshop_crafting() -> void:
 func _scenario_hibiscus_needs_basket() -> void:
 	_game_state().accept_offer(_game_state().bookings.offers[0].id)
 	_tap_building(&"hibiscus_1", 1.3)
+
+
+func _scenario_story_start() -> void:
+	main.dialogue_box.on_tap()  # texte complet
+
+
+func _scenario_story_banner() -> void:
+	main.dialogue_box.skip()
+	var kimo: NpcView = main.map.npcs[&"npc_kimo"]
+	cam.rig.set_zoom(1.2)
+	cam.rig.center_on(kimo.global_position + Vector2(200, 60))
+	cam.position = cam.rig.position
+	cam.zoom = Vector2.ONE * cam.rig.zoom
+	_tap(cam.rig.world_to_screen(kimo.global_position + Vector2(0, -50)))
+
+
+func _scenario_story_hina() -> void:
+	main.dialogue_box.skip()
+	root.get_node("EventBus").game_event.emit(&"camera_panned", &"", 1)
+	root.get_node("EventBus").game_event.emit(&"camera_zoomed", &"", 1)
+	await process_frame
+	var hina: NpcView = main.map.npcs[&"npc_hina"]
+	cam.rig.set_zoom(1.3)
+	cam.rig.center_on(hina.global_position + Vector2(0, 120))
+	cam.position = cam.rig.position
+	cam.zoom = Vector2.ONE * cam.rig.zoom
+	main.dialogue_box.on_tap()
+
+
+func _scenario_story_arrival() -> void:
+	while main.dialogue_box.visible:
+		main.dialogue_box.skip()
+		await process_frame
+	var gs := _game_state()
+	gs.accept_offer(gs.bookings.offers[0].id)
+	gs.add_items({&"welcome_basket": 1})
+	gs.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
+	_advance(120)
+	gs.perform_lodging_action(&"hibiscus_1", Lodging.Action.WELCOME_GUESTS)
+	var anim: ArrivalAnimation = main.map.get_node("Objects").get_children().filter(func(n): return n is ArrivalAnimation)[0]
+	for t in anim._tweens:
+		t.custom_step(4.6)
+	cam.rig.set_zoom(1.0)
+	cam.rig.center_on(main.map.cell_center(Vector2i(13, 24)))
+	cam.position = cam.rig.position
+	cam.zoom = Vector2.ONE * cam.rig.zoom
+	main.panel.close_panel()

@@ -22,7 +22,7 @@ static func validate(catalog: Dictionary) -> PackedStringArray:
 
 
 func _run(catalog: Dictionary) -> void:
-	for type in ["currencies", "items", "recipes", "npcs", "bookings", "buildings", "quests", "maps"]:
+	for type in ["currencies", "items", "recipes", "npcs", "bookings", "buildings", "quests", "maps", "dialogues"]:
 		_index(type, catalog.get(type, []))
 	for def in catalog.get("currencies", []):
 		_check_named("currencies", def, def.icon)
@@ -32,6 +32,12 @@ func _run(catalog: Dictionary) -> void:
 		if def.display_name.strip_edges() == "":
 			_err("npcs", def.id, "nom affiché vide")
 		_check_key("npcs", def.id, def.job_key)
+		if def.sprite == null or def.portrait == null:
+			_err("npcs", def.id, "sprite ou portrait manquant")
+		for key in def.ambient_keys:
+			_check_key("npcs", def.id, key)
+	for def in catalog.get("dialogues", []):
+		_check_dialogue(def)
 	for def in catalog.get("recipes", []):
 		_check_recipe(def)
 	for def in catalog.get("bookings", []):
@@ -158,6 +164,18 @@ func _check_building(def: BuildingDef) -> void:
 			_err("buildings", id, "emprise différente du bâtiment cible")
 
 
+func _check_dialogue(def: DialogueDef) -> void:
+	if def.lines.is_empty():
+		_err("dialogues", def.id, "dialogue vide")
+	for line in def.lines:
+		if line == null:
+			_err("dialogues", def.id, "réplique nulle")
+			continue
+		if line.speaker != null and not _known("npcs", line.speaker):
+			_err("dialogues", def.id, "personnage inconnu « %s »" % line.speaker.id)
+		_check_key("dialogues", def.id, line.text_key)
+
+
 func _check_quest(def: QuestDef) -> void:
 	var id := def.id
 	_check_key("quests", id, def.title_key)
@@ -188,6 +206,14 @@ func _check_quest(def: QuestDef) -> void:
 			_err("quests", id, "quantité d'objectif invalide")
 	if def.reward_xp < 0:
 		_err("quests", id, "XP négative")
+	for dialogue in [def.intro_dialogue, def.outro_dialogue]:
+		if dialogue != null and not _known("dialogues", dialogue):
+			_err("quests", id, "dialogue hors catalogue « %s »" % dialogue.id)
+	if def.focus_building != &"" and not _has("buildings", def.focus_building):
+		_err("quests", id, "bâtiment « Y aller » inconnu « %s »" % def.focus_building)
+	for objective in def.objectives:
+		if objective != null and objective.label_key != "":
+			_check_key("quests", id, objective.label_key)
 	_check_amounts("quests", id, "récompense", def.reward_currencies, "currencies", true)
 	_check_amounts("quests", id, "récompense", def.reward_items, "items", true)
 
@@ -251,6 +277,18 @@ func _check_map(def: MapDef) -> void:
 			used[cell] = placement.uid
 			if def.zone_at(cell) != zone_of_first:
 				_err("maps", id, "« %s » est à cheval sur une zone" % placement.uid)
+	for spot in def.npc_spots:
+		if spot == null or not _known("npcs", spot.npc):
+			_err("maps", id, "personnage inconnu sur la carte")
+		elif not grid.is_land(spot.cell):
+			_err("maps", id, "« %s » placé hors de la terre ferme en %s" % [spot.npc.id, spot.cell])
+	if def.pier_cell != Vector2i(-1, -1) and not grid.is_land(def.pier_cell):
+		_err("maps", id, "ponton hors de la terre ferme")
+	for placement in def.placements:
+		if placement:
+			for cell in placement.arrival_path:
+				if not grid.is_land(cell):
+					_err("maps", id, "chemin des voyageurs de « %s » hors de la terre en %s" % [placement.uid, cell])
 	var builds := {}
 	for placement in def.placements:
 		if placement and placement.building:
@@ -281,6 +319,9 @@ func _check_new_game(def: NewGameDef) -> void:
 	for item in def.items:
 		if not _known("items", item):
 			_err("new_game", &"new_game", "objet hors catalogue")
+	for quest in def.quests:
+		if not _known("quests", quest):
+			_err("new_game", &"new_game", "quête hors catalogue")
 	for key in def.starting_balances:
 		if not _has("currencies", key) or def.starting_balances[key] < 0:
 			_err("new_game", &"new_game", "solde de départ invalide « %s »" % key)

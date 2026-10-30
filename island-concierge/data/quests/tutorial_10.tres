@@ -1,14 +1,17 @@
-[gd_resource type="Resource" script_class="QuestDef" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="QuestDef" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://src/defs/quest_def.gd" id="1_script"]
 [ext_resource type="Resource" path="res://data/npcs/npc_hina.tres" id="2_giver"]
 [ext_resource type="Script" path="res://src/defs/objective_def.gd" id="3_objective"]
+[ext_resource type="Resource" path="res://data/dialogues/dlg_tutorial_10.tres" id="4_intro"]
+[ext_resource type="Resource" path="res://data/dialogues/dlg_tutorial_10_outro.tres" id="5_outro"]
 
-[sub_resource type="Resource" id="Resource_obj0"]
+[sub_resource type="Resource" id="Obj_0"]
 script = ExtResource("3_objective")
 event = &"construction_started"
 target = &"tiki_bar_site"
 amount = 1
+label_key = "OBJ_TIKI"
 
 [resource]
 script = ExtResource("1_script")
@@ -16,7 +19,10 @@ id = &"tutorial_10"
 title_key = "QUEST_TUTORIAL_10"
 giver = ExtResource("2_giver")
 prerequisites = Array[StringName]([&"tutorial_09"])
-objectives = Array[ExtResource("3_objective")]([SubResource("Resource_obj0")])
+objectives = Array[ExtResource("3_objective")]([SubResource("Obj_0")])
+intro_dialogue = ExtResource("4_intro")
+outro_dialogue = ExtResource("5_outro")
+focus_building = &"tiki_bar_site"
 reward_xp = 0
 reward_currencies = Dictionary[StringName, int]({})
 reward_items = Dictionary[StringName, int]({})

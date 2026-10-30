@@ -54,6 +54,11 @@ func set_selected(value: bool) -> void:
 	queue_redraw()
 
 
+## Vrai si la position (monde) est sur l'emprise au sol du bâtiment.
+func footprint_hit(world_pos: Vector2) -> bool:
+	return Geometry2D.is_point_in_polygon(to_local(world_pos), footprint_polygon)
+
+
 ## Vrai si la position (monde) touche l'emprise au sol ou le dessin du bâtiment.
 func hit_test(world_pos: Vector2) -> bool:
 	var local := to_local(world_pos)

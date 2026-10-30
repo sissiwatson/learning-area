@@ -17,6 +17,7 @@ var bar := BuildingDef.new()
 var site := BuildingDef.new()
 var quest_a := QuestDef.new()
 var quest_b := QuestDef.new()
+var dialogue := DialogueDef.new()
 var map := MapDef.new()
 var new_game := NewGameDef.new()
 var timings := TimingsDef.new()
@@ -32,6 +33,11 @@ func _init() -> void:
 	craft.id = &"craft_welcome_basket"; craft.name_key = "RECIPE_CRAFT_WELCOME_BASKET"
 	craft.inputs = {&"pineapple": 3}; craft.outputs = {&"welcome_basket": 1}
 	hina.id = &"npc_hina"; hina.display_name = "Hina"; hina.job_key = "JOB_OWNER"
+	hina.sprite = icon; hina.portrait = icon
+	dialogue.id = &"dlg_a"
+	var line := DialogueLineDef.new()
+	line.speaker = hina; line.text_key = "DLG_TUTORIAL_02_1"
+	dialogue.lines = [line]
 	booking.id = &"couple"; booking.guest_name = "Camille et Noé"
 	_building(office, &"concierge_office", BuildingDef.Role.OFFICE, icon)
 	office.office = OfficeDef.new(); office.office.booking_templates = [booking]
@@ -47,6 +53,7 @@ func _init() -> void:
 	site.construction.builds_into = bar
 	quest_a.id = &"tutorial_01"; quest_a.title_key = "QUEST_TUTORIAL_01"; quest_a.giver = hina
 	quest_a.objectives = [_objective(&"booking_accepted", &"")]
+	quest_a.intro_dialogue = dialogue
 	quest_b.id = &"tutorial_02"; quest_b.title_key = "QUEST_TUTORIAL_02"; quest_b.giver = hina
 	quest_b.prerequisites = [&"tutorial_01"]
 	quest_b.objectives = [_objective(&"item_collected", &"pineapple")]
@@ -63,6 +70,7 @@ func catalog() -> Dictionary:
 		"currencies": [shells], "items": [pineapple, basket], "recipes": [harvest, craft],
 		"npcs": [hina], "bookings": [booking], "buildings": [office, bungalow, farm, workshop, bar, site],
 		"quests": [quest_a, quest_b], "maps": [map], "new_games": [new_game], "timings": [timings],
+		"dialogues": [dialogue],
 	}
 
 

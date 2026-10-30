@@ -1,0 +1,44 @@
+keys,fr
+DLG_TUTORIAL_01_1,On y est. Mahana. Hina t'attend… et elle n'aime pas attendre.
+DLG_TUTORIAL_01_2,Glisse ton doigt pour regarder l'île. Pince avec deux doigts pour t'approcher.
+DLG_TUTORIAL_02_1,Te voilà ! Je suis Hina. Mon grand-père a construit ce bungalow avec le bois que la mer nous a rendu après la grande tempête.
+DLG_TUTORIAL_02_2,Je ne veux pas des touristes qui passent. Je veux des invités qu'on accueille. C'est ton métier maintenant.
+DLG_TUTORIAL_02_3,Un couple demande deux nuits. Va au bureau de conciergerie et accepte leur réservation.
+DLG_TUTORIAL_03_1,"Ici, c'est l'hôte qui offre : chaque visiteur reçoit des fruits du jardin."
+DLG_TUTORIAL_03_2,Nos ananas t'attendent à la plantation. Lance une récolte.
+DLG_TUTORIAL_04_1,Ah… bonjour. Hina t'envoie ? Tu as les ananas ?
+DLG_TUTORIAL_04_2,"Le panier, je le tresse avec des feuilles de palmier séchées. Chaque brin passe sous deux, puis sur deux… Viens à l'atelier."
+DLG_TUTORIAL_06_1,"Le panier est prêt ? Alors au ménage ! Le sol, le lit, les serviettes… et le panier sur la table."
+DLG_TUTORIAL_06_2,Un voyageur remarque tout. Ouvre le bungalow et fais le ménage.
+DLG_TUTORIAL_07_1,Tes voyageurs sont sur mon bateau. On accoste au ponton.
+DLG_TUTORIAL_07_2,"Va les accueillir. Un sourire, les clés, et le panier qui les attend."
+DLG_TUTORIAL_09_1,"Ils sont installés. Laisse-les profiter : deux nuits, ça passe vite."
+DLG_TUTORIAL_09_2,"Pendant ce temps, tu peux préparer la suite : récolter, tresser… À la fin du séjour, n'oublie pas d'encaisser ta commission."
+DLG_TUTORIAL_09_OUTRO_1,Mon grand-père aurait aimé voir ça. Des invités heureux dans sa maison.
+DLG_TUTORIAL_09_OUTRO_2,"Continue comme ça, et d'autres propriétaires te feront confiance."
+DLG_TUTORIAL_10_1,Tu vois l'emplacement près de la plage ? C'était le petit bar de mon cousin.
+DLG_TUTORIAL_10_2,"Avec tes coquillages, tu pourrais le rouvrir. Les voyageurs adoreraient."
+DLG_TUTORIAL_10_OUTRO_1,Un tiki bar sur la plage… Mahana se réveille.
+DLG_TUTORIAL_10_OUTRO_2,"Un jour, je t'emmènerai voir le Grand Banc. Le récif a besoin qu'on s'en occupe."
+OBJ_CAMERA_PAN,Faire glisser la carte
+OBJ_CAMERA_ZOOM,Pincer pour zoomer
+OBJ_ACCEPT_BOOKING,Accepter une réservation au bureau
+OBJ_HARVEST,Récolter des ananas
+OBJ_BASKET,Tresser un panier d'accueil
+OBJ_PREPARE,Faire le ménage du bungalow
+OBJ_WELCOME,Accueillir les voyageurs
+OBJ_STAY,Attendre la fin du séjour
+OBJ_COLLECT,Encaisser la commission
+OBJ_TIKI,Lancer la construction du tiki bar
+AMB_NPC_HINA_1,"Mon grand-père disait : une maison vide, c'est un bateau sans équipage."
+AMB_NPC_HINA_2,"Tu as pensé au panier ? Ici, personne n'arrive les mains vides."
+AMB_NPC_HINA_3,Le bungalow a l'air heureux quand il y a des voyageurs.
+AMB_NPC_TAO_1,La houle est calme aujourd'hui. Bon jour pour accueillir du monde.
+AMB_NPC_TAO_2,Mon bateau n'est pas rapide. Il est fiable. C'est mieux.
+AMB_NPC_TAO_3,Le récif du Grand Banc… un jour je te montrerai.
+AMB_NPC_MALIA_1,"Bientôt, mon étal sera sur le quai. Tu m'enverras tes voyageurs ?"
+AMB_NPC_MALIA_2,"Un bon ananas, ça se sent avant de se voir !"
+AMB_NPC_MALIA_3,"Le gâteau d'ananas, c'est la recette de ma tante. Secret absolu."
+AMB_NPC_KIMO_1,"Chaque brin passe sous deux, puis sur deux…"
+AMB_NPC_KIMO_2,Le bois flotté raconte toujours un voyage.
+AMB_NPC_KIMO_3,"Si tu veux décorer un logement un jour, pense à moi."

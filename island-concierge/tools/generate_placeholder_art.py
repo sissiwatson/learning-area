@@ -408,6 +408,111 @@ def icon_level():
     return img
 
 
+# --- Personnages (originaux, fictifs) -------------------------------------
+CHARACTERS = {
+    # nom : (peau, cheveux, haut, bas, accessoire)
+    "npc_hina": ((176, 118, 84), (235, 235, 235), (232, 70, 110), (232, 70, 110), "bun"),
+    "npc_tao": ((150, 98, 66), (40, 32, 28), (40, 90, 140), (230, 220, 200), "cap"),
+    "npc_malia": ((168, 110, 76), (52, 36, 30), (245, 140, 40), (245, 140, 40), "scarf"),
+    "npc_kimo": ((160, 104, 72), (30, 26, 24), (70, 150, 80), (90, 70, 50), "bandana"),
+    "guest_a": ((236, 196, 164), (200, 150, 70), (250, 250, 250), (60, 90, 150), "hat"),
+    "guest_b": ((120, 80, 56), (25, 20, 20), (240, 200, 60), (230, 230, 230), "bag"),
+}
+
+
+def character(name, scale=1.0):
+    """Personnage debout 64×120, pied au pixel (32, 118)."""
+    skin, hair, top, bottom, extra = CHARACTERS[name]
+    img = Image.new("RGBA", (64, 120), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse((14, 110, 50, 120), fill=(0, 0, 0, 60))  # ombre
+    dress = top == bottom
+    if dress:
+        d.polygon([(20, 52), (44, 52), (50, 104), (14, 104)], fill=top)
+    else:
+        d.rectangle((22, 78, 31, 108), fill=bottom)
+        d.rectangle((33, 78, 42, 108), fill=bottom)
+        d.rounded_rectangle((18, 50, 46, 82), 6, fill=top)
+    d.rectangle((24, 104, 30, 112), fill=skin)
+    d.rectangle((34, 104, 40, 112), fill=skin)
+    d.line((18, 56, 12, 82), fill=skin, width=6)  # bras
+    d.line((46, 56, 52, 82), fill=skin, width=6)
+    d.ellipse((19, 20, 45, 48), fill=skin)  # tête
+    d.chord((18, 16, 46, 40), 180, 360, fill=hair)
+    d.ellipse((26, 32, 29, 35), fill=(30, 20, 15))
+    d.ellipse((35, 32, 38, 35), fill=(30, 20, 15))
+    d.arc((27, 36, 37, 43), 20, 160, fill=(120, 50, 40), width=2)
+    if extra == "bun":
+        d.ellipse((24, 8, 40, 22), fill=hair)
+        d.ellipse((40, 24, 48, 32), fill=(232, 60, 100))  # fleur d'hibiscus
+    elif extra == "cap":
+        d.chord((17, 14, 47, 36), 180, 360, fill=(220, 60, 50))
+        d.rectangle((40, 24, 54, 28), fill=(220, 60, 50))
+    elif extra == "scarf":
+        d.chord((16, 12, 48, 38), 180, 360, fill=(250, 210, 60))
+    elif extra == "bandana":
+        d.rectangle((18, 22, 46, 27), fill=(220, 180, 60))
+    elif extra == "hat":
+        d.ellipse((10, 18, 54, 28), fill=(235, 215, 160))
+        d.chord((19, 6, 45, 30), 180, 360, fill=(235, 215, 160))
+    elif extra == "bag":
+        d.rounded_rectangle((46, 70, 60, 96), 4, fill=(150, 90, 50))
+    return img
+
+
+def portrait(name):
+    """Portrait 192×192 pour les dialogues (agrandissement du buste sur fond rond)."""
+    base = character(name).crop((8, 4, 56, 64)).resize((160, 200), Image.NEAREST)
+    img = Image.new("RGBA", (192, 192), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse((0, 0, 191, 191), fill=(255, 236, 200, 255))
+    mask = Image.new("L", (192, 192), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, 191, 191), fill=255)
+    layer = Image.new("RGBA", (192, 192), (0, 0, 0, 0))
+    layer.paste(base, (16, 8), base)
+    img.paste(layer, (0, 0), Image.composite(layer, Image.new("RGBA", (192, 192)), mask))
+    d.ellipse((0, 0, 191, 191), outline=(190, 140, 80, 255), width=6)
+    return img
+
+
+def boat():
+    """Bateau de Tao, 160×110, vu de trois quarts ; ligne de flottaison en (80, 90)."""
+    img = Image.new("RGBA", (160, 110), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse((20, 82, 140, 102), fill=(255, 255, 255, 90))  # écume
+    d.polygon([(14, 60), (146, 60), (128, 92), (30, 92)], fill=(250, 250, 245))
+    d.polygon([(14, 60), (146, 60), (140, 70), (20, 70)], fill=(30, 140, 160))
+    d.rectangle((60, 34, 104, 60), fill=(240, 236, 220))
+    d.rectangle((66, 40, 78, 50), fill=(150, 210, 230))
+    d.rectangle((84, 40, 96, 50), fill=(150, 210, 230))
+    d.polygon([(56, 34), (108, 34), (100, 26), (64, 26)], fill=(220, 60, 50))
+    d.line((82, 26, 82, 6), fill=(110, 72, 40), width=3)
+    d.polygon([(82, 6), (100, 12), (82, 16)], fill=(250, 196, 50))
+    return img
+
+
+def farm_stage(stage):
+    """Plantation : 0 = jeunes pousses, 1 = plants, 2 = fruits mûrs (sprite habituel)."""
+    if stage == 2:
+        return pineapple_farm()
+    c = Canvas(fp=3, extra=96)
+    i, d = c.iso, c.d
+    d.polygon([i(0.05, 0.05), i(2.95, 0.05), i(2.95, 2.95), i(0.05, 2.95)], fill=(150, 104, 66, 255))
+    for row in range(5):
+        y = 0.35 + row * 0.55
+        for col in range(5):
+            x = 0.35 + col * 0.55
+            px, py = i(x, y, 0)
+            size = 6 if stage == 0 else 14
+            for a in (-50, 0, 50) if stage == 0 else (-60, -30, 0, 30, 60):
+                r = math.radians(a - 90)
+                d.line((px, py, px + math.cos(r) * size, py + math.sin(r) * size), fill=(80, 170, 80, 255), width=3)
+    for fx, fy in ((0, 0), (3, 0), (0, 3), (3, 3), (1.5, 0), (1.5, 3), (0, 1.5), (3, 1.5)):
+        x, y = i(fx, fy, 0)
+        d.line((x, y, x, y - 22), fill=(120, 80, 44), width=4)
+    return c.img
+
+
 def main():
     ROOT.mkdir(parents=True, exist_ok=True)
     rng = random.Random(1987)
@@ -432,6 +537,15 @@ def main():
     icon_pineapple().save(ui / "icon_pineapple.png")
     icon_welcome_basket().save(ui / "icon_welcome_basket.png")
     icon_level().save(ui / "icon_level.png")
+    chars = ROOT.parent / "characters"
+    chars.mkdir(parents=True, exist_ok=True)
+    for name in CHARACTERS:
+        character(name).save(chars / f"{name}.png")
+        if name.startswith("npc_"):
+            portrait(name).save(chars / f"{name}_portrait.png")
+    boat().save(chars / "boat_tao.png")
+    for stage in (0, 1):
+        farm_stage(stage).save(buildings / f"pineapple_farm_stage{stage}.png")
     print("Écrit : assets/tiles/*.png, assets/buildings/*.png, assets/ui/icon_*.png")
 
 

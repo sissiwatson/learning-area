@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="NewGameDef" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="NewGameDef" load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://src/defs/new_game_def.gd" id="1_new_game"]
 [ext_resource type="Resource" path="res://data/currencies/shells.tres" id="2_shells"]
@@ -8,6 +8,15 @@
 [ext_resource type="Script" path="res://src/defs/item_def.gd" id="6_item_def"]
 [ext_resource type="Resource" path="res://data/balance/timings.tres" id="7_timings"]
 [ext_resource type="Resource" path="res://data/progression/progression.tres" id="8_progression"]
+[ext_resource type="Script" path="res://src/defs/quest_def.gd" id="9_quest_def"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_01.tres" id="q_tutorial_01"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_02.tres" id="q_tutorial_02"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_03.tres" id="q_tutorial_03"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_04.tres" id="q_tutorial_04"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_06.tres" id="q_tutorial_06"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_07.tres" id="q_tutorial_07"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_09.tres" id="q_tutorial_09"]
+[ext_resource type="Resource" path="res://data/quests/tutorial_10.tres" id="q_tutorial_10"]
 
 [resource]
 script = ExtResource("1_new_game")
@@ -20,3 +29,4 @@ starting_items = Dictionary[StringName, int]({})
 inventory_capacity = 50
 timings = ExtResource("7_timings")
 progression = ExtResource("8_progression")
+quests = Array[ExtResource("9_quest_def")]([ExtResource("q_tutorial_01"), ExtResource("q_tutorial_02"), ExtResource("q_tutorial_03"), ExtResource("q_tutorial_04"), ExtResource("q_tutorial_06"), ExtResource("q_tutorial_07"), ExtResource("q_tutorial_09"), ExtResource("q_tutorial_10")])

@@ -21,6 +21,7 @@ var map: MapDef
 var timings: TimingsDef
 var progression_def: ProgressionDef
 var progression := Progression.new()
+var quest_log := QuestLog.new()
 var bookings: BookingSystem
 ## Réservations déjà payées (identifiant -> true) : garde-fou contre tout
 ## double versement, même avec une sauvegarde incohérente.
@@ -43,6 +44,7 @@ const HISTORY_LIMIT := 100
 
 
 func _ready() -> void:
+	EventBus.game_event.connect(_on_game_event)
 	# Les minuteurs sont des horodatages : une vérification par seconde suffit.
 	var timer := Timer.new()
 	timer.wait_time = 1.0
@@ -64,6 +66,7 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 	timings = setup.timings
 	progression_def = setup.progression
 	progression = Progression.new(progression_def.level_thresholds)
+	quest_log = QuestLog.new(setup.quests)
 	currency_defs.clear()
 	for def in setup.currencies:
 		currency_defs[def.id] = def
@@ -104,6 +107,7 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 		templates = office.booking_templates
 	bookings = BookingSystem.new(templates, office.max_offers if office else 1, timings.offer_refresh_seconds)
 	_announce_everything()
+	_refresh_quests()
 	tick()
 
 
@@ -119,6 +123,7 @@ func tick() -> void:
 			EventBus.lodging_state_changed.emit(uid, reached)
 			if reached == Lodging.State.STAY_COMPLETE:
 				EventBus.stay_completed.emit(uid, lodging.booking.id, lodging.booking.commission())
+				EventBus.game_event.emit(&"stay_completed", get_placement(uid).building.id, 1)
 	for uid in producers:
 		_deliver(uid, at)
 	if bookings.update(at, _max_free_capacity()):
@@ -140,6 +145,7 @@ func to_save_dict() -> Dictionary:
 		"last_seen": last_seen,
 		"wallet": wallet.to_dict(),
 		"progression": progression.to_dict(),
+		"quests": quest_log.to_dict(),
 		"inventory": {"counts": inventory.to_dict().counts},
 		"lodgings": lodging_data,
 		"producers": producer_data,
@@ -160,6 +166,7 @@ func load_save_dict(data: Dictionary, new_map: MapDef, setup: NewGameDef = DEFAU
 	last_seen = maxi(last_seen, int(data.get("last_seen", 0)))
 	wallet = Wallet.from_dict(_dict(data, "wallet"), currency_defs.keys())
 	progression = Progression.from_dict(_dict(data, "progression"), progression_def.level_thresholds)
+	quest_log.load_dict(_dict(data, "quests"))
 	inventory = Inventory.from_dict({"capacity": setup.inventory_capacity, "counts": _dict(data, "inventory").get("counts", {})},
 			item_defs.keys(), setup.inventory_capacity)
 	var saved_lodgings := _dict(data, "lodgings")
@@ -184,6 +191,7 @@ func load_save_dict(data: Dictionary, new_map: MapDef, setup: NewGameDef = DEFAU
 		if entry is Dictionary and stay_history.size() < HISTORY_LIMIT:
 			stay_history.append(entry)
 	_announce_everything()
+	_refresh_quests()
 	tick()
 	return Result.success()
 
@@ -220,6 +228,43 @@ func gain_xp(amount: int, reason := &"") -> void:
 	EventBus.xp_gained.emit(amount, reason)
 	if result.ok and result.value > 0:
 		EventBus.level_up.emit(progression.level())
+
+
+# --- Quêtes ------------------------------------------------------------------
+
+## Démarre une quête disponible (à la fin de son dialogue d'introduction).
+func start_quest(id: StringName) -> Result:
+	var result := quest_log.start(id)
+	if result.ok:
+		EventBus.quest_started.emit(id)
+	return result
+
+
+func _on_game_event(event: StringName, target: StringName, amount: int) -> void:
+	var completed := quest_log.record(event, target, amount)
+	for q in quest_log.with_status(QuestLog.Status.ACTIVE):
+		EventBus.quest_progressed.emit(q.id)
+	for q in completed:
+		_grant_quest_rewards(q)
+		EventBus.quest_completed.emit(q.id)
+	if not completed.is_empty():
+		_refresh_quests()
+
+
+## Récompenses d'une quête terminée, une seule fois (marquées dans le journal).
+func _grant_quest_rewards(q: QuestDef) -> void:
+	if not quest_log.claim_reward(q.id):
+		return
+	for id in q.reward_currencies:
+		earn(id, q.reward_currencies[id], StringName("quest:" + q.id))
+	if not q.reward_items.is_empty():
+		add_items(q.reward_items)  # inventaire plein : la récompense d'objets est perdue, signalé par action_failed
+	gain_xp(q.reward_xp, StringName("quest:" + q.id))
+
+
+func _refresh_quests() -> void:
+	for q in quest_log.refresh():
+		EventBus.quest_available.emit(q.id)
 
 
 # --- Économie -------------------------------------------------------------
@@ -292,6 +337,7 @@ func _deliver(uid: StringName, at: int) -> void:
 			_emit_items(recipe.outputs)
 			for id in recipe.outputs:
 				EventBus.item_collected.emit(id, recipe.outputs[id])
+				EventBus.game_event.emit(&"item_collected", id, recipe.outputs[id])
 			EventBus.production_completed.emit(uid, recipe.id)
 			gain_xp(recipe.xp, StringName("recipe:" + recipe.id))
 		else:
@@ -350,6 +396,7 @@ func accept_offer(offer_id: StringName, lodging_uid := &"") -> Result:
 	lodging.book(booking)
 	EventBus.booking_accepted.emit(booking.id, uid)
 	gain_xp(progression_def.xp_booking_accepted, &"booking_accepted")
+	EventBus.game_event.emit(&"booking_accepted", &"", 1)
 	EventBus.lodging_state_changed.emit(uid, lodging.state)
 	tick()  # une offre peut réapparaître aussitôt (anti-blocage)
 	EventBus.offers_changed.emit()
@@ -367,7 +414,8 @@ func perform_lodging_action(uid: StringName, action: Lodging.Action) -> Result:
 			var result := lodging.welcome_guests(now(), timings.night_seconds)
 			return _report(result, func():
 				EventBus.lodging_state_changed.emit(uid, lodging.state)
-				gain_xp(progression_def.xp_guests_welcomed, &"guests_welcomed"), {"uid": uid})
+				gain_xp(progression_def.xp_guests_welcomed, &"guests_welcomed")
+				EventBus.game_event.emit(&"guests_welcomed", get_placement(uid).building.id, 1), {"uid": uid})
 		Lodging.Action.COLLECT_COMMISSION:
 			return _collect(uid, lodging)
 	return _report(Result.failure(&"invalid_action"), Callable(), {"uid": uid})
@@ -386,7 +434,8 @@ func _prepare(uid: StringName, lodging: Lodging) -> Result:
 	var result := lodging.start_preparing(now(), timings.cleaning_seconds)
 	return _report(result, func():
 		EventBus.lodging_state_changed.emit(uid, lodging.state)
-		gain_xp(progression_def.xp_lodging_prepared, &"lodging_prepared"), {"uid": uid})
+		gain_xp(progression_def.xp_lodging_prepared, &"lodging_prepared")
+		EventBus.game_event.emit(&"lodging_prepared", get_placement(uid).building.id, 1), {"uid": uid})
 
 
 ## Encaisse la commission d'un séjour terminé, une seule fois par réservation.
@@ -411,6 +460,7 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 	})
 	EventBus.commission_collected.emit(uid, booking.id, amount)
 	gain_xp(progression_def.xp_stay_completed, &"stay_completed")
+	EventBus.game_event.emit(&"commission_collected", &"", 1)
 	EventBus.lodging_state_changed.emit(uid, lodging.state)
 	tick()
 	return Result.success(amount)

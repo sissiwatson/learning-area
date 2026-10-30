@@ -1,9 +1,15 @@
-[gd_resource type="Resource" script_class="NpcDef" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="NpcDef" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://src/defs/npc_def.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/characters/npc_malia.png" id="2_sprite"]
+[ext_resource type="Texture2D" path="res://assets/characters/npc_malia_portrait.png" id="3_portrait"]
 
 [resource]
 script = ExtResource("1_script")
 id = &"npc_malia"
 display_name = "Malia"
 job_key = "JOB_COOK"
+sprite = ExtResource("2_sprite")
+sprite_anchor = Vector2(32, 118)
+portrait = ExtResource("3_portrait")
+ambient_keys = Array[String](["AMB_NPC_MALIA_1", "AMB_NPC_MALIA_2", "AMB_NPC_MALIA_3"])

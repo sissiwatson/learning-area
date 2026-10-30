@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/mahana.tscn" id="2_mahana"]
@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/resource_bar.tscn" id="6_resources"]
 [ext_resource type="Script" path="res://scenes/ui/toast_stack.gd" id="7_toasts"]
 [ext_resource type="Theme" path="res://scenes/ui/theme.tres" id="8_theme"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="9_dialogue"]
+[ext_resource type="PackedScene" path="res://scenes/ui/quest_banner.tscn" id="10_banner"]
+[ext_resource type="Script" path="res://scenes/quest_director.gd" id="11_director"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -21,6 +24,9 @@ script = ExtResource("3_camera")
 script = ExtResource("4_hud")
 
 [node name="ResourceBar" parent="HUD" instance=ExtResource("6_resources")]
+unique_name_in_owner = true
+
+[node name="QuestBanner" parent="HUD" instance=ExtResource("10_banner")]
 unique_name_in_owner = true
 
 [node name="BuildingPanel" parent="HUD" instance=ExtResource("5_panel")]
@@ -39,3 +45,9 @@ grow_horizontal = 2
 mouse_filter = 2
 theme = ExtResource("8_theme")
 script = ExtResource("7_toasts")
+
+[node name="DialogueBox" parent="HUD" instance=ExtResource("9_dialogue")]
+unique_name_in_owner = true
+
+[node name="QuestDirector" type="Node" parent="."]
+script = ExtResource("11_director")

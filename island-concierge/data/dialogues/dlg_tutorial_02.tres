@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="DialogueDef" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/defs/dialogue_def.gd" id="1_script"]
+[ext_resource type="Script" path="res://src/defs/dialogue_line_def.gd" id="2_line"]
+[ext_resource type="Resource" path="res://data/npcs/npc_hina.tres" id="npc_0"]
+
+[sub_resource type="Resource" id="Line_0"]
+script = ExtResource("2_line")
+speaker = ExtResource("npc_0")
+text_key = "DLG_TUTORIAL_02_1"
+
+[sub_resource type="Resource" id="Line_1"]
+script = ExtResource("2_line")
+speaker = ExtResource("npc_0")
+text_key = "DLG_TUTORIAL_02_2"
+
+[sub_resource type="Resource" id="Line_2"]
+script = ExtResource("2_line")
+speaker = ExtResource("npc_0")
+text_key = "DLG_TUTORIAL_02_3"
+
+[resource]
+script = ExtResource("1_script")
+id = &"dlg_tutorial_02"
+lines = Array[ExtResource("2_line")]([SubResource("Line_0"), SubResource("Line_1"), SubResource("Line_2")])

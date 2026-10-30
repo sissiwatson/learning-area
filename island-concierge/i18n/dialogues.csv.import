@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cdakbauhiun13"
+
+[deps]
+
+files=["res://i18n/dialogues.fr.translation"]
+
+source_file="res://i18n/dialogues.csv"
+dest_files=["res://i18n/dialogues.fr.translation"]
+
+[params]
+
+compress=true
+delimiter=0

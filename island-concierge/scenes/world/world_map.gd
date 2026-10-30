@@ -33,6 +33,8 @@ var _locked := {}  # StringName (id de zone) -> bool
 var _badges := {}  # StringName -> LockBadge
 ## uid du placement -> BuildingView
 var buildings := {}
+## id du PNJ -> NpcView
+var npcs := {}
 
 @onready var ground: TileMapLayer = $Ground
 @onready var decor: TileMapLayer = $Objects/Decor
@@ -57,6 +59,7 @@ func build() -> void:
 			ground.set_cell(cell, TERRAIN_SOURCE, TERRAIN_TILES[grid.terrain_at(cell)])
 	_build_decor()
 	_spawn_buildings()
+	_spawn_npcs()
 	_locked.clear()
 	for zone in map_def.zones:
 		_locked[zone.id] = zone.starts_locked
@@ -117,6 +120,39 @@ func _spawn_buildings() -> void:
 		_objects.add_child(view)
 		view.setup(placement, map_local)
 		buildings[placement.uid] = view
+
+
+func _spawn_npcs() -> void:
+	for view in npcs.values():
+		view.free()
+	npcs.clear()
+	for spot in map_def.npc_spots:
+		var view := NpcView.new()
+		_objects.add_child(view)
+		view.setup(spot.npc, ground.map_to_local(spot.cell))
+		npcs[spot.npc.id] = view
+
+
+## Personnage touché par une position monde, ou null.
+func npc_at(world_pos: Vector2) -> NpcView:
+	for view: NpcView in npcs.values():
+		if view.hit_test(world_pos):
+			return view
+	return null
+
+
+## Lance l'arrivée (ou le départ) des voyageurs d'un logement.
+func play_arrival(uid: StringName, reverse := false) -> ArrivalAnimation:
+	var placement: PlacementDef = buildings[uid].placement if buildings.has(uid) else null
+	if placement == null or placement.arrival_path.size() < 2:
+		return null
+	var points := PackedVector2Array()
+	for cell in placement.arrival_path:
+		points.append(ground.map_to_local(cell))
+	var anim := ArrivalAnimation.new()
+	_objects.add_child(anim)
+	anim.play(points, reverse)
+	return anim
 
 
 func _build_decor() -> void:

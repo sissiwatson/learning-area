@@ -10,6 +10,12 @@ var selected: BuildingView
 @onready var panel: BuildingPanel = %BuildingPanel
 @onready var resource_bar: ResourceBar = %ResourceBar
 @onready var toasts: ToastStack = %Toasts
+@onready var dialogue_box: DialogueBox = %DialogueBox
+@onready var quest_banner: QuestBanner = %QuestBanner
+@onready var director: QuestDirector = $QuestDirector
+## Dernier état connu de chaque logement (pour animer les arrivées réelles,
+## pas celles rejouées au chargement d'une sauvegarde).
+var _lodging_states := {}
 
 
 func _ready() -> void:
@@ -32,6 +38,15 @@ func _ready() -> void:
 		signal_ref.connect(func(_a = null, _b = null): refresh_attention())
 	refresh_attention()
 	EventBus.level_up.connect(func(lvl): toasts.show_message(tr("TOAST_LEVEL_UP") % lvl, ResourceBar.LEVEL_ICON))
+	camera.user_panned.connect(func(): EventBus.game_event.emit(&"camera_panned", &"", 1))
+	camera.user_zoomed.connect(func(): EventBus.game_event.emit(&"camera_zoomed", &"", 1))
+	quest_banner.go_requested.connect(focus_building)
+	for uid in GameState.lodgings:
+		_lodging_states[uid] = GameState.lodgings[uid].state
+	EventBus.lodging_state_changed.connect(_on_lodging_state_changed)
+	EventBus.commission_collected.connect(func(uid, _b, _c): map.play_arrival(uid, true))
+	director.setup(dialogue_box, toasts, map)
+	quest_banner.refresh()
 
 
 func select_building(view: BuildingView) -> void:
@@ -42,7 +57,35 @@ func select_building(view: BuildingView) -> void:
 	panel.show_placement(view.placement)
 
 
+## Centre la caméra sur le premier bâtiment de ce type et ouvre son panneau.
+func focus_building(building_id: StringName) -> void:
+	for uid in map.buildings:
+		var view: BuildingView = map.buildings[uid]
+		if view.placement.building.id == building_id:
+			camera.rig.set_zoom(maxf(camera.rig.zoom, 1.0))
+			camera.rig.center_on(view.global_position + Vector2(260, 0))
+			camera.position = camera.rig.position
+			camera.zoom = Vector2.ONE * camera.rig.zoom
+			select_building(view)
+			return
+
+
+func _on_lodging_state_changed(uid: StringName, state: int) -> void:
+	var before: int = _lodging_states.get(uid, -1)
+	_lodging_states[uid] = state
+	if before == Lodging.State.READY and state == Lodging.State.OCCUPIED:
+		map.play_arrival(uid)
+
+
 func _on_map_tapped(world_pos: Vector2) -> void:
+	# Un personnage est dessiné devant les bâtiments : il est prioritaire
+	# (zone de toucher serrée autour de son dessin).
+	var npc := map.npc_at(world_pos)
+	if npc:
+		panel.close_panel()
+		if not director.play_for_npc(npc.npc.id):
+			npc.say_next()
+		return
 	var view := map.building_at(world_pos)
 	if view:
 		select_building(view)
