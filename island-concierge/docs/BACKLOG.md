@@ -187,7 +187,7 @@ situations/décisions D4–D5, calendrier D1, journal comptable E1).
 
 | Statut | Étape | Dépend de |
 |--------|-------|-----------|
-| ⬜ | X1 · Services vendus aux voyageurs (excursion avec Tao, dîner chez Malia, transferts) | N9, E1 |
+| ⬜ | X1 · Services vendus aux voyageurs — détaillé par le lot T | N9, E1 |
 | ⬜ | X2 · Investissements (boîte à clés, linge de qualité, véhicule, outillage) | E1 |
 | ⬜ | X3 · Partenariats (bateau, restaurants, artisans) | X1, M1 |
 | ⬜ | X4 · Acquisition de biens : propriétaire-investisseur (revenus, travaux, vacance) | E4, M2 |
@@ -199,6 +199,72 @@ situations/décisions D4–D5, calendrier D1, journal comptable E1).
 | 🟡 | V1 · Animations d'ambiance : **commencé en V0.1** (personnages qui se balancent, bateau de Tao, voyageurs qui marchent) ; à poursuivre en V0.2 (promeneurs, autres bateaux, eau) — mesurées sur appareil d'entrée de gamme | — |
 | ⬜ | V2 · Habitants et commerces qui évoluent selon les choix | N2, D3 |
 | ⬜ | V3 · Événements culturels (Fête des Lumières) et activités | D1, N10 |
+
+### Introduction et identité du joueur (lot O) — proposition
+
+Conception : `GAME_VISION.md` §4.8, script `NARRATIVE.md` §11.
+
+| Statut | Étape | Dépend de | Version |
+|--------|-------|-----------|---------|
+| ⬜ | O1 · Lecteur de scènes (`CutsceneDef` : caméra, dialogue, cartes, saisie) | 10b | V0.2 |
+| ⬜ | O2 · Introduction de Mahana (passable, jouée une fois, rejouable, marqueur sauvegardé) | O1, 9 | V0.2 |
+| ⬜ | O3 · Nom de la conciergerie (saisie, validation, affichage, modification) | O1 | V0.2 |
+| ⬜ | O4 · Avatar du joueur | O3 | V0.4 |
+
+### Accueil : gammes de paniers (lot A) — proposition
+
+Conception : `GAME_VISION.md` §4.9. La recette V0.1 reste en place.
+
+| Statut | Étape | Dépend de | Version |
+|--------|-------|-----------|---------|
+| ⬜ | A1 · Gammes de paniers en données ; la recette actuelle devient « Panier de fruits » | 8 | V0.2 |
+| ⬜ | A2 · Migration de sauvegarde v1 → v2 (`welcome_basket` → gamme « fruits »), testée | A1, 9 | V0.2 |
+| ⬜ | A3 · Gamme « Bienvenue » (corbeille, fruits, fleur) | A1, C1, F1 | V0.2 |
+| ⬜ | A4 · Effets des gammes sur la satisfaction | A1, R3 | V0.3 |
+| ⬜ | A5 · Gammes « Découverte » et « Prestige », vente en supplément (marge) | A4, B1, C2 | V0.3 |
+| ⬜ | A6 · Attentes de gamme selon les profils voyageurs | A4, B3 | V0.3 |
+
+### Ressources et artisanat (lot C) — proposition
+
+Conception : `GAME_VISION.md` §4.10 ; fiches `NARRATIVE.md` §12.
+
+| Statut | Étape | Dépend de | Version |
+|--------|-------|-----------|---------|
+| ⬜ | C1 · Ressources : noix de coco, papayes, fleurs, fibres (achat au marché d'abord) | F1 | V0.2 |
+| ⬜ | C2 · Ateliers de Kimo : corbeille tressée, couronne de fleurs | C1 | V0.3 |
+| ⬜ | C3 · Savons et huiles parfumées (nouveau lieu) | C2 | V0.4 |
+| ⬜ | C4 · Fiches pédagogiques sourcées (N13), jamais livrées en `DRAFT` | N6 | V0.3 |
+| ⬜ | C5 · Stocks et capacités de production | C2, D1 | V0.4 |
+
+### Faire / déléguer / acheter (lot F) — proposition
+
+| Statut | Étape | Dépend de | Version |
+|--------|-------|-----------|---------|
+| ⬜ | F1 · Marché de Malia : achat de matières (prix, stock quotidien) | E1, D1 | V0.2 |
+| ⬜ | F2 · Délégation à un habitant (rémunération, capacité, qualité, relation) | F1, N2 | V0.3 |
+| ⬜ | F3 · Comparateur dans le panneau : coût, temps, qualité, effets | F1–F2 | V0.3 |
+| ⬜ | F4 · Partenariats locaux (contrats à prix fixe) | F3, X3 | V0.4 |
+
+### Expériences touristiques (lot T) — proposition
+
+Conception : `GAME_VISION.md` §4.11. Détaille et remplace X1.
+
+| Statut | Étape | Dépend de | Version |
+|--------|-------|-----------|---------|
+| ⬜ | T1 · Activités en données (tarif, coût, prestataire, durée, marge, effet, capacité) vendues en option d'une réservation | 7, E1 | V0.2 |
+| ⬜ | T2 · Balade botanique (Hina) et rencontre au marché (Malia) | T1 | V0.2 |
+| ⬜ | T3 · Atelier de vannerie (Kimo) et dîner chez Malia | T1, C2 | V0.3 |
+| ⬜ | T4 · Excursion au lagon (Tao) | T1 | V0.3 |
+| ⬜ | T5 · Massage aux huiles parfumées (nouvelle praticienne fictive) | T1, C3 | V0.4 |
+| ⬜ | T6 · Effets des expériences sur la satisfaction | T1, R3 | V0.3 |
+
+### Vie de l'île — suite (lot V)
+
+| Statut | Étape | Version |
+|--------|-------|---------|
+| ⬜ | V1b · Promeneurs sur les chemins, autres bateaux au loin, mouettes | V0.2 |
+| ⬜ | V1c · Étal de Malia sur le quai, voyageurs visibles sur la terrasse pendant le séjour | V0.2 |
+| ⬜ | V1d · Habitants qui vont et viennent selon l'heure (calendrier D1) | V0.3 |
 
 ### Monétisation future (lot $) — V1.0 au plus tôt
 
@@ -217,9 +283,9 @@ réputation achetée, accélérations plafonnées, transparence).
 | Version | Contenu | Condition de passage |
 |---------|---------|----------------------|
 | **V0.1** « Premier séjour » | Étapes 0–12 ci-dessus : boucle simple, XP et niveaux, quêtes de Hina, animation de production, tiki bar | Tests verts + recette Android |
-| **V0.2** « Le métier de concierge » | S1–S3, I1, E1–E2 (charges par séjour, marge), R1–R6, B1–B4, décoration, N6–N7 | Tests verts + recette Android |
-| **V0.3** « L'entreprise » | P1–P4, M1–M4, E3–E4 (charges fixes, trésorerie, tableau de bord), X1, I2–I5, Bungalow Corail | Tests verts + recette Android |
-| **V0.4** « L'investisseur et l'île vivante » | X2–X4, V1–V3, D1–D10 (« L'avenir de la baie »), R7–R13, N8–N10 | Tests verts dont non-dominance + recette Android |
+| **V0.2** « Le métier de concierge » | O1–O3, A1–A3, C1, F1, T1–T2, V1b–V1c, S1–S3, I1, E1–E2 (charges par séjour, marge), R1–R6, B1–B4, décoration, N6–N7 | Tests verts (294 tests V0.1 compris) + simulation « un tiers d'actions de production au plus » + recette Android |
+| **V0.3** « L'entreprise » | A4–A6, C2, C4, F2–F3, T3–T4, T6, V1d, P1–P4, M1–M4, E3–E4 (charges fixes, trésorerie, tableau de bord), I2–I5, Bungalow Corail | Tests verts + recette Android |
+| **V0.4** « L'investisseur et l'île vivante » | C3, C5, F4, T5, O4, X2–X4, V2–V3, D1–D10 (« L'avenir de la baie »), R7–R13, N8–N10 | Tests verts dont non-dominance + recette Android |
 | **V0.5** « L'archipel » | N11–N12, R14 | Relecture culturelle des fiches |
 | **V1.0** | Équilibrage, accessibilité, monétisation éthique ($1–$4) si décidée | Simulation sans achat validée |
 
@@ -228,6 +294,7 @@ réputation achetée, accélérations plafonnées, transparence).
 - 💡 Retour haptique au tap sur Android (`Input.vibrate_handheld`), à évaluer sur appareil.
 - 💡 Recentrer la caméra sur le bâtiment sélectionné quand le panneau le masque.
 - 💡 Mettre à l'échelle le seuil de tap selon la densité de l'écran (`DisplayServer.screen_get_dpi`).
+- 💡 V0.2 chargée : si nécessaire, la scinder en V0.2 (introduction, paniers, marché, expériences simples, vie de l'île) et V0.2.5 (situations, incidents, réputation).
 - 💡 Bulles des personnages : éviter qu'elles passent sous le bandeau d'objectif.
 - 💡 Message au joueur après une sauvegarde récupérée ou réinitialisée (toast), quand le système de notifications existera.
 - 💡 Destinées : durée d'un jour de jeu (temps réel ou cycles d'activité) à décider avant D1.

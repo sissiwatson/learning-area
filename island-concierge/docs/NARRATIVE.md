@@ -62,7 +62,9 @@ missions narratives.
   tourisme encore discret.
 - **Le panier de bienvenue** : coutume de l'île — tout visiteur reçoit des
   fruits du jardin de son hôte. C'est l'origine fictive du panier d'accueil
-  de la boucle de jeu.
+  de la boucle de jeu. Dans sa forme complète (proposition, `GAME_VISION.md`
+  §4.9), il réunit une corbeille tressée par Kimo, des fruits, des fleurs et
+  parfois un produit artisanal ; cette composition est une **fiction du jeu**.
 - **Le quai et son marché** : cœur de la vie quotidienne, où arrivent les
   bateaux et où l'on vend poisson, fruits et objets tressés.
 - **La Fête des Lumières du Lagon** : festival annuel inventé, où les
@@ -303,7 +305,58 @@ tutoriel.
 | N10 | **Missions culturelles de Mahana** (une par catégorie) | Toutes atteignables (test de graphe) ; fiches associées |
 | N11 | **Cadre multi-destinations** (`DestinationDef`, changement de carte) | Une 2ᵉ destination de test se charge sans changer le code |
 | N12 | **Première destination réelle** | Fiches sourcées et relues ; aucune fiche `DRAFT` livrée |
+| N13 | **Fiches de l'artisanat** (§12) | Chaque fiche publiée a sa nature et ses sources complètes ; test de données bloquant sinon |
 
 Insertion recommandée : N1–N5 remplacent l'étape « Progression et quêtes »
 de la V0.1 (tutoriel avec Hina) ; N6–N7 dans la V0.1 avec 3 fiches ; N8–N10
 en V0.2 ; N11–N12 en V0.3.
+
+---
+
+## 11. Introduction interactive (proposition, lot O)
+
+> Statut : **proposition à valider**. Remplace le premier dialogue de Tao.
+> Durée cible : environ 90 secondes ; passable à tout moment ; jouée une
+> seule fois (rejouable depuis les réglages).
+
+| # | Plan | Ce que voit / fait le joueur | Réplique (personnages fictifs) |
+|---|------|------------------------------|--------------------------------|
+| 1 | Large, au loin | Le bateau de Tao glisse sur le lagon ; l'île apparaît | **Tao** : « Là-bas, c'est Mahana. Petite île, grand cœur. » |
+| 2 | La caméra survole l'île | Plage, plantation, bungalow, quai (la caméra se déplace seule ; un toucher accélère) | **Tao** : « Des pêcheurs, des artisans, des cuisiniers… et de plus en plus de voyageurs. » |
+| 3 | Le quai | Hina attend, bras croisés, sourire en coin | **Hina** : « Tu es la personne dont tout le monde parle ? Celle qui veut ouvrir une conciergerie ? » |
+| 4 | Cartes de mission | 4 cartes illustrées apparaissent une à une : **rentable**, **accueillir**, **collaborer**, **préserver** | **Hina** : « Ici, une conciergerie doit faire vivre son patron… et l'île avec. » |
+| 5 | Le nom | Champ de saisie « Nom de votre conciergerie » (proposition : « Conciergerie du Lagon ») ; bouton « C'est parti » | **Hina** : « Et comment s'appellera-t-elle, ta conciergerie ? » |
+| 6 | Transition | Hina répète le nom choisi ; enchaînement sur la quête « Arrivée au quai » | **Hina** : « [Nom]… Ça sonne bien. Mon bungalow sera votre premier client. » |
+
+Règles :
+- **Passer l'introduction** : nom par défaut appliqué, quête « Arrivée au
+  quai » démarrée, marqueur « introduction vue » sauvegardé.
+- Nom : 3 à 24 caractères, lettres, chiffres, espaces, apostrophes et traits
+  d'union ; espaces superflus retirés ; liste de mots refusés ; modifiable
+  plus tard. Jamais d'avantage de jeu lié au nom.
+- Accessibilité : texte lisible (≥ 34 px), pas de son indispensable,
+  animation de caméra réduite si l'option « réduire les animations » est
+  activée.
+- Données : `CutsceneDef` (étapes : mouvement de caméra, dialogue, cartes,
+  saisie) jouée par un lecteur générique, réutilisable pour d'autres
+  scènes (arrivée sur une nouvelle île).
+
+## 12. Fiches pédagogiques de l'artisanat (proposition, lots C et N)
+
+Chaque activité d'artisanat ou d'expérience a une fiche du carnet :
+**origine, usage, fabrication**, plus sa nature et ses sources. Les faits
+réels sont séparés du récit de Mahana. **Aucune source n'est inventée** :
+une fiche reste en `DRAFT` (non livrée) tant que ses sources ne sont pas
+vérifiées et relues.
+
+| Fiche | Nature | Contenu prévu | Sources à réunir avant publication |
+|-------|--------|---------------|-------------------------------------|
+| La corbeille de Kimo | FICTION + INSPIRED | Récit : Kimo et l'atelier familial (fiction). Contexte réel : vannerie de feuilles de cocotier et de pandanus dans les îles du Pacifique, préparation des fibres (séchage, refente), techniques de tressage | ouvrages d'ethnologie, collections de musées (vannerie océanienne) |
+| La couronne de fleurs | INSPIRED | Usage décoratif et festif des couronnes de fleurs en Polynésie ; choix des fleurs ; précautions : ne pas réduire une pratique culturelle à un objet touristique | ouvrages et institutions culturelles polynésiennes ; relecture par une personne du territoire |
+| Le savon à l'huile de coco | FACT (technique) | Principe de la saponification ; rôle de l'huile de coco ; sécurité (manipulation de la soude, réservée aux adultes, aucun mode opératoire détaillé dans le jeu) | ressources pédagogiques de chimie, organismes de sécurité |
+| L'huile parfumée aux fleurs | INSPIRED | Macération de fleurs dans l'huile de coco, pratique réelle de Polynésie ; mention des appellations protégées existantes sans les utiliser comme nom de produit du jeu | textes officiels sur l'appellation, ouvrages sur les plantes polynésiennes |
+| Le panier de bienvenue | FICTION | Coutume de Mahana (§2) | aucune (badge « Fiction du jeu ») |
+| Le jardin de Hina (balade botanique) | FICTION + FACT | Récit du jardin (fiction) ; fiches botaniques réelles : hibiscus, frangipanier, cocotier, papayer (origine, usages) | flores et jardins botaniques reconnus |
+
+Personnages ajoutés plus tard : une **praticienne de massage** (fictive,
+V0.4), dont la fiche suivra le même gabarit que les autres PNJ (§3).

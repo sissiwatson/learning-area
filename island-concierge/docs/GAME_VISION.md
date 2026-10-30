@@ -38,6 +38,10 @@ qu'occuper (attendre, taper) doit être raccourcie, automatisée ou retirée.
   temps) et payer (coûte, libère du temps). C'est une décision de gestion.
 - Les durées restent courtes et les taps peu nombreux ; une animation donne
   le retour visuel attendu (V0.1).
+- **Faire, déléguer ou acheter** (§4.10) : pour chaque production ou service,
+  le joueur choisit entre le faire lui-même, le confier à un habitant
+  rémunéré, ou l'acheter. La production devient une décision de gestion,
+  jamais une corvée obligatoire.
 
 ## 4. Axes de simulation
 
@@ -94,6 +98,83 @@ décisions (`ARCHIPELAGO_DESTINIES.md`).
 ### 4.7 Monétisation future (lot $)
 Voir §6 : principes non négociables.
 
+> Les sections 4.8 à 4.11 sont des **propositions à valider** (extension du
+> game design, aucune implémentation) ; découpage au §8 et dans `BACKLOG.md`.
+
+### 4.8 Introduction et identité du joueur (lot O)
+- **Introduction interactive courte** (environ 90 s) : le bateau de Tao
+  approche Mahana, Tao présente l'île, Hina accueille le joueur sur le quai
+  et lui confie sa mission. Script dans `NARRATIVE.md` §11.
+- **La mission en quatre idées**, montrées en cartes illustrées : créer une
+  conciergerie rentable, accueillir les voyageurs, collaborer avec les
+  habitants, préserver l'île.
+- **Nom de la conciergerie** choisi par le joueur (proposition par défaut,
+  modifiable plus tard dans les réglages) ; il apparaît dans les dialogues,
+  les avis et le tableau de bord. **Avatar** personnalisable plus tard.
+- **Passable** à tout moment (le nom par défaut s'applique) et **jouée une
+  seule fois** (marqueur sauvegardé) ; rejouable depuis les réglages sans
+  toucher à la progression. Elle remplace le premier dialogue de Tao et
+  enchaîne sur la quête « Arrivée au quai ».
+
+### 4.9 Accueil : les paniers repensés (lot A)
+Le panier d'accueil devient un **produit composé**, cohérent et gradué :
+contenant tressé, fruits, fleurs, produits artisanaux.
+
+| Gamme | Composition (proposition) | Coût des matières* | Temps | Effet sur la satisfaction (critère « expérience ») | Vente possible en supplément |
+|-------|---------------------------|-------------------:|-------|-------------------------|-----------------------------|
+| **Panier de fruits** (recette V0.1 conservée) | 3 ananas | 0 (récolte) | 1 min | évite le malus « pas de panier » | non |
+| **Bienvenue** | 1 corbeille tressée, 2 fruits, 1 fleur | 12 | 2 min | +0,10 | non |
+| **Découverte** | corbeille, 3 fruits, 2 fleurs, 1 savon | 30 | 3 min | +0,20 | oui (50 ⇒ marge 20) |
+| **Prestige** | corbeille, fruits, couronne de fleurs, huile parfumée, carte manuscrite | 60 | 4 min | +0,30 ; attendu par les profils premium | oui (100 ⇒ marge 40) |
+
+\* équivalent en coquillages si les matières sont achetées ; valeurs à
+équilibrer. Les bonus compensent des malus d'autres faits du séjour sans
+jamais dépasser 5,00 (`REPUTATION.md`).
+
+**Transition sans casser la V0.1** : la recette « 3 ananas → 1 panier »
+reste en place et devient la gamme « Panier de fruits » ; l'objet
+`welcome_basket` des sauvegardes existantes est converti par une migration
+de sauvegarde testée (version 1 → 2).
+
+### 4.10 Ressources, artisanat et « faire / déléguer / acheter » (lots C et F)
+- **Nouvelles ressources** : noix de coco, papayes, fleurs (hibiscus,
+  frangipanier), fibres végétales séchées ; **produits artisanaux** :
+  corbeille tressée, couronne de fleurs, savon, huile parfumée.
+- **Activités** : vannerie, couronnes de fleurs, savons, huiles parfumées,
+  compositions d'accueil. Chacune a une **fiche pédagogique** (origine,
+  usage, fabrication) avec sa nature FICTION / INSPIRED / FACT et des
+  **sources fiables** pour tout fait culturel (`NARRATIVE.md` §12).
+- **Peu de bâtiments de production** : une cocoteraie et un jardin de fleurs
+  au plus en V0.3 ; le reste s'achète ou se délègue.
+- **Faire / déléguer / acheter**, pour chaque production ou service :
+
+| Choix | Coût | Temps du joueur | Qualité | Autres effets |
+|-------|------|-----------------|---------|---------------|
+| Faire soi-même | matières seulement | minuteur + taps | standard | XP |
+| Déléguer (ex. Kimo) | rémunération à l'unité | aucun | supérieure | relation + ; capacité limitée par jour |
+| Acheter (ex. marché de Malia) | prix de vente | aucun | standard | stock limité par jour ; économie locale + |
+
+  Introduction progressive : matériel, rémunérations, stocks, capacités de
+  production, bénéfices, partenariats locaux (contrats à prix fixe).
+
+### 4.11 Expériences touristiques (lot T)
+Activités vendues aux voyageurs en option de leur séjour. Chacune a un
+**tarif**, un **coût**, un **prestataire** éventuel, une **durée**, une
+**marge** et un **effet** sur la satisfaction ; capacité limitée par jour.
+
+| Activité (proposition) | Prestataire | Durée | Tarif | Coût | Marge | Effet |
+|------------------------|-------------|-------|------:|-----:|------:|-------|
+| Balade botanique | Hina | 3 min | 60 | 20 | 40 | expérience +0,15 ; fiche botanique |
+| Rencontre au marché | Malia | 2 min | 0 | 0 | 0 | patrimoine et communauté + ; relation + |
+| Atelier de vannerie | Kimo | 3 min | 80 | 50 | 30 | expérience +0,20 |
+| Dîner chez Malia | Malia | 4 min | 100 | 60 | 40 | expérience +0,25 |
+| Excursion au lagon | Tao | 5 min | 150 | 90 | 60 | expérience +0,30 |
+| Massage aux huiles parfumées | praticienne (nouveau personnage fictif, V0.4) | 2 min | 120 | 70 | 50 | confort +0,10, expérience +0,10 |
+
+Toutes les valeurs sont des données à équilibrer ; les activités réutilisent
+les services des PNJ (`NARRATIVE.md` §3) et le moteur de réservation (une
+option s'ajoute à une réservation, pas de système parallèle).
+
 ## 5. Situations réalistes à plusieurs solutions
 
 Moteur unique de **situations** (données) : déclencheur, contexte, options
@@ -136,6 +217,27 @@ Aucune monétisation dans la V0.x de prototype. Quand elle viendra :
 5. **Mineurs et dépenses** : contrôle parental et limites de dépense
    respectés ; aucun achat dans le prototype ni dans les tests.
 
+## 6 bis. Contraintes de conception (proposition)
+
+Règles vérifiables, à respecter par chaque extension :
+
+1. **Pas un clone de FarmVille** : sur une session type de 10 minutes, la
+   production (lancer, attendre, récolter) représente au plus un tiers des
+   actions ; mesuré par simulation à chaque version.
+2. **Décisions plutôt que récoltes répétitives** : toute matière première
+   peut être achetée ou déléguée dès qu'elle devient nécessaire ; pas
+   d'arrosage, pas de récolte qui pourrit, pas de vente de récoltes comme
+   boucle principale.
+3. **Production au service de l'accueil** : chaque ressource sert un panier,
+   une décoration ou une expérience vendue.
+4. **Fiction étiquetée** : aucune tradition inventée n'est présentée comme
+   un fait historique ; faits sourcés, fiches non sourcées jamais livrées.
+5. **Pas de pay-to-win** (§6) : aucune accélération sur les expériences, les
+   avis, la réputation ou les relations.
+6. **Non-régression** : les fonctionnalités existantes et leurs tests (294 à
+   la fin de la V0.1) restent verts ; toute conversion de données passe par
+   une migration de sauvegarde testée.
+
 ## 7. Architecture
 
 - **Données** : situations, options, personnel, propriétaires, mandats,
@@ -154,9 +256,9 @@ Aucune monétisation dans la V0.x de prototype. Quand elle viendra :
 | Version | Thème | Contenu | Ce qu'on garde hors champ |
 |---------|-------|---------|---------------------------|
 | **V0.1** « Premier séjour » | Une boucle simple et jouable, une île qui vit déjà | Carte, caméra, bungalow, réservations, productions, sauvegarde, XP et niveaux, quêtes de Hina (dialogues passables), **personnages visibles et bavards, bateau de Tao, voyageurs qui arrivent**, animation de production, tiki bar, finitions | réputation, charges, incidents, personnel ; dans le tutoriel, la décoration, la demande de voyageurs et l'avis détaillé passent en V0.2 |
-| **V0.2** « Le métier de concierge » | Apprendre les réalités du terrain | Île plus vivante (promeneurs, autres bateaux, étal de Malia, voyageurs sur la terrasse pendant le séjour) ; moteur de situations ; 3 premiers incidents (chauffe-eau, arrivée tardive, ménage en retard) ; charges par séjour (ménage, linge, consommables) et marge par séjour ; réputation (avis, période d'essai de 5 avis) ; décision de décoration ; cartes de demande de réservation | personnel, mandats, investissements |
-| **V0.3** « L'entreprise » | Développer une entreprise rentable | Personnel (recrutement, planning, qualité, paiements) ; relations propriétaires (prospection, négociation, mandats, fidélisation) ; charges fixes, trésorerie et tableau de bord ; services (excursion avec Tao, dîners chez Malia) ; Bungalow Corail et Côte Est | acquisition de biens, Destinées |
-| **V0.4** « L'investisseur et l'île vivante » | Devenir propriétaire-investisseur | Investissements et acquisition de biens ; partenariats ; vie de l'île (bateaux, habitants, événements) ; Destinées de l'archipel (« L'avenir de la baie ») | multi-destinations |
+| **V0.2** « Le métier de concierge » | Apprendre les réalités du terrain | **Introduction interactive et nom de la conciergerie** ; **gammes de paniers « fruits » et « Bienvenue »** (migration testée) ; **achat au marché de Malia** ; **2 expériences simples** (balade botanique, rencontre au marché) ; île plus vivante (promeneurs, autres bateaux, étal de Malia, voyageurs sur la terrasse pendant le séjour) ; moteur de situations ; 3 premiers incidents (chauffe-eau, arrivée tardive, ménage en retard) ; charges par séjour (ménage, linge, consommables) et marge par séjour ; réputation (avis, période d'essai de 5 avis) ; décision de décoration ; cartes de demande de réservation | personnel, mandats, investissements |
+| **V0.3** « L'entreprise » | Développer une entreprise rentable | Paniers « Découverte » et « Prestige » et leurs effets ; noix de coco, papayes, fleurs, fibres ; ateliers de Kimo (vannerie, couronnes) ; **délégation** et comparateur faire / déléguer / acheter ; expériences vannerie, dîner, excursion ; fiches pédagogiques sourcées ; personnel (recrutement, planning, qualité, paiements) ; relations propriétaires (prospection, négociation, mandats, fidélisation) ; charges fixes, trésorerie et tableau de bord ; services (excursion avec Tao, dîners chez Malia) ; Bungalow Corail et Côte Est | acquisition de biens, Destinées |
+| **V0.4** « L'investisseur et l'île vivante » | Devenir propriétaire-investisseur | Savons et huiles parfumées, stocks et capacités, partenariats locaux ; massage (nouvelle praticienne) ; avatar du joueur ; investissements et acquisition de biens ; partenariats ; vie de l'île (bateaux, habitants, événements) ; Destinées de l'archipel (« L'avenir de la baie ») | multi-destinations |
 | **V0.5** « L'archipel » | Plusieurs destinations | Seconde destination ; première destination inspirée d'un lieu réel (fiches sourcées) | — |
 | **V1.0** | Équilibrage, accessibilité, monétisation éthique (si décidée) | Perles, packs décoratifs, conforts, extensions selon §6 | — |
 
