@@ -1,5 +1,9 @@
 # Scénario des dix premières minutes — « Le bungalow de Hina »
 
+> **V0.1 : version allégée** — séquences 1 à 4, 6, 7, 9 et 10 ; la décoration
+> (5), la demande des voyageurs (8) et l'avis détaillé arrivent en V0.2
+> (`GAME_VISION.md` §8). L'économie du tutoriel (50 → 170 → 20) est inchangée.
+>
 > Statut : **principe validé ; version 2** (progression par actions, dialogues
 > accélérables, décision de décoration, économie détaillée).
 > Personnages et lieux fictifs. Conception générale : [`NARRATIVE.md`](NARRATIVE.md).

@@ -343,7 +343,7 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 8  | **Productions** | `Producer` (emplacements à minuteurs), plantation d'ananas, atelier (panier), panier exigé pour préparer, livraison automatique | Tests minuteurs, capacité, taps répétés, application fermée, production pendant un séjour | ✅ (non testé sur appareil) |
 | 9  | **Sauvegarde** | `SaveManager` : JSON versionné, écriture atomique + secours, arrière-plan, rattrapage des minuteurs, corruption, migrations ; temps de jeu monotone | Tests avec horloge simulée ; relance conserve l'état | ✅ (non testé sur appareil) |
 | R3–R4 | **Réputation : séjours notés** | journal de séjour, règles, avis publié en fin de séjour | Séjour parfait = 5,00 ; sans panier = note attendue | à faire |
-| 10 | **Progression & tutoriel narratif** | XP, niveaux, toasts ; N1–N5 : conditions/effets, PNJ et relations, dialogues, quêtes narratives, tutoriel avec Hina (voir `NARRATIVE.md`) | Test de bout en bout du tutoriel ; partie jouée à la main | à faire |
+| 10 | **Progression & quêtes de Hina** (10a XP et niveaux, 10b quêtes et tutoriel allégé, 10c animation de production) | XP, niveaux, toasts ; N1–N5 : conditions/effets, PNJ et relations, dialogues, quêtes narratives, tutoriel avec Hina (voir `NARRATIVE.md`) | Test de bout en bout du tutoriel ; partie jouée à la main | à faire |
 | N6–N7 | **Carnet de voyage et validation de contenu** | 3 fiches de Mahana, test de cohérence des références | Récompenses uniques ; données cassées détectées | à faire |
 | R5–R6 | **Réputation : effets et redressement** | offres par palier, missions | Jamais 0 offre ; scénario de récupération | à faire |
 | 11 | **Tiki bar** | Chantier → construction → bâtiment | `test_full_loop` jusqu'au tiki bar | à faire |
@@ -550,3 +550,14 @@ Demandes de réservation enrichies (statuts, expiration, profils voyageurs) :
 | Horloge système reculée | le temps de jeu (`GameState.now`) ne recule jamais : progression en pause jusqu'à ce que l'horloge dépasse la dernière valeur vue ; rien n'est annulé ni rejoué |
 | Horloge système avancée | les minuteurs se terminent, mais chacun une seule fois ; pas de production répétée ; offres plafonnées. Limite assumée pour V0.1 (pas de serveur de temps) |
 | Tests | `SaveManager` désactivé par le crochet GUT (`tests/helpers/pre_run_hook.gd`) ; les tests de sauvegarde utilisent leur propre dossier |
+
+## 20. Identité : simulation entrepreneuriale
+
+Vision de référence : [`GAME_VISION.md`](GAME_VISION.md). Le cœur du jeu est la
+décision, la relation client, la rentabilité et le développement de
+l'entreprise ; la production est secondaire. Les futurs systèmes (finances,
+personnel, propriétaires, incidents, développement, vie de l'île) reposent
+sur un **moteur unique de situations à options** partagé avec les grandes
+décisions des Destinées, sur le moteur de conditions et d'effets du lot N et
+sur un journal comptable catégorisé : aucun système parallèle, tout en
+données, chaque règle testée.
