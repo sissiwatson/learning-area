@@ -28,7 +28,7 @@ personnel sont en V0.2 et au-delà.
 | ✅ 🧪 | 10c · Première animation de production (plantation en 3 stades, anneau de progression, « +3 » et « +120 » flottants, rebond) | Sur appareil : fluidité et lisibilité |
 | ✅ 🧪 | 11 · Tiki bar (niveau 2, 150 coquillages, 5 min, chantier remplacé par le tiki bar, fin du tutoriel) | Sur appareil : parcours complet du tutoriel |
 | ✅ 🧪 | 12 · Finitions V0.1 : audit UX (3 formats d'écran), recette de stabilité (aléatoire, singe, endurance), cadrage initial U1, crédits — voir `STABILITY_V0.1.md` | **Validation technique provisoire** (votre décision), sous réserve de la recette n°4. Retour 0.1.5 : le jeu fonctionne ; attentes trop longues pendant les séjours → 0.1.6 « Rythme ». Points de la recette n°4 non encore renseignés |
-| ⬜ | 0.1.6 · Rythme : accélérations facultatives (lot Z1–Z4) — voir `PACING_AND_SPEEDUPS.md` | Proposition à valider avant le code |
+| 🔜 | 0.1.6 · Rythme : accélérations équilibrées et activités pendant les séjours (lots 1 à 7) — plan d'exécution `PLAN_V0.1.6.md` | Lot 1 présenté, en attente de votre accord |
 
 Reporté en V0.2 : réputation R1–R6, carnet N6–N7, décision de décoration,
 demande de voyageurs et avis détaillé du tutoriel (séquences 5 et 8).
@@ -289,8 +289,9 @@ Conception : [`PACING_AND_SPEEDUPS.md`](PACING_AND_SPEEDUPS.md).
 | ⬜ | Z1 · Règles d'accélération pures (barème en données, paliers, refus, idempotence, sauvegarde, horloge) | 7, 9 | 0.1.6 |
 | ⬜ | Z2 · « Avancer le temps » dans le panneau du séjour ; accélération offerte une seule fois dans le tutoriel | Z1 | 0.1.6 |
 | ⬜ | Z3 · Renfort de ménage et équipe renforcée (chantiers) | Z1 | 0.1.6 |
-| ⬜ | Z4 · Mesure des temps morts (≤ 90 s sur 30 min) dans la simulation de session | 0.2 (V0.2) | V0.2 |
-| ⬜ | Z5 · Demandes des voyageurs pendant le séjour, version légère (commentaire et historique) | Z4, N1 | V0.2 |
+| ⬜ | Z4 · Mesure des temps morts (≤ 90 s sur 30 min) dans une simulation de session | — | 0.1.6 (avancé) |
+| ⬜ | Z5 · Demandes des voyageurs pendant le séjour, version légère (commentaire et historique) | Z4, N1 | 0.1.6 (avancé) |
+| ⬜ | Z6 · Quêtes parallèles du premier séjour : « Les habitants de Mahana », « Un panier d'avance » | Z4, 10b | 0.1.6 |
 
 ### Direction artistique 3D et prototype (lot G) — proposition
 
@@ -341,7 +342,7 @@ Plan détaillé de la V0.2 en lots testables (proposition) : [`PLAN_V0.2.md`](PL
 | Version | Thème | Contenu | Condition de passage |
 |---------|-------|---------|----------------------|
 | **V0.1** « Premier séjour » | Boucle simple et jouable | Étapes 0–12 | Tests verts + recette de stabilité + recette Android |
-| **0.1.6** « Rythme » (proposé) | Moins d'attente | Z1–Z3 | Tests verts + recette Android |
+| **0.1.6** « Rythme » (validé) | Moins d'attente, sans devoir payer | Z1–Z6 (`PLAN_V0.1.6.md`) | Tests verts + critère des 90 s + recettes Android 0.1.6-a1 et 0.1.6 |
 | **Prototype 3D** (proposé, isolé) | Valider la direction artistique | G-P0 à G-P8 | Recette Android du prototype + décision |
 | **V0.2** « Immersion et découverte » | Donner envie de jouer, faire vivre l'île | O1–O3 (introduction, nom), V1b–V1c (habitants et voyageurs qui se déplacent), F1 (marché de Malia), A1–A3 (paniers réalistes, migration), C1 (ressources achetées au marché), T1–T2 (premières expériences), C4 partiel + N6 (premières fiches pédagogiques) | Tests verts (non-régression V0.1) + simulation « production ≤ un tiers des actions » + recette Android |
 | **V0.2.5** « Réalités du métier » | La gestion au centre | S1–S3 et I1 (premiers incidents), R1–R6 (avis et réputation), E1–E2 (charges par séjour), bilan financier (chiffre d'affaires propriétaires, commission, coûts, marge), premières décisions à conséquences (décoration, situations), B1–B4 | Tests verts + recette Android |

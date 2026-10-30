@@ -53,6 +53,10 @@ symptôme tout de suite ; les activités (§5) traitent la cause en V0.2.
 
 ### 2.2 Paliers proposés (valeurs à équilibrer)
 
+> **Remplacé** par le barème équilibré de [`PLAN_V0.1.6.md`](PLAN_V0.1.6.md) §2
+> (20 % de la commission au plus, prix cumulatif, paliers « Une nuit passe » et
+> « Fin du séjour »). Le texte ci-dessous est la première proposition.
+
 Prix = **4 coquillages par minute restante entamée**, soit environ un tiers
 de ce que le séjour rapporte par minute (10 à 12).
 
