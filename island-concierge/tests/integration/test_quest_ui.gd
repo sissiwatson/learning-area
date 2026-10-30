@@ -203,6 +203,16 @@ func test_overlays_keep_their_screen_size() -> void:
 	assert_almost_eq(ring.scale.x * cam.rig.zoom, WorldMap.OVERLAY_SCREEN_SCALE, 0.001)
 
 
+## « Y aller » recadre la caméra : les étiquettes suivent le nouveau zoom.
+func test_go_button_framing_keeps_overlays_screen_sized() -> void:
+	main.frame_island(Vector2(1920, 1080))
+	assert_lt(main.camera.rig.zoom, 1.0, "vue d'ensemble dézoomée")
+	main.focus_building(&"amenities_workshop")
+	assert_almost_eq(main.camera.zoom.x, 1.0, 0.001)
+	var badge: Node2D = main.map.get_node("LockBadges").get_child(0)
+	assert_almost_eq(badge.scale.x * main.camera.zoom.x, WorldMap.OVERLAY_SCREEN_SCALE, 0.001)
+
+
 func test_initial_framing_shows_the_whole_island_on_every_screen_shape() -> void:
 	for view in [Vector2(1920, 1080), Vector2(2400, 1080), Vector2(1920, 1440)]:
 		main.frame_island(view)

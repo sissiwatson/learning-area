@@ -81,8 +81,7 @@ func show_bubble(text: String) -> void:
 	var holder := Node2D.new()
 	holder.add_to_group(&"screen_sized")
 	holder.position = Vector2(0, -npc.sprite_anchor.y * SCALE - 20)
-	var map := _world_map()
-	holder.scale = Vector2.ONE * (map.overlay_scale if map else 1.0)
+	holder.scale = _marker.scale  # déjà à l'échelle écran (groupe screen_sized)
 	add_child(holder)
 	holder.add_child(bubble)
 	bubble.reset_size()
@@ -93,12 +92,6 @@ func show_bubble(text: String) -> void:
 	fade.tween_property(bubble, "modulate:a", 0.0, 0.4)
 	fade.tween_callback(bubble.queue_free)
 
-
-func _world_map() -> WorldMap:
-	var node := get_parent()
-	while node and not node is WorldMap:
-		node = node.get_parent()
-	return node
 
 
 func _draw_marker() -> void:

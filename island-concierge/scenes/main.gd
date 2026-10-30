@@ -72,9 +72,8 @@ func frame_island(view_size := Vector2.ZERO) -> void:
 	var view := camera.rig.view_size
 	camera.rig.set_zoom(minf(view.x / land.size.x, view.y / land.size.y) * 0.95)
 	camera.rig.center_on(land.get_center())
-	camera.position = camera.rig.position
-	camera.zoom = Vector2.ONE * camera.rig.zoom
-	map.set_camera_zoom(camera.rig.zoom)
+	camera.apply_now()
+	map.set_camera_zoom(camera.rig.zoom)  # même si le zoom n'a pas changé
 
 
 ## Centre la caméra sur le premier bâtiment de ce type et ouvre son panneau.
@@ -84,8 +83,7 @@ func focus_building(building_id: StringName) -> void:
 		if view.placement.building.id == building_id:
 			camera.rig.set_zoom(maxf(camera.rig.zoom, 1.0))
 			camera.rig.center_on(view.global_position + Vector2(260, 0))
-			camera.position = camera.rig.position
-			camera.zoom = Vector2.ONE * camera.rig.zoom
+			camera.apply_now()
 			select_building(view)
 			return
 

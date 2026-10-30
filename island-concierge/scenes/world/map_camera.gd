@@ -89,6 +89,12 @@ func _process(delta: float) -> void:
 	_apply()
 
 
+## Applique tout de suite la position et le zoom du modèle (cadrages
+## programmés) ; prévient les abonnés si le zoom change.
+func apply_now() -> void:
+	_apply()
+
+
 func _apply() -> void:
 	position = rig.position
 	if not is_equal_approx(zoom.x, rig.zoom):
