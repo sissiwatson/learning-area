@@ -143,3 +143,4 @@ corrigés par l'audit UX et la recette de stabilité de l'étape 12
 | 6 | Offres du bureau | La commission affichée est la vraie (jamais « 0 »), même si le bungalow est déjà réservé | |
 | 7 | Ancienne sauvegarde | Installer 0.1.5 par-dessus 0.1.4 ou 0.1.3 : la partie continue (solde, séjour en cours), le tutoriel reprend | |
 | 8 | Session longue | 15 min de jeu sans ralentissement ni fermeture inattendue | |
+| 9 | Boutons d'action | Un toucher sur « Faire le ménage », « Encaisser », « Accepter » lance l'action une seule fois, sans délai perceptible | |

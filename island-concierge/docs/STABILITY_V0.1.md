@@ -63,34 +63,79 @@ avec le temps qui passe. Vérifie : aucune erreur moteur, panneau et dialogue
 jamais ensemble, aucun nœud orphelin, pas d'accumulation de nœuds après la
 fin des animations.
 
-Résultat : 8 quêtes du tutoriel terminées par le hasard, 24 ouvertures de
-panneau, nœuds 192 → 205 (bâtiments construits), orphelins 0 → 0.
+Résultat : 445 touchers (dont 265 sur la carte, les autres sur l'interface),
+387 boutons, 146 ouvertures de panneau, 7 quêtes du tutoriel terminées par
+le hasard, nœuds 192 → 207 (bâtiments construits), orphelins 0 → 0.
+
+Correction honnête de l'outil : une première version injectait les touchers
+avec des coordonnées fausses en mode headless (fenêtre 0×0, étirement non
+identité) ; les touchers arrivaient bien à la caméra mais loin de l'île
+(25 panneaux ouverts au lieu de 146). Corrigé ; les chiffres ci-dessus sont
+ceux de la version corrigée.
 
 **Défaut trouvé et corrigé — S1 (plantage)** : en rouvrant vite un panneau
 pendant qu'il se mettait en page, la barre de défilement apparaissait et
 disparaissait sans fin (la largeur change le retour à la ligne, donc la
 hauteur, donc la barre) ; la file de messages du moteur saturait et le jeu
 **plantait**. La place de la barre est désormais toujours réservée
-(`SCROLL_MODE_RESERVE`). Contre-épreuve : sans ce réglage, le singe plante au
-même endroit. Ce défaut pouvait toucher les téléphones, où les panneaux
+(`SCROLL_MODE_RESERVE`). Contre-épreuve (faite avec la première version du
+singe) : sans ce réglage, il plante au même endroit. Ce défaut pouvait toucher les téléphones, où les panneaux
 défilent plus souvent.
 
-### 2.3 Compatibilité des sauvegardes (🧪)
+### 2.3 Vrais touchers sur les boutons du panneau (🧪 Xvfb, pas encore 📱)
+
+**Défaut trouvé par l'endurance et corrigé — S3** : un vrai toucher (Android
+envoie la souris émulée puis le toucher) sur un bouton d'action du panneau
+(« Faire le ménage », « Encaisser », « Accepter »…) reconstruisait le panneau
+et retirait le bouton **avant** la fin du toucher ; le moteur livrait alors
+la fin du toucher à un bouton sorti de l'arbre et écrivait une erreur
+(`!is_inside_tree`). L'action était bien faite, mais l'erreur se serait
+produite **à chaque toucher** sur téléphone. Les tests ne la voyaient pas :
+ils appuient sur les boutons par programme.
+
+Correction : les actions du panneau sont exécutées juste après le toucher
+(connexion différée) ; chaque bouton garde le bâtiment pour lequel il a été
+créé, donc l'action s'applique même si le panneau se ferme dans la même
+image (`test_action_still_applies_when_the_panel_closes_in_the_same_frame`).
+Preuve par le vrai chemin des entrées : scénario `touch_panel_action` de
+`tools/visual_checks.sh` (échoue sans le correctif, contre-épreuve faite).
+
+### 2.4 Compatibilité des sauvegardes (🧪)
 
 Une sauvegarde au format de l'APK 0.1.3 (sans progression, quêtes ni
 chantiers) se charge : solde, inventaire et séjour en cours conservés,
 progression à zéro, tutoriel disponible ; la sauvegarde suivante passe au
 format complet (`test_save_from_0_1_3_without_progression_quests_or_constructions_loads`).
 
-### 2.4 Endurance en temps réel (🧪 `tools/endurance_run.sh`)
+### 2.5 Endurance en temps réel (🧪 `tools/endurance_run.sh`)
 
 Scène complète, horloge réelle accélérée ×20, joueur automatique (une action
 toutes les 0,4 s : boutons, bâtiments, glissés, molette), vraie sauvegarde
 sur fichier temporaire, mesures toutes les 10 s.
 
-RESULTATS_ENDURANCE
+Résultat de la version finale (10 min réelles = 3 h 20 de jeu, 61 mesures) :
 
-### 2.5 Garde-fous ajoutés aux outils
+| Mesure | Début | Min | Max | Fin |
+|--------|------:|----:|----:|----:|
+| Mémoire statique (Mo) | 32,8 | 32,7 | 33,1 | 33,0 |
+| Objets | 1 854 | 1 826 | 1 899 | 1 853 |
+| Nœuds | 119 | 112 | 133 | 117 |
+| Orphelins (transitoires, mesurés dans l'image d'une action) | 5 | 0 | 13 | 5 |
+
+- 1 501 actions (577 boutons, 610 touchers, 134 glissés, 180 crans de
+  molette) ; les **8 quêtes du tutoriel** terminées, tiki bar compris ;
+  niveau 5, 6 séjours encaissés ; sauvegarde réelle écrite sans échec.
+- **Aucune dérive** de mémoire, d'objets ni de nœuds ; **0 erreur moteur**.
+- Images par seconde (40 à 135) : sans valeur pour un téléphone (rendu
+  logiciel llvmpipe, renderer de compatibilité) ; la fluidité reste à
+  vérifier sur appareil.
+
+Les premières exécutions ont trouvé le défaut S3 (§2.3). Elles ont aussi
+montré deux limites du joueur automatique, corrigées dans l'outil : des
+coordonnées de fenêtre mal converties, et des glissés fusionnés par le
+moteur (aucun déplacement de carte reconnu).
+
+### 2.6 Garde-fous ajoutés aux outils
 
 - `tools/run_tests.sh` échoue sur toute ligne `ERROR:` du moteur (vérifié
   avec un test volontairement fautif).
@@ -100,8 +145,9 @@ RESULTATS_ENDURANCE
 
 ## 3. Bilan chiffré
 
-- Tests automatisés : 294 → **308**, tous verts, 0 ligne d'erreur moteur.
-- Défauts corrigés à l'étape 12 : 7 d'ergonomie, 2 de stabilité (dont un
+- Tests automatisés : 294 → **310**, tous verts, 0 ligne d'erreur moteur ;
+  plus 31 scénarios de captures et l'endurance, hors suite GUT.
+- Défauts corrigés à l'étape 12 : 7 d'ergonomie, 3 de stabilité (dont un
   plantage).
 - Non vérifié : comportement sur téléphone (renderer mobile, tactile réel,
   clavier, mémoire de l'appareil) → recette n°4.
