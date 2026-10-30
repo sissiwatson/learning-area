@@ -86,7 +86,7 @@ Modèle de téléphone et version d'Android : non communiqués.
 | 8 | Boutons du panneau | Faciles à toucher, texte lisible sans zoomer | ✅ | — |
 | 9 | Glisser sur le panneau | La carte ne bouge pas | ✅ | ✅ |
 | 10 | Encoche / bords arrondis | Titre et panneau non masqués | ⏳ non vérifié | — |
-| 11 | Mise en arrière-plan puis retour | Le jeu reprend sans erreur (pas encore de sauvegarde : l'état peut être perdu si Android ferme l'app) | ⏳ non vérifié | — |
+| 11 | Mise en arrière-plan puis retour | Le jeu reprend sans erreur ; depuis 0.1.3, l'état est sauvegardé et le temps écoulé rattrapé | ⏳ non vérifié | — |
 | 12 | Fluidité | Pas de saccade visible en déplaçant la carte au zoom min | ✅ | — |
 
 Merci de noter le modèle de téléphone et la version d'Android.

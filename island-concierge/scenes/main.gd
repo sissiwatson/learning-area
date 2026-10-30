@@ -12,8 +12,9 @@ var selected: BuildingView
 
 
 func _ready() -> void:
-	# Partie neuve à chaque lancement tant que la sauvegarde n'existe pas (étape 9).
-	GameState.new_game(map.map_def)
+	# Reprend la partie sauvegardée (minuteurs rattrapés), sinon partie neuve.
+	if not SaveManager.load_into_game(map.map_def):
+		GameState.new_game(map.map_def)
 	resource_bar.rebuild()
 	var bounds := map.world_bounds()
 	# Vue initiale entre le centre de l'île et le premier bungalow.

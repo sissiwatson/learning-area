@@ -79,8 +79,15 @@ static func from_dict(data: Dictionary, currency_ids: Array) -> Wallet:
 		if wallet.has_currency(id) and (value is int or value is float):
 			wallet._balances[id] = clampi(int(value), 0, MAX_BALANCE)
 	for entry in data.get("history", []):
-		if entry is Dictionary:
-			wallet.history.append(entry)
+		if entry is Dictionary:  # JSON rend des flottants et des chaînes : on normalise
+			wallet.history.append({
+				"currency": StringName(str(entry.get("currency", ""))),
+				"delta": int(entry.get("delta", 0)),
+				"balance": int(entry.get("balance", 0)),
+				"reason": StringName(str(entry.get("reason", ""))),
+			})
+	if wallet.history.size() > HISTORY_SIZE:
+		wallet.history = wallet.history.slice(-HISTORY_SIZE)
 	return wallet
 
 

@@ -14,4 +14,5 @@ fi
 mkdir -p tests/results
 # Importe les ressources (traductions, textures) avant de lancer les tests.
 "$GODOT" --headless --path . --import >/dev/null 2>&1 || true
-"$GODOT" --headless --path . -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json
+# Délai maximal : un script de test qui ne compile pas peut bloquer GUT.
+timeout "${TEST_TIMEOUT:-600}" "$GODOT" --headless --path . -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json

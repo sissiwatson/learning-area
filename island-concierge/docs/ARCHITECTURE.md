@@ -341,7 +341,7 @@ Une étape n'est validée que si elle a été exécutée ou testée.
 | 7  | **Réservations** | `Booking`, `BookingSystem`, `Lodging` avec minuteurs, bureau, ménage, accueil, fin automatique, commission, versement, pastilles « ! » | Tests des montants, durées, transitions, doubles paiements, réservations invalides, anti-blocage | ✅ (non testé sur appareil) |
 | R1–R2 | **Réputation : calcul et registre** | voir `REPUTATION.md` §10 | Tests de frontière 4,80 et d'immuabilité | à faire |
 | 8  | **Productions** | `Producer` (emplacements à minuteurs), plantation d'ananas, atelier (panier), panier exigé pour préparer, livraison automatique | Tests minuteurs, capacité, taps répétés, application fermée, production pendant un séjour | ✅ (non testé sur appareil) |
-| 9  | **Sauvegarde** | JSON versionné, sauvegarde en arrière-plan, rattrapage des minuteurs, corruption, migrations, horloge système modifiée | Tests avec horloge simulée ; relance conserve l'état | à faire |
+| 9  | **Sauvegarde** | `SaveManager` : JSON versionné, écriture atomique + secours, arrière-plan, rattrapage des minuteurs, corruption, migrations ; temps de jeu monotone | Tests avec horloge simulée ; relance conserve l'état | ✅ (non testé sur appareil) |
 | R3–R4 | **Réputation : séjours notés** | journal de séjour, règles, avis publié en fin de séjour | Séjour parfait = 5,00 ; sans panier = note attendue | à faire |
 | 10 | **Progression & tutoriel narratif** | XP, niveaux, toasts ; N1–N5 : conditions/effets, PNJ et relations, dialogues, quêtes narratives, tutoriel avec Hina (voir `NARRATIVE.md`) | Test de bout en bout du tutoriel ; partie jouée à la main | à faire |
 | N6–N7 | **Carnet de voyage et validation de contenu** | 3 fiches de Mahana, test de cohérence des références | Récompenses uniques ; données cassées détectées | à faire |
@@ -477,10 +477,8 @@ recettes et chantier) :
 Les tests remplacent `GameState.clock` par une horloge simulée
 (`tests/helpers/fake_clock.gd`) et avancent le temps sans attendre.
 
-**Limite actuelle** : le temps réel avance bien pendant que le jeu est en
-arrière-plan ; mais si Android **ferme** l'application, l'état est perdu
-jusqu'à l'étape 9, Sauvegarde (le format `to_dict` des logements et des offres
-est déjà prêt et testé).
+Depuis l'étape 9, l'état est sauvegardé (passage en arrière-plan compris) et
+le temps écoulé application fermée est rattrapé au chargement (§19).
 
 ## 16. Réservations (étape 7)
 
@@ -534,3 +532,21 @@ Demandes de réservation enrichies (statuts, expiration, profils voyageurs) :
   puis tressage (3 ananas). Règle anti-blocage vérifiée par `DataValidator`.
 - Productions et séjours sont indépendants : on récolte et on tresse pendant
   qu'un séjour est en cours (testé).
+
+## 19. Sauvegarde (étape 9)
+
+| Aspect | Règle |
+|--------|-------|
+| Fichier | `user://save.json` : `{ "format", "version", "saved_at", "data" }`, version courante 1 |
+| Contenu (`GameState.to_save_dict`) | carte, `last_seen`, porte-monnaie (soldes + journal), inventaire, logements (état, réservation, minuteur), productions (emplacements), offres et compteurs, réservations payées, 100 derniers séjours |
+| Ce qui n'est pas sauvegardé | les définitions (bâtiments, recettes, prix, capacités, verrouillage initial) : relues depuis `data/` ; la sauvegarde n'apporte que l'état |
+| Écriture | fichier temporaire relu et validé, puis l'ancienne sauvegarde devient `.bak`, puis remplacement |
+| Déclencheurs | passage en arrière-plan / fermeture (immédiat), encaissement d'une commission (immédiat), autres changements (après 2 s de calme) |
+| Chargement | sauvegarde principale ; sinon `.bak` ; sinon nouvelle partie. Un fichier illisible est conservé à part (`.corrupt-…`), jamais supprimé |
+| Versions | migrations successives `n → n+1` ; version plus récente que le jeu : mise de côté (`.future-…`), jamais écrasée |
+| Rattrapage | après chargement, `tick` applique fins de ménage, de séjour, de production et nouvelles offres, une seule fois chacune |
+| Double encaissement | réservations payées sauvegardées ; restaurer une sauvegarde plus ancienne restaure aussi l'ancien solde : jamais deux commissions au total (testé) |
+| Données invalides | soldes négatifs, quantités hors capacité, états incohérents, bâtiments inconnus, recettes disparues : corrigés ou ignorés |
+| Horloge système reculée | le temps de jeu (`GameState.now`) ne recule jamais : progression en pause jusqu'à ce que l'horloge dépasse la dernière valeur vue ; rien n'est annulé ni rejoué |
+| Horloge système avancée | les minuteurs se terminent, mais chacun une seule fois ; pas de production répétée ; offres plafonnées. Limite assumée pour V0.1 (pas de serveur de temps) |
+| Tests | `SaveManager` désactivé par le crochet GUT (`tests/helpers/pre_run_hook.gd`) ; les tests de sauvegarde utilisent leur propre dossier |

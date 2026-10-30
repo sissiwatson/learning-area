@@ -108,3 +108,10 @@ func test_loading_sanitizes_invalid_data() -> void:
 func test_new_currency_can_be_added_without_code_change() -> void:
 	var extended := Wallet.from_dict(w.to_dict(), [&"shells", &"pearls", &"stars"])
 	assert_true(extended.earn(&"stars", 3).ok)
+
+
+func test_history_survives_json_with_exact_types() -> void:
+	w.earn(&"shells", 50, &"new_game")
+	var copy := Wallet.from_dict(JSON.parse_string(JSON.stringify(w.to_dict())), [&"shells"])
+	assert_eq(copy.history, w.history)
+	assert_eq(typeof(copy.history[0].delta), TYPE_INT)

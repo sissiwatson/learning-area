@@ -33,6 +33,11 @@ var blocked_producers := {}
 ## Réservations terminées et payées, de la plus ancienne à la plus récente.
 var stay_history: Array[Dictionary] = []
 var _placements := {}  # uid -> PlacementDef
+## Instant le plus récent déjà vu (secondes Unix) : le temps de jeu ne recule
+## jamais, même si l'horloge système est reculée.
+var last_seen := 0
+
+const HISTORY_LIMIT := 100
 
 
 func _ready() -> void:
@@ -53,6 +58,7 @@ func _notification(what: int) -> void:
 ## Démarre une partie neuve sur une carte. (La sauvegarde arrive à l'étape 10.)
 func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 	map = new_map
+	last_seen = 0
 	timings = setup.timings
 	currency_defs.clear()
 	for def in setup.currencies:
@@ -93,10 +99,7 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 	if office:
 		templates = office.booking_templates
 	bookings = BookingSystem.new(templates, office.max_offers if office else 1, timings.offer_refresh_seconds)
-	for id in currency_defs:
-		EventBus.currency_changed.emit(id, wallet.balance(id))
-	for id in item_defs:
-		EventBus.inventory_changed.emit(id, inventory.count(id))
+	_announce_everything()
 	tick()
 
 
@@ -116,6 +119,83 @@ func tick() -> void:
 		_deliver(uid, at)
 	if bookings.update(at, _max_free_capacity()):
 		EventBus.offers_changed.emit()
+
+
+# --- Sauvegarde ------------------------------------------------------------
+
+## État complet de la partie, sérialisable en JSON.
+func to_save_dict() -> Dictionary:
+	var lodging_data := {}
+	for uid in lodgings:
+		lodging_data[uid] = lodgings[uid].to_dict()
+	var producer_data := {}
+	for uid in producers:
+		producer_data[uid] = producers[uid].to_dict()
+	return {
+		"map": map.id,
+		"last_seen": last_seen,
+		"wallet": wallet.to_dict(),
+		"inventory": {"counts": inventory.to_dict().counts},
+		"lodgings": lodging_data,
+		"producers": producer_data,
+		"bookings": bookings.to_dict(),
+		"paid_bookings": paid_bookings.keys(),
+		"stay_history": stay_history.duplicate(true),
+	}
+
+
+## Restaure une partie sauvegardée sur `new_map`. Les définitions viennent
+## toujours des données actuelles ; la sauvegarde n'apporte que l'état.
+## Valeurs invalides corrigées, bâtiments inconnus ignorés, bâtiments absents
+## de la sauvegarde à l'état initial. Le temps écoulé est rattrapé ensuite.
+func load_save_dict(data: Dictionary, new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> Result:
+	if str(data.get("map", "")) != String(new_map.id):
+		return Result.failure(&"save_map_mismatch")
+	new_game(new_map, setup)
+	last_seen = maxi(last_seen, int(data.get("last_seen", 0)))
+	wallet = Wallet.from_dict(_dict(data, "wallet"), currency_defs.keys())
+	inventory = Inventory.from_dict({"capacity": setup.inventory_capacity, "counts": _dict(data, "inventory").get("counts", {})},
+			item_defs.keys(), setup.inventory_capacity)
+	var saved_lodgings := _dict(data, "lodgings")
+	for uid in lodgings:
+		if saved_lodgings.get(uid) is Dictionary:
+			var current: Lodging = lodgings[uid]
+			lodgings[uid] = Lodging.from_dict(saved_lodgings[uid], current.capacity, current.locked)
+	var saved_producers := _dict(data, "producers")
+	for uid in producers:
+		if saved_producers.get(uid) is Dictionary:
+			var placement := get_placement(uid)
+			var ids := recipes_of(uid).map(func(r): return r.id)
+			producers[uid] = Producer.from_dict(saved_producers[uid], placement.building.producer.slots, ids)
+	bookings.load_dict(_dict(data, "bookings"))
+	paid_bookings.clear()
+	var paid: Variant = data.get("paid_bookings", [])
+	for id in (paid if paid is Array else []):
+		paid_bookings[StringName(str(id))] = true
+	stay_history.clear()
+	var history: Variant = data.get("stay_history", [])
+	for entry in (history if history is Array else []):
+		if entry is Dictionary and stay_history.size() < HISTORY_LIMIT:
+			stay_history.append(entry)
+	_announce_everything()
+	tick()
+	return Result.success()
+
+
+func _dict(data: Dictionary, key: String) -> Dictionary:
+	var value: Variant = data.get(key, {})
+	return value if value is Dictionary else {}
+
+
+## Signale à l'interface l'état complet (après un chargement).
+func _announce_everything() -> void:
+	for id in currency_defs:
+		EventBus.currency_changed.emit(id, wallet.balance(id))
+	for id in item_defs:
+		EventBus.inventory_changed.emit(id, inventory.count(id))
+	for uid in lodgings:
+		EventBus.lodging_state_changed.emit(uid, lodgings[uid].state)
+	EventBus.offers_changed.emit()
 
 
 # --- Économie -------------------------------------------------------------
@@ -293,6 +373,8 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 	var amount := booking.commission()
 	if amount > 0:
 		earn(COMMISSION_CURRENCY, amount, StringName("commission:" + booking.id))
+	if stay_history.size() >= HISTORY_LIMIT:
+		stay_history.pop_front()
 	stay_history.append({
 		"booking": booking.to_dict(), "lodging": uid, "commission": amount,
 		"owner_share": booking.owner_share(), "paid_at": now(),
@@ -303,9 +385,14 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 	return Result.success(amount)
 
 
-## Instant présent pour toutes les règles de jeu.
+## Instant présent pour toutes les règles de jeu, monotone :
+## - horloge reculée : le temps de jeu reste figé à `last_seen` jusqu'à ce que
+##   l'horloge le dépasse (rien n'est annulé ni rejoué) ;
+## - horloge avancée : les minuteurs se terminent, mais chacun ne produit
+##   qu'une fois (pas de répétition, au plus `max_offers` offres).
 func now() -> int:
-	return clock.now()
+	last_seen = maxi(last_seen, clock.now())
+	return last_seen
 
 
 func _max_free_capacity() -> int:

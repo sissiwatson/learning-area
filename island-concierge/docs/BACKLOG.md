@@ -16,10 +16,10 @@ valider sur appareil est indiqué explicitement. 📱 = validé sur Android rée
 | ✅ 🧪 📱 | 4 · Export Android debug | Sur appareil : encoche, mise en arrière-plan |
 | ✅ 🧪 📱 | 5 · Économie de base (coquillages, inventaire, HUD) | — (barre de ressources lisible, APK 0.1.1) |
 | ✅ 🧪 | 6 · Base de données et validation de `data/` (tous les bâtiments de Mahana sur la carte) | Sur appareil : panneaux des nouveaux bâtiments |
-| ✅ 🧪 | 7 · Réservations (bureau, ménage, accueil, fin automatique, commission, versement) | Sur appareil : parcours complet, lisibilité du panneau, pastilles « ! » ; état perdu si Android ferme l'app (avant l'étape 9) |
+| ✅ 🧪 | 7 · Réservations (bureau, ménage, accueil, fin automatique, commission, versement) | Sur appareil : parcours complet, lisibilité du panneau, pastilles « ! » ; état conservé depuis l'étape 9 |
 | ⬜ | R1–R2 · Réputation : calcul de note, registre d'avis, paliers (période d'essai : 5 avis) | |
 | ✅ 🧪 | 8 · Productions (ananas 30 s, panier 1 min, panier exigé pour préparer, livraison automatique, inventaire plein sans perte) | Sur appareil : parcours production → ménage ; lisibilité des boutons désactivés |
-| 🔜 | 9 · Sauvegarde locale versionnée (avancée avant la progression) | |
+| ✅ 🧪 | 9 · Sauvegarde locale versionnée (arrière-plan, rattrapage, corruption, migrations, horloge modifiée) | Sur appareil : fermer l'application pendant un séjour puis la rouvrir ; forcer l'arrêt ; changer l'heure du téléphone |
 | ⬜ | R3–R4 · Réputation : journal de séjour, avis en fin de séjour | |
 | ⬜ | 10 · Progression et tutoriel narratif avec Hina (N1–N5) — scénario v2 : progression par actions, dialogues passables, décision de décoration | |
 | ⬜ | N6–N7 · Carnet de voyage (3 fiches) et validation du contenu | |
@@ -150,6 +150,7 @@ boucle de gestion (V0.1) puis de la réputation et de la narration (V0.2).
 - 💡 Retour haptique au tap sur Android (`Input.vibrate_handheld`), à évaluer sur appareil.
 - 💡 Recentrer la caméra sur le bâtiment sélectionné quand le panneau le masque.
 - 💡 Mettre à l'échelle le seuil de tap selon la densité de l'écran (`DisplayServer.screen_get_dpi`).
+- 💡 Message au joueur après une sauvegarde récupérée ou réinitialisée (toast), quand le système de notifications existera.
 - 💡 Destinées : durée d'un jour de jeu (temps réel ou cycles d'activité) à décider avant D1.
 - 💡 Choix de la première destination réelle et des relecteurs culturels.
 - 💡 Portraits des PNJ : style graphique à définir (originaux).
