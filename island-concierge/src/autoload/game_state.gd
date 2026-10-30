@@ -438,6 +438,19 @@ func find_lodging_for(guests: int) -> StringName:
 	return &""
 
 
+## Taux de commission du logement qui accueillerait `guests` voyageurs :
+## un logement libre adapté s'il y en a, sinon le premier logement adapté
+## (pour afficher la commission même quand tout est occupé).
+func commission_percent_for(guests: int) -> int:
+	var uid := find_lodging_for(guests)
+	if uid == &"":
+		for candidate in lodgings:
+			if lodgings[candidate].capacity >= guests and not lodgings[candidate].locked:
+				uid = candidate
+				break
+	return get_placement(uid).building.lodging.commission_percent if uid != &"" else 0
+
+
 ## Accepte une offre du bureau. Sans `lodging_uid`, choisit le premier
 ## logement libre adapté.
 func accept_offer(offer_id: StringName, lodging_uid := &"") -> Result:

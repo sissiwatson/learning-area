@@ -11,6 +11,8 @@ signal tapped_world(world_pos: Vector2)
 ## Émis une fois par geste du joueur (quêtes de prise en main).
 signal user_panned
 signal user_zoomed
+## Le niveau de zoom a changé (éléments à taille constante à l'écran).
+signal zoom_changed(zoom: float)
 
 @export var max_zoom_level := 2.0
 @export var initial_zoom_level := 0.8
@@ -89,7 +91,9 @@ func _process(delta: float) -> void:
 
 func _apply() -> void:
 	position = rig.position
-	zoom = Vector2.ONE * rig.zoom
+	if not is_equal_approx(zoom.x, rig.zoom):
+		zoom = Vector2.ONE * rig.zoom
+		zoom_changed.emit(rig.zoom)
 
 
 func _zoom_at(screen_pos: Vector2, factor: float) -> void:

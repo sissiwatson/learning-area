@@ -24,11 +24,8 @@ func _ready() -> void:
 		GameState.new_game(map.map_def)
 	resource_bar.rebuild()
 	var bounds := map.world_bounds()
-	# Vue initiale entre le centre de l'île et le premier bungalow.
-	var focus := bounds.get_center()
-	if map.buildings.has(&"hibiscus_1"):
-		focus = focus.lerp(map.buildings[&"hibiscus_1"].global_position, 0.5)
-	camera.setup(bounds, focus)
+	camera.zoom_changed.connect(map.set_camera_zoom)
+	frame_island()
 	camera.ui_hit_test = hud.is_point_over_ui
 	camera.tapped_world.connect(_on_map_tapped)
 	panel.closed.connect(_clear_selection)
@@ -54,6 +51,7 @@ func _ready() -> void:
 	EventBus.construction_started.connect(func(_u): map.refresh_production_visuals())
 	EventBus.building_built.connect(_on_building_built)
 	map.refresh_production_visuals()
+	dialogue_box.started.connect(func(_id): panel.close_panel())
 	director.setup(dialogue_box, toasts, map)
 	quest_banner.refresh()
 
@@ -64,6 +62,19 @@ func select_building(view: BuildingView) -> void:
 	selected = view
 	view.selected = true
 	panel.show_placement(view.placement)
+
+
+## Cadrage initial : toute la terre ferme visible, centrée (quel que soit le
+## format de l'écran : 16:9, 20:9, 4:3).
+func frame_island(view_size := Vector2.ZERO) -> void:
+	var land := map.land_bounds()
+	camera.setup(map.world_bounds(), land.get_center(), view_size)
+	var view := camera.rig.view_size
+	camera.rig.set_zoom(minf(view.x / land.size.x, view.y / land.size.y) * 0.95)
+	camera.rig.center_on(land.get_center())
+	camera.position = camera.rig.position
+	camera.zoom = Vector2.ONE * camera.rig.zoom
+	map.set_camera_zoom(camera.rig.zoom)
 
 
 ## Centre la caméra sur le premier bâtiment de ce type et ouvre son panneau.

@@ -15,6 +15,7 @@ const SCENARIOS := [
 	"story_start", "story_banner", "story_hina", "story_arrival",
 	"farm_growing", "farm_harvested",
 	"tiki_ready", "tiki_building", "tiki_built",
+	"audit_panel_and_dialogue",
 ]
 const FakeClock := preload("res://tests/helpers/fake_clock.gd")
 
@@ -355,3 +356,21 @@ func _scenario_tiki_building() -> void:
 
 func _scenario_tiki_built() -> void:
 	await _tiki_setup(2)
+
+
+## Audit : une quête se termine depuis un panneau et le dialogue suivant s'ouvre.
+func _scenario_audit_panel_and_dialogue() -> void:
+	main.dialogue_box.skip()
+	root.get_node("EventBus").game_event.emit(&"camera_panned", &"", 1)
+	root.get_node("EventBus").game_event.emit(&"camera_zoomed", &"", 1)
+	for i in 3:
+		await process_frame
+	while main.dialogue_box.visible:
+		main.dialogue_box.skip()
+		await process_frame
+	_tap_building(&"office_1", 1.0)
+	_advance(60)
+	main.panel.offer_buttons()[0].pressed.emit()
+	for i in 3:
+		await process_frame
+	main.dialogue_box.on_tap()

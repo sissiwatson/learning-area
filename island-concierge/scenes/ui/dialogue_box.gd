@@ -6,6 +6,7 @@ class_name DialogueBox
 extends PanelContainer
 
 signal finished(dialogue_id: StringName)
+signal started(dialogue_id: StringName)
 
 ## Vitesse d'écriture (caractères par seconde).
 @export var characters_per_second := 45.0
@@ -31,6 +32,7 @@ func _ready() -> void:
 func play(dialogue: DialogueDef) -> void:
 	runner = DialogueRunner.new(dialogue)
 	show()
+	started.emit(dialogue.id)
 	_show_line()
 
 

@@ -84,6 +84,19 @@ func world_bounds() -> Rect2:
 	return rect.grow_individual(half.x, half.y, half.x, half.y)
 
 
+## Taille à l'écran des étiquettes, bulles, pastilles et anneaux (1 = taille
+## de conception à zoom 1). Ils restent lisibles quel que soit le zoom.
+const OVERLAY_SCREEN_SCALE := 0.9
+var overlay_scale := 1.0
+
+
+func set_camera_zoom(zoom: float) -> void:
+	overlay_scale = OVERLAY_SCREEN_SCALE / maxf(zoom, 0.01)
+	for node in get_tree().get_nodes_in_group(&"screen_sized"):
+		if is_ancestor_of(node):
+			node.scale = Vector2.ONE * overlay_scale
+
+
 ## Bâtiment touché par une position monde (le plus en avant), ou null.
 func building_at(world_pos: Vector2) -> BuildingView:
 	var best: BuildingView = null
@@ -91,6 +104,20 @@ func building_at(world_pos: Vector2) -> BuildingView:
 		if view.hit_test(world_pos) and (best == null or view.position.y > best.position.y):
 			best = view
 	return best
+
+
+## Rectangle (monde) englobant la terre ferme de l'île.
+func land_bounds() -> Rect2:
+	var rect := Rect2()
+	var first := true
+	for y in grid.size.y:
+		for x in grid.size.x:
+			var cell := Vector2i(x, y)
+			if grid.is_land(cell):
+				var c := cell_center(cell)
+				rect = Rect2(c, Vector2.ZERO) if first else rect.expand(c)
+				first = false
+	return rect.grow_individual(64, 32, 64, 32)
 
 
 func is_zone_locked(zone_id: StringName) -> bool:
@@ -165,6 +192,8 @@ func float_reward(uid: StringName, text: String, icon: Texture2D) -> FloatingRew
 		return null
 	var view: BuildingView = buildings[uid]
 	var reward := FloatingReward.new()
+	reward.add_to_group(&"screen_sized")
+	reward.scale = Vector2.ONE * overlay_scale
 	reward.position = view.position + Vector2(0, view.top_y())
 	_objects.add_child(reward)
 	reward.setup(text, icon)
@@ -214,6 +243,8 @@ func _refresh_zones() -> void:
 				if grid.is_land(Vector2i(x, y)):
 					zone_overlay.set_cell(Vector2i(x, y), TERRAIN_SOURCE, LOCKED_TILE)
 		var badge := LockBadge.new()
+		badge.add_to_group(&"screen_sized")
+		badge.scale = Vector2.ONE * overlay_scale
 		badge.text = tr(zone.name_key)
 		badge.position = to_local(cell_center(zone.badge_position()))
 		_badge_root.add_child(badge)

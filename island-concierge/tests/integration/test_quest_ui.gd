@@ -176,3 +176,36 @@ func test_toasts_never_cover_the_building_panel_or_dialogue() -> void:
 	var toast_rect: Rect2 = main.toasts.get_child(0).get_global_rect()
 	assert_false(toast_rect.intersects(main.panel.get_global_rect()), "toast %s / panneau %s" % [toast_rect, main.panel.get_global_rect()])
 	assert_false(toast_rect.intersects(main.dialogue_box.get_global_rect()))
+
+
+func test_a_starting_dialogue_closes_the_building_panel() -> void:
+	_box().skip()
+	main.select_building(main.map.buildings[&"office_1"])
+	assert_true(main.panel.visible)
+	EventBus.game_event.emit(&"camera_panned", &"", 1)
+	EventBus.game_event.emit(&"camera_zoomed", &"", 1)
+	await get_tree().process_frame
+	assert_true(_box().visible, "Hina enchaîne")
+	assert_false(main.panel.visible, "le dialogue prend la main : pas de superposition")
+
+
+func test_overlays_keep_their_screen_size() -> void:
+	var cam: MapCamera = main.camera
+	var badge: Node2D = main.map.get_node("LockBadges").get_child(0)
+	cam.rig.set_zoom(cam.rig.min_zoom)
+	cam._apply()
+	var small_zoom_scale := badge.scale.x * cam.rig.zoom
+	cam.rig.set_zoom(2.0)
+	cam._apply()
+	assert_almost_eq(badge.scale.x * cam.rig.zoom, small_zoom_scale, 0.001, "taille à l'écran identique")
+	assert_almost_eq(badge.scale.x * cam.rig.zoom, WorldMap.OVERLAY_SCREEN_SCALE, 0.001)
+	var ring: Node2D = main.map.buildings[&"farm_1"].ring
+	assert_almost_eq(ring.scale.x * cam.rig.zoom, WorldMap.OVERLAY_SCREEN_SCALE, 0.001)
+
+
+func test_initial_framing_shows_the_whole_island_on_every_screen_shape() -> void:
+	for view in [Vector2(1920, 1080), Vector2(2400, 1080), Vector2(1920, 1440)]:
+		main.frame_island(view)
+		var visible: Rect2 = main.camera.rig.visible_rect()
+		assert_true(visible.grow(1).encloses(main.map.land_bounds()), "toute l'île visible en %s" % view)
+		assert_true(visible.has_point(main.map.buildings[&"hibiscus_1"].global_position))

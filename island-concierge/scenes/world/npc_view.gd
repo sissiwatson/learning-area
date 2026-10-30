@@ -27,6 +27,7 @@ func setup(def: NpcDef, local_position: Vector2) -> void:
 	add_child(sprite)
 	_marker.position = Vector2(0, -def.sprite_anchor.y * SCALE - 30)
 	_marker.visible = false
+	_marker.add_to_group(&"screen_sized")
 	_marker.draw.connect(_draw_marker)
 	add_child(_marker)
 	# Balancement discret : une seule animation en boucle par personnage.
@@ -75,15 +76,29 @@ func show_bubble(text: String) -> void:
 	style.set_corner_radius_all(18)
 	style.set_content_margin_all(14)
 	bubble.add_theme_stylebox_override(&"normal", style)
-	bubble.position = Vector2(-180, -npc.sprite_anchor.y * SCALE - 40)
 	bubble.z_index = 20
-	add_child(bubble)
+	# La bulle garde la même taille à l'écran quel que soit le zoom.
+	var holder := Node2D.new()
+	holder.add_to_group(&"screen_sized")
+	holder.position = Vector2(0, -npc.sprite_anchor.y * SCALE - 20)
+	var map := _world_map()
+	holder.scale = Vector2.ONE * (map.overlay_scale if map else 1.0)
+	add_child(holder)
+	holder.add_child(bubble)
 	bubble.reset_size()
-	bubble.position.y -= bubble.size.y
+	bubble.position = Vector2(-bubble.size.x / 2.0, -bubble.size.y)
+	bubble.tree_exited.connect(holder.queue_free)
 	var fade := bubble.create_tween()
 	fade.tween_interval(BUBBLE_SECONDS)
 	fade.tween_property(bubble, "modulate:a", 0.0, 0.4)
 	fade.tween_callback(bubble.queue_free)
+
+
+func _world_map() -> WorldMap:
+	var node := get_parent()
+	while node and not node is WorldMap:
+		node = node.get_parent()
+	return node
 
 
 func _draw_marker() -> void:

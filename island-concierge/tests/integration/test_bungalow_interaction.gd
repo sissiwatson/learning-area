@@ -18,6 +18,10 @@ func before_each() -> void:
 	var bounds: Rect2 = main.map.world_bounds()
 	cam = main.camera
 	cam.setup(bounds, bounds.get_center(), Vector2(1920, 1080))
+	# Le dialogue d'ouverture démarre à la frame suivante et fermerait le panneau.
+	await get_tree().process_frame
+	while main.dialogue_box.visible:
+		main.dialogue_box.skip()
 
 
 func after_each() -> void:
@@ -219,3 +223,11 @@ func test_panel_keeps_its_width_in_every_state() -> void:
 			GameState.perform_lodging_action(&"hibiscus_1", Lodging.Action.PREPARE)
 	assert_eq(widths, [668.0, 668.0, 668.0])
 	assert_false(panel._scroll.get_v_scroll_bar().visible, "pas de défilement quand tout tient à l'écran")
+
+
+func test_offer_shows_the_real_commission_even_when_everything_is_booked() -> void:
+	_advance(60)  # deux offres
+	GameState.accept_offer(GameState.bookings.offers[0].id)
+	var panel := _tap_building(&"office_1")
+	var amounts: Label = panel.offers_box.get_child(1).get_child(1)
+	assert_eq(amounts.text, "250 coquillages · commission 50", "pas « commission 0 »")

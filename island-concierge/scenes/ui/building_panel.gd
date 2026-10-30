@@ -220,9 +220,7 @@ func _make_offer_card(offer: Dictionary) -> Control:
 	card.add_theme_constant_override(&"separation", 6)
 	var revenue := template.nights * template.nightly_price
 	var target := GameState.find_lodging_for(template.guests)
-	var percent := 0
-	if target != &"":
-		percent = GameState.get_placement(target).building.lodging.commission_percent
+	var percent := GameState.commission_percent_for(template.guests)
 	card.add_child(_make_label(tr("PANEL_OFFER_LINE") % [template.guest_name,
 			_count("TRAVELERS", template.guests), _count("NIGHTS", template.nights)], 32))
 	card.add_child(_make_label(tr("PANEL_OFFER_AMOUNTS") % [NumberFormat.thousands(revenue),
@@ -352,9 +350,13 @@ func _show_construction(construction: ConstructionDef) -> void:
 ## Le panneau ne dépasse jamais de l'écran : au-delà, son contenu défile.
 func _fit_height() -> void:
 	_scroll.custom_minimum_size.y = 0.0
-	await get_tree().process_frame  # laisse le contenu recalculer sa taille
-	if not is_inside_tree():
-		return
+	# Laisse le contenu recalculer sa taille ; la connexion disparaît d'elle-même
+	# si le panneau est détruit entre-temps.
+	if not get_tree().process_frame.is_connected(_fit_height_now):
+		get_tree().process_frame.connect(_fit_height_now, CONNECT_ONE_SHOT)
+
+
+func _fit_height_now() -> void:
 	var style := get_theme_stylebox(&"panel")
 	var chrome := style.get_minimum_size().y if style else 0.0
 	var available := get_viewport_rect().size.y - 2.0 * SCREEN_MARGIN - chrome

@@ -47,6 +47,8 @@ func setup(new_placement: PlacementDef, map_local: Callable) -> void:
 		add_child(sprite)
 		_badge.position = Vector2(0, top_y() - 8)
 		add_child(_badge)
+		_badge.add_to_group(&"screen_sized")
+		ring.add_to_group(&"screen_sized")
 		ring.position = Vector2(0, top_y() - 8)
 		add_child(ring)
 	if not def.stage_textures.is_empty():
