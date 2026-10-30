@@ -45,6 +45,12 @@ func _ready() -> void:
 		_lodging_states[uid] = GameState.lodgings[uid].state
 	EventBus.lodging_state_changed.connect(_on_lodging_state_changed)
 	EventBus.commission_collected.connect(func(uid, _b, _c): map.play_arrival(uid, true))
+	EventBus.ticked.connect(map.refresh_production_visuals)
+	EventBus.production_started.connect(func(_u, _r): map.refresh_production_visuals())
+	EventBus.production_completed.connect(_on_production_completed)
+	EventBus.commission_collected.connect(func(uid, _b, amount):
+		map.float_reward(uid, "+%s" % NumberFormat.thousands(amount), GameState.currency_defs[GameState.COMMISSION_CURRENCY].icon))
+	map.refresh_production_visuals()
 	director.setup(dialogue_box, toasts, map)
 	quest_banner.refresh()
 
@@ -68,6 +74,13 @@ func focus_building(building_id: StringName) -> void:
 			camera.zoom = Vector2.ONE * camera.rig.zoom
 			select_building(view)
 			return
+
+
+func _on_production_completed(uid: StringName, recipe_id: StringName) -> void:
+	var recipe: RecipeDef = GameState.recipe_defs[recipe_id]
+	for id in recipe.outputs:
+		map.float_reward(uid, "+%d" % recipe.outputs[id], GameState.item_defs[id].icon)
+	map.refresh_production_visuals()
 
 
 func _on_lodging_state_changed(uid: StringName, state: int) -> void:

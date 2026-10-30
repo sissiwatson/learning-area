@@ -141,6 +141,30 @@ func npc_at(world_pos: Vector2) -> NpcView:
 	return null
 
 
+## Anneaux et stades des bâtiments de production.
+func refresh_production_visuals() -> void:
+	var at := GameState.now()
+	for uid in GameState.producers:
+		if not buildings.has(uid):
+			continue
+		var producer: Producer = GameState.producers[uid]
+		var state := producer.slot_state(0, at)
+		buildings[uid].show_progress(producer.progress(0, at) if state == Producer.SlotState.RUNNING else -1.0)
+
+
+## Fait monter « +texte » au-dessus d'un bâtiment.
+func float_reward(uid: StringName, text: String, icon: Texture2D) -> FloatingReward:
+	if not buildings.has(uid):
+		return null
+	var view: BuildingView = buildings[uid]
+	var reward := FloatingReward.new()
+	reward.position = view.position + Vector2(0, view.top_y())
+	_objects.add_child(reward)
+	reward.setup(text, icon)
+	view.bounce()
+	return reward
+
+
 ## Lance l'arrivée (ou le départ) des voyageurs d'un logement.
 func play_arrival(uid: StringName, reverse := false) -> ArrivalAnimation:
 	var placement: PlacementDef = buildings[uid].placement if buildings.has(uid) else null

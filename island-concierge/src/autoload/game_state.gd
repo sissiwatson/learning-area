@@ -128,6 +128,7 @@ func tick() -> void:
 		_deliver(uid, at)
 	if bookings.update(at, _max_free_capacity()):
 		EventBus.offers_changed.emit()
+	EventBus.ticked.emit()
 
 
 # --- Sauvegarde ------------------------------------------------------------

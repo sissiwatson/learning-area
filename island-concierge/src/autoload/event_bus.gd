@@ -44,3 +44,5 @@ signal quest_available(quest_id: StringName)
 signal quest_started(quest_id: StringName)
 signal quest_progressed(quest_id: StringName)
 signal quest_completed(quest_id: StringName)
+## Fin d'une mise à jour du temps (chaque seconde) : rafraîchir les animations.
+signal ticked

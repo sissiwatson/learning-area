@@ -11,6 +11,11 @@ var selected := false: set = set_selected
 var footprint_polygon := PackedVector2Array()
 var sprite := Sprite2D.new()
 var _badge := AttentionBadge.new()
+## Anneau de progression d'une production ou d'une construction.
+var ring := ProgressRing.new()
+## Stade visuel affiché (-1 = texture principale).
+var stage := -1
+var _ring_tween: Tween
 var _hit_image: Image  # chargée au premier tap sur le dessin, puis réutilisée
 ## Pastille « une action vous attend » au-dessus du bâtiment.
 var attention := false: set = set_attention
@@ -39,13 +44,61 @@ func setup(new_placement: PlacementDef, map_local: Callable) -> void:
 	sprite.offset = -def.texture_anchor
 	if sprite.get_parent() == null:
 		add_child(sprite)
-		_badge.position = Vector2(0, -def.texture_anchor.y + 24)
+		_badge.position = Vector2(0, top_y() - 8)
 		add_child(_badge)
+		ring.position = Vector2(0, top_y() - 8)
+		add_child(ring)
+	if not def.stage_textures.is_empty():
+		show_stage(0)
+
+
+## Met à jour l'anneau et le stade visuel ; `ratio` < 0 = rien en cours.
+func show_progress(ratio: float) -> void:
+	var running := ratio >= 0.0
+	ring.visible = running
+	if running:
+		if _ring_tween and _ring_tween.is_valid():
+			_ring_tween.kill()
+		# Glisse jusqu'à la nouvelle valeur pendant la seconde suivante.
+		_ring_tween = create_tween()
+		_ring_tween.tween_property(ring, "value", ratio, 0.9 if ratio > ring.value else 0.0)
+	var stages := placement.building.stage_textures
+	if not stages.is_empty():
+		if not running:
+			show_stage(0)
+		else:
+			# 0-50 % : plants ; 50-100 % : fruits.
+			show_stage(mini(1 + int(ratio * 2.0), stages.size() - 1))
+
+
+func show_stage(index: int) -> void:
+	var stages := placement.building.stage_textures
+	if stages.is_empty() or index == stage:
+		return
+	stage = clampi(index, 0, stages.size() - 1)
+	sprite.texture = stages[stage]
+	_hit_image = null
+
+
+## Petit rebond (livraison terminée).
+func bounce() -> void:
+	var t := create_tween()
+	t.tween_property(sprite, "scale", Vector2(1.06, 0.94), 0.12)
+	t.tween_property(sprite, "scale", Vector2(0.97, 1.03), 0.12)
+	t.tween_property(sprite, "scale", Vector2.ONE, 0.16)
 
 
 func set_attention(value: bool) -> void:
 	attention = value
 	_badge.visible = value
+
+
+## Hauteur (locale) du haut du dessin visible : pastilles et anneaux s'y posent.
+func top_y() -> float:
+	var image := sprite.texture.get_image() if sprite.texture else null
+	if image == null:
+		return -placement.building.texture_anchor.y
+	return image.get_used_rect().position.y - placement.building.texture_anchor.y
 
 
 func set_selected(value: bool) -> void:
@@ -100,3 +153,24 @@ class AttentionBadge:
 		draw_circle(Vector2(0, -3), 28, Color(0.55, 0.35, 0.05), false, 4.0)
 		draw_rect(Rect2(-5, -22, 10, 26), Color(0.3, 0.18, 0.02))
 		draw_circle(Vector2(0, 12), 6, Color(0.3, 0.18, 0.02))
+
+
+
+## Anneau de progression au-dessus du bâtiment.
+class ProgressRing:
+	extends Node2D
+
+	var value := 0.0:
+		set(v):
+			value = clampf(v, 0.0, 1.0)
+			queue_redraw()
+
+	func _init() -> void:
+		visible = false
+		z_index = 6
+
+	func _draw() -> void:
+		draw_circle(Vector2.ZERO, 30, Color(1, 1, 1, 0.9))
+		draw_arc(Vector2.ZERO, 22, 0, TAU, 40, Color(0.86, 0.84, 0.78), 9.0, true)
+		if value > 0.0:
+			draw_arc(Vector2.ZERO, 22, -PI / 2, -PI / 2 + TAU * value, 40, Color(0.11, 0.55, 0.6), 9.0, true)

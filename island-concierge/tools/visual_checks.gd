@@ -13,6 +13,7 @@ const SCENARIOS := [
 	"hibiscus_complete", "hibiscus_collected",
 	"farm_running", "workshop_missing", "workshop_crafting", "hibiscus_needs_basket",
 	"story_start", "story_banner", "story_hina", "story_arrival",
+	"farm_growing", "farm_harvested",
 ]
 const FakeClock := preload("res://tests/helpers/fake_clock.gd")
 
@@ -301,3 +302,28 @@ func _scenario_story_arrival() -> void:
 	cam.position = cam.rig.position
 	cam.zoom = Vector2.ONE * cam.rig.zoom
 	main.panel.close_panel()
+
+
+func _show_farm() -> void:
+	var farm: BuildingView = main.map.buildings[&"farm_1"]
+	cam.rig.set_zoom(1.3)
+	cam.rig.center_on(farm.global_position + Vector2(0, -60))
+	cam.position = cam.rig.position
+	cam.zoom = Vector2.ONE * cam.rig.zoom
+
+
+func _scenario_farm_growing() -> void:
+	_game_state().start_production(&"farm_1", &"harvest_pineapple")
+	_advance(18)
+	_show_farm()
+	for i in 70:  # laisse l'anneau glisser jusqu'à sa valeur
+		await process_frame
+
+
+func _scenario_farm_harvested() -> void:
+	_game_state().start_production(&"farm_1", &"harvest_pineapple")
+	_advance(30)
+	_show_farm()
+	for f in main.map.get_node("Objects").get_children():
+		if f is FloatingReward:
+			f._tween.custom_step(0.45)

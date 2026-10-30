@@ -19,6 +19,9 @@ const ROLE_KEYS := {
 ## Emprise en cellules (x, y).
 @export var footprint := Vector2i(2, 2)
 @export var texture: Texture2D
+## Stades visuels d'une production en cours (ex. pousses, plants, fruits) ;
+## vide = la texture principale ne change pas.
+@export var stage_textures: Array[Texture2D] = []
 ## Pixel de la texture placé au centre de l'emprise au sol.
 @export var texture_anchor := Vector2(128, 192)
 ## Paramètres propres au rôle (un seul renseigné, selon `role`).
