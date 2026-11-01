@@ -195,3 +195,13 @@ func test_speedups_are_saved_and_cleared_at_checkout() -> void:
 	restored.update(2000)
 	restored.collect_commission()
 	assert_eq(restored.speedups.size(), 0, "vidé au départ des voyageurs")
+
+
+func test_progress_and_elapsed_time_count_the_removed_time() -> void:
+	var l := _occupied(1000)  # séjour de 600 s, de 1120 à 1720
+	assert_almost_eq(l.progress(1120), 0.0, 0.001)
+	l.shorten(1120, 300, 1720, {"seconds": 300})
+	assert_almost_eq(l.progress(1120), 0.5, 0.001, "une nuit passée = la moitié du séjour")
+	assert_eq(l.elapsed_stay_seconds(1120), 300)
+	assert_almost_eq(l.progress(1270), 0.75, 0.001)
+	assert_almost_eq(l.progress(1420), 1.0, 0.001)

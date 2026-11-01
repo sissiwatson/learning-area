@@ -140,3 +140,28 @@ PANEL_TIKI_INFO,"Le tiki bar est ouvert ! Bientôt, les voyageurs pourront y pre
 TOAST_BUILT,Construction terminée : %s
 ERR_ALREADY_STARTED,La construction est déjà lancée
 ERR_LEVEL_TOO_LOW,Niveau insuffisant
+SPEEDUP_TITLE,Avancer le temps
+SPEEDUP_HINT,Facultatif : le séjour se termine aussi tout seul.
+SPEEDUP_ONE_NIGHT,Passer une nuit
+SPEEDUP_FINISH,Terminer le séjour
+SPEEDUP_BUTTON_PRICE,%s · %s coquillages
+SPEEDUP_BUTTON_FREE,%s · offert (offre unique)
+SPEEDUP_BUTTON_SHORT,%s · il manque %s coquillages
+SPEEDUP_CONFIRM_TITLE_ONE_NIGHT,Passer une nuit ?
+SPEEDUP_CONFIRM_TITLE_FINISH,Terminer le séjour maintenant ?
+SPEEDUP_CONFIRM_GAIN,Temps gagné
+SPEEDUP_CONFIRM_PRICE,Prix
+SPEEDUP_CONFIRM_BALANCE,Solde après
+SPEEDUP_CONFIRM_SHELLS,%s coquillages
+SPEEDUP_CONFIRM_FREE,Offert
+SPEEDUP_CONFIRM_FREE_NOTE,"Offre unique : Hina vous offre ce coup de pouce une seule fois par partie."
+SPEEDUP_CONFIRM_NOTE,"Les voyageurs gardent leur séjour : la commission et la part du propriétaire ne changent pas."
+SPEEDUP_CONFIRM_OK,Confirmer
+SPEEDUP_CONFIRM_USE_OFFER,Utiliser l'offre
+SPEEDUP_CANCEL,Annuler
+SPEEDUP_ENDED,Le séjour est terminé : rien à accélérer.
+SPEEDUP_SHORT,Il manque %s coquillages.
+TOAST_SPEEDUP,Le temps file à Mahana (%s de gagné).
+ERR_STALE_QUOTE,Le temps restant a changé : vérifiez le nouveau prix.
+ERR_PRICE_CHANGED,Le prix a changé : vérifiez avant de confirmer.
+ERR_NOTHING_TO_SPEED_UP,Rien à accélérer.

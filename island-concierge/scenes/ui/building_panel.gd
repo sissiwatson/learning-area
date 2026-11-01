@@ -7,6 +7,9 @@ extends PanelContainer
 signal closed
 ## Le joueur demande à ouvrir un autre bâtiment (ex. le bureau depuis un logement).
 signal open_requested(uid: StringName)
+## « Avancer le temps » : la confirmation (prix, temps gagné, solde après)
+## est affichée par la scène principale.
+signal speedup_requested(uid: StringName, tier: SpeedupRules.Tier)
 
 const STATE_KEYS := {
 	Lodging.State.VACANT: "LODGING_STATE_VACANT",
@@ -40,6 +43,12 @@ const DETAIL_FONT_SIZE := 30
 const DETAIL_VALUE_MIN_WIDTH := 200.0
 ## Marge gardée libre au-dessus et au-dessous du panneau.
 const SCREEN_MARGIN := 32.0
+const SPEEDUP_BUTTON_HEIGHT := 96.0
+const SPEEDUP_TIERS := [SpeedupRules.Tier.ONE_NIGHT, SpeedupRules.Tier.FINISH]
+const SPEEDUP_NAME_KEYS := {
+	SpeedupRules.Tier.ONE_NIGHT: "SPEEDUP_ONE_NIGHT",
+	SpeedupRules.Tier.FINISH: "SPEEDUP_FINISH",
+}
 
 var placement: PlacementDef
 ## Clé de ligne de détail -> Label de valeur (pour l'affichage et les tests).
@@ -60,6 +69,8 @@ var detail_values := {}
 @onready var close_button: Button = %Close
 @onready var _scroll: ScrollContainer = %Scroll
 @onready var _content: VBoxContainer = %Content
+## Section « Avancer le temps » (séjour en cours seulement), sous les actions.
+var speedup_box := VBoxContainer.new()
 
 
 func _ready() -> void:
@@ -81,6 +92,14 @@ func _ready() -> void:
 	EventBus.currency_changed.connect(func(_id, _v): if visible and placement and _def().role == BuildingDef.Role.CONSTRUCTION: _refresh())
 	EventBus.level_up.connect(func(_l): if visible and placement: _refresh())
 	EventBus.action_failed.connect(_on_action_failed)
+	EventBus.stay_sped_up.connect(func(uid, _seconds, _cost):
+		if visible and placement and placement.uid == uid:
+			_refresh())
+	EventBus.currency_changed.connect(func(_id, _v): _update_speedup_buttons())
+	speedup_box.name = "Speedups"
+	speedup_box.add_theme_constant_override(&"separation", 12)
+	_content.add_child(speedup_box)
+	_content.move_child(speedup_box, actions.get_index() + 1)
 	# Rafraîchit les comptes à rebours une fois par seconde, panneau ouvert seulement.
 	var timer := Timer.new()
 	timer.wait_time = 1.0
@@ -124,6 +143,8 @@ func _refresh() -> void:
 	detail_values.clear()
 	_clear(actions)
 	_clear(offers_box)
+	_clear(speedup_box)
+	speedup_box.visible = false
 	%StateRow.visible = false
 	%ProgressRow.visible = false
 	info.text = ""
@@ -191,7 +212,69 @@ func _show_lodging(def: BuildingDef) -> void:
 			text = tr("ACTION_COLLECT_AMOUNT") % NumberFormat.thousands(booking.commission())
 		var button := _add_button(StringName("Action_" + Lodging.Action.keys()[action]), text, _on_action_pressed.bind(placement.uid, action))
 		button.disabled = not enabled
+	if lodging.state == Lodging.State.OCCUPIED:
+		_show_speedups()
 	_update_progress()
+
+
+## Section discrète « Avancer le temps » : deux boutons secondaires avec leur
+## prix (ou l'offre unique), et le rappel que c'est facultatif.
+func _show_speedups() -> void:
+	var heading := _make_label(tr("SPEEDUP_TITLE"), DETAIL_FONT_SIZE)
+	heading.add_theme_color_override(&"font_color", DETAIL_LABEL_COLOR)
+	speedup_box.add_child(heading)
+	for tier in SPEEDUP_TIERS:
+		var button := Button.new()
+		button.name = "Speedup_" + SpeedupRules.Tier.keys()[tier]
+		button.theme_type_variation = &"SecondaryButton"
+		button.custom_minimum_size.y = SPEEDUP_BUTTON_HEIGHT
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		# Différé, comme les actions : la confirmation s'ouvre après le toucher.
+		button.pressed.connect(_on_speedup_pressed.bind(placement.uid, tier), CONNECT_DEFERRED)
+		speedup_box.add_child(button)
+	var hint := _make_label(tr("SPEEDUP_HINT"), 26)
+	hint.add_theme_color_override(&"font_color", DETAIL_LABEL_COLOR)
+	speedup_box.add_child(hint)
+	speedup_box.visible = true
+	_update_speedup_buttons()
+
+
+## Prix à jour (celui de « Terminer le séjour » baisse avec le temps).
+func _update_speedup_buttons() -> void:
+	if not speedup_box.visible or placement == null:
+		return
+	for tier in SPEEDUP_TIERS:
+		var button := speedup_box.get_node_or_null("Speedup_" + SpeedupRules.Tier.keys()[tier]) as Button
+		if button == null:
+			continue
+		var name_text := tr(SPEEDUP_NAME_KEYS[tier])
+		var quote := GameState.quote_stay_speedup(placement.uid, tier)
+		if not quote.ok:
+			button.text = name_text
+			button.disabled = true
+			continue
+		var q: Dictionary = quote.value
+		var missing: int = q.cost - GameState.wallet.balance(q.currency)
+		if q.free:
+			button.text = tr("SPEEDUP_BUTTON_FREE") % name_text
+		elif missing > 0:
+			button.text = tr("SPEEDUP_BUTTON_SHORT") % [name_text, NumberFormat.thousands(missing)]
+		else:
+			button.text = tr("SPEEDUP_BUTTON_PRICE") % [name_text, NumberFormat.thousands(q.cost)]
+		button.disabled = missing > 0
+
+
+## Boutons « Avancer le temps » visibles (tests et captures).
+func speedup_buttons() -> Array[Button]:
+	var result: Array[Button] = []
+	for child in speedup_box.get_children():
+		if child is Button:
+			result.append(child)
+	return result
+
+
+func _on_speedup_pressed(uid: StringName, tier: SpeedupRules.Tier) -> void:
+	speedup_requested.emit(uid, tier)
 
 
 func _update_producer_progress() -> void:
@@ -281,7 +364,7 @@ func _update_progress() -> void:
 		progress_label.text = tr("PANEL_CLEANING_PROGRESS") % left
 	else:
 		var night_seconds := GameState.timings.night_seconds
-		var night := mini((now - lodging.timer_start) / night_seconds + 1, lodging.booking.nights)
+		var night := mini(lodging.elapsed_stay_seconds(now) / night_seconds + 1, lodging.booking.nights)
 		progress_label.text = tr("PANEL_STAY_PROGRESS") % [night, lodging.booking.nights, left]
 
 
@@ -482,6 +565,7 @@ func _on_second() -> void:
 			info.text = tr("PANEL_NEXT_OFFER") % NumberFormat.duration(wait)
 	else:
 		_update_progress()
+		_update_speedup_buttons()
 
 
 func _on_action_failed(code: StringName, _params: Dictionary) -> void:

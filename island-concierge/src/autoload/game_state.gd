@@ -600,14 +600,18 @@ func quote_stay_speedup(uid: StringName, tier: SpeedupRules.Tier) -> Result:
 
 ## Accélère un séjour. `expected_end` = fin du minuteur affichée avec le
 ## devis : si elle a changé (double toucher), refus sans paiement.
+## `max_cost` = prix affiché au joueur (-1 : pas de limite) : le devis est
+## refait au moment de valider, et un prix plus élevé est refusé sans débit.
 ## Ordre sûr : devis, paiement tout-ou-rien, puis raccourcissement.
-func speed_up_stay(uid: StringName, tier: SpeedupRules.Tier, expected_end: int) -> Result:
+func speed_up_stay(uid: StringName, tier: SpeedupRules.Tier, expected_end: int, max_cost := -1) -> Result:
 	var quote := quote_stay_speedup(uid, tier)
 	if not quote.ok:
 		return _report(quote, Callable(), {"uid": uid})
 	var q: Dictionary = quote.value
 	if expected_end != q.expected_end:
 		return _report(Result.failure(&"stale_quote"), Callable(), {"uid": uid})
+	if max_cost >= 0 and q.cost > max_cost:
+		return _report(Result.failure(&"price_changed"), Callable(), {"uid": uid})
 	var lodging := get_lodging(uid)
 	var booking_id := String(lodging.booking.id)
 	if q.cost > 0:

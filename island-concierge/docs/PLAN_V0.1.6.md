@@ -232,6 +232,75 @@ perles prévues dans la conception (`PACING_AND_SPEEDUPS.md` §3).
     les deux plus grands écarts ont été vérifiés à l'œil.
 - **Non vérifié** : rien sur appareil (rien de visible dans ce lot).
 
+## 4 bis. Lot 2 — « Avancer le temps » dans le panneau (✅ 🧪 réalisé, 📱 recette n°5)
+
+### Ce qui a été fait
+
+- **Panneau d'un séjour en cours** : section discrète « Avancer le temps ».
+  - Deux boutons secondaires (fond crème, contour lagon, 96 px de haut) :
+    - « Passer une nuit · 9 coquillages » ;
+    - « Terminer le séjour · offert (offre unique) », puis son prix une fois
+      l'offre utilisée.
+  - Rappel « Facultatif : le séjour se termine aussi tout seul. »
+  - Si le solde ne suffit pas, bouton grisé « il manque X coquillages ».
+  - Prix mis à jour chaque seconde et à chaque changement de solde.
+- **Confirmation** : fenêtre centrée sur fond assombri.
+  - Elle affiche le temps gagné, le prix (ou « Offert »), le solde après
+    paiement, et la mention « Offre unique : Hina vous offre ce coup de pouce
+    une seule fois par partie ».
+  - Elle rappelle que les voyageurs gardent leur séjour.
+  - Boutons « Annuler » et « Confirmer » / « Utiliser l'offre » (104 px).
+  - Annuler, toucher le fond ou Échap : aucun effet.
+  - Un dialogue qui commence, ou la fermeture du panneau, l'annulent aussi.
+- **Revalidation au moment de confirmer** :
+  - le devis est refait ;
+  - séjour terminé entre-temps : refus sans débit, avec explication ;
+  - solde devenu insuffisant : refus sans débit, avec le montant manquant ;
+  - prix plus élevé que celui affiché (offre déjà utilisée) : refus sans
+    débit, nouveau prix affiché ;
+  - double toucher : un seul paiement.
+- **Hina**, au début du premier séjour (dialogue de la quête « Encaisser sa
+  commission »), une réplique ajoutée : « Si un jour tu es pressé, tu peux
+  avancer le temps depuis le bungalow. La première fois, c'est moi qui
+  offre. Mais rien ne presse : un séjour se termine aussi tout seul. »
+- **Retour discret** après une accélération : message « Le temps file à
+  Mahana (X de gagné). »
+- **Défaut trouvé et corrigé en chemin** : la barre de progression et
+  « Nuit x/y » repartaient de zéro après une accélération (calcul sur le
+  minuteur raccourci). Le temps retiré compte désormais comme écoulé.
+
+### Preuves (🧪)
+
+- **354 tests verts** (336 + 18), 0 erreur moteur.
+  - 17 tests d'interface : section visible seulement pendant un séjour,
+    style et taille des boutons, textes et prix, montant manquant, contenu
+    de la confirmation, offre unique et consommation unique, annulation
+    (trois façons), application et progression, double toucher sur
+    « Confirmer » et sur le bouton du panneau, séjour terminé pendant la
+    confirmation, solde modifié pendant la confirmation, prix devenu plus
+    élevé, dialogue qui annule, carte bloquée derrière la confirmation,
+    réplique de Hina, contraste du texte (≥ 4,5:1).
+  - 1 test unitaire : progression avec temps retiré.
+- **Contre-épreuves** (défaut introduit puis retiré, chacune détectée) :
+  - prix non revérifié ;
+  - barre de progression sans le temps retiré ;
+  - confirmation non rafraîchie quand le solde change ;
+  - « Annuler » qui confirmerait.
+- **Aucun test intermittent** : 8 exécutions de suite sans échec.
+- **Vrai toucher** (souris émulée puis toucher, comme Android), sous Xvfb :
+  scénario `touch_speedup_confirm` (« Passer une nuit » puis « Confirmer » ;
+  le prix payé est celui affiché, aucune erreur moteur).
+- **Captures aux 3 formats** (16:9, 20:9, 4:3) : 36 scénarios × 3, aucune
+  erreur ; panneau et confirmation lisibles, rien de coupé.
+- **Endurance 5 min** (joueur automatique qui touche aussi ces boutons) :
+  0 erreur, mémoire 33,4 à 33,9 Mo, sans dérive.
+
+### Non vérifié
+
+- Tout ce qui se passe sur appareil : recette n°5 dans `ANDROID_EXPORT.md`.
+- Le bouton retour d'Android ferme l'application (comportement existant,
+  non modifié) ; il ne sert donc pas à annuler la confirmation.
+
 ## 5. Prototype 3D (après la 0.1.6)
 
 Conformément à votre ordre :

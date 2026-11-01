@@ -143,12 +143,18 @@ func remaining(now: int) -> int:
 	return maxi(timer_end - now, 0) if is_timing() else 0
 
 
-## Avancement du minuteur en cours, de 0 à 1.
+## Avancement du minuteur en cours, de 0 à 1. Le temps retiré par des
+## accélérations compte comme écoulé (la barre ne recule jamais).
 func progress(now: int) -> float:
-	var total := timer_end - timer_start
+	var total := (timer_end - timer_start) + removed_seconds()
 	if not is_timing() or total <= 0:
 		return 0.0
-	return clampf(float(now - timer_start) / total, 0.0, 1.0)
+	return clampf(float(now - timer_start + removed_seconds()) / total, 0.0, 1.0)
+
+
+## Temps de séjour écoulé, accélérations comprises (pour « Nuit x/y »).
+func elapsed_stay_seconds(now: int) -> int:
+	return maxi(now - timer_start, 0) + removed_seconds() if state == State.OCCUPIED else 0
 
 
 func to_dict() -> Dictionary:

@@ -155,3 +155,21 @@ corrigés par l'audit UX et la recette de stabilité de l'étape 12
 
 Aucun défaut fonctionnel bloquant signalé. V0.1 : validation technique
 provisoire, sous réserve de cette recette.
+
+## Recette n°5 — APK 0.1.6-a1 (« Avancer le temps », lots 1 et 2)
+
+Rien de cette liste n'est encore validé sur téléphone. Le renfort de ménage
+et l'équipe renforcée (lot 3) ne sont pas encore dans cet APK.
+
+| # | Vérification | Résultat attendu | Appareil réel |
+|---|--------------|------------------|---------------|
+| 1 | Installation par-dessus 0.1.5 | La partie continue (solde, séjour, chantier) | |
+| 2 | Panneau d'un séjour en cours | Section « Avancer le temps » discrète : « Passer une nuit · X coquillages », « Terminer le séjour · offert (offre unique) », rappel « Facultatif » | |
+| 3 | Confirmation | Temps gagné, prix (ou « Offert »), solde après ; « Annuler » ou toucher le fond : rien ne change | |
+| 4 | Offre unique | « Utiliser l'offre » termine le séjour sans payer ; au séjour suivant, le prix est affiché à la place | |
+| 5 | Paiement | « Passer une nuit » retire le bon montant ; la barre de progression avance (elle ne repart pas de zéro) ; message « Le temps file à Mahana » | |
+| 6 | Encaissement après accélération | Commission entière (120 pour Camille et Noé), une seule fois | |
+| 7 | Solde insuffisant | Bouton grisé « il manque X coquillages » | |
+| 8 | Hina (partie neuve) | Au début du premier séjour, elle mentionne l'accélération sans pousser à dépenser | |
+| 9 | Confort tactile | Boutons faciles à toucher, rien de coupé sur votre écran | |
+| 10 | Fermeture pendant la confirmation | Rouvrir : rien n'a été payé | |

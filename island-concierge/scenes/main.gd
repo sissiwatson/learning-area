@@ -13,6 +13,8 @@ var selected: BuildingView
 @onready var dialogue_box: DialogueBox = %DialogueBox
 @onready var quest_banner: QuestBanner = %QuestBanner
 @onready var director: QuestDirector = $QuestDirector
+## Confirmation des accélérations, au-dessus de toute l'interface.
+var speedup_confirm := SpeedupConfirm.new()
 ## Dernier état connu de chaque logement (pour animer les arrivées réelles,
 ## pas celles rejouées au chargement d'une sauvegarde).
 var _lodging_states := {}
@@ -51,7 +53,14 @@ func _ready() -> void:
 	EventBus.construction_started.connect(func(_u): map.refresh_production_visuals())
 	EventBus.building_built.connect(_on_building_built)
 	map.refresh_production_visuals()
-	dialogue_box.started.connect(func(_id): panel.close_panel())
+	hud.add_child(speedup_confirm)
+	panel.speedup_requested.connect(speedup_confirm.open)
+	panel.closed.connect(speedup_confirm.cancel)
+	EventBus.stay_sped_up.connect(func(_uid, seconds, _cost):
+		toasts.show_message(tr("TOAST_SPEEDUP") % NumberFormat.duration(seconds)))
+	dialogue_box.started.connect(func(_id):
+		speedup_confirm.cancel()
+		panel.close_panel())
 	director.setup(dialogue_box, toasts, map)
 	quest_banner.refresh()
 

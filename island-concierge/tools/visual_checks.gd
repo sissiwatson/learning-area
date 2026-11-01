@@ -16,6 +16,8 @@ const SCENARIOS := [
 	"farm_growing", "farm_harvested",
 	"tiki_ready", "tiki_building", "tiki_built",
 	"audit_panel_and_dialogue", "touch_panel_action",
+	"speedup_panel", "speedup_confirm_offer", "speedup_confirm_paid", "speedup_confirm_short",
+	"touch_speedup_confirm",
 ]
 const FakeClock := preload("res://tests/helpers/fake_clock.gd")
 
@@ -397,3 +399,60 @@ func _scenario_touch_panel_action() -> void:
 	var state: int = _game_state().get_lodging(&"hibiscus_1").state
 	if state != Lodging.State.PREPARING:
 		push_error("le toucher sur « Faire le ménage » n'a pas lancé le ménage")
+
+
+## Séjour en cours (2 nuits, 400 s écoulées) avec la section « Avancer le temps ».
+func _to_stay_with_speedups() -> void:
+	_to_hibiscus_state(3)
+	for i in 3:
+		await process_frame
+
+
+func _scenario_speedup_panel() -> void:
+	await _to_stay_with_speedups()
+
+
+func _scenario_speedup_confirm_offer() -> void:
+	await _to_stay_with_speedups()
+	main.speedup_confirm.open(&"hibiscus_1", SpeedupRules.Tier.FINISH)
+
+
+func _scenario_speedup_confirm_paid() -> void:
+	_game_state().free_speedups = 0
+	await _to_stay_with_speedups()
+	main.speedup_confirm.open(&"hibiscus_1", SpeedupRules.Tier.ONE_NIGHT)
+
+
+func _scenario_speedup_confirm_short() -> void:
+	_game_state().free_speedups = 0
+	_game_state().spend({&"shells": 46})
+	await _to_stay_with_speedups()
+	main.speedup_confirm.open(&"hibiscus_1", SpeedupRules.Tier.FINISH)
+
+
+## Vrais touchers (souris émulée puis toucher) : « Passer une nuit » puis
+## « Confirmer ». Aucune erreur moteur ; le prix payé est celui affiché.
+func _scenario_touch_speedup_confirm() -> void:
+	_game_state().free_speedups = 0
+	await _to_stay_with_speedups()
+	var before: int = _game_state().wallet.balance(&"shells")
+	var shown: int = _game_state().quote_stay_speedup(&"hibiscus_1", SpeedupRules.Tier.ONE_NIGHT).value.cost
+	await _real_tap(main.panel.speedup_box.get_node("Speedup_ONE_NIGHT"))
+	if not main.speedup_confirm.visible:
+		push_error("la confirmation ne s'est pas ouverte")
+		return
+	await _real_tap(main.speedup_confirm.confirm_button)
+	var paid: int = before - _game_state().wallet.balance(&"shells")
+	if main.speedup_confirm.visible or paid != shown or shown <= 0:
+		push_error("accélération par vrais touchers : payé %d (affiché %d)" % [paid, shown])
+
+
+func _real_tap(control: Control) -> void:
+	var pos := root.get_final_transform() * control.get_global_rect().get_center()
+	for pressed in [true, false]:
+		var e := InputEventScreenTouch.new()
+		e.index = 0; e.pressed = pressed; e.position = pos
+		Input.parse_input_event(e)
+		Input.flush_buffered_events()
+	for i in 3:
+		await process_frame
