@@ -1,0 +1,187 @@
+{
+	"data": {
+		"bookings": {
+			"next_offer_at": 1800000930,
+			"next_template_index": 3,
+			"offers": [
+				{
+					"id": "offer_0004",
+					"template": "friends_amaru"
+				}
+			],
+			"sequence": 5
+		},
+		"constructions": {
+			"tiki_site_1": {
+				"end_at": 1800001480,
+				"start_at": 1800001180,
+				"state": "BUILDING"
+			}
+		},
+		"inventory": {
+			"counts": {
+				"pineapple": 0,
+				"welcome_basket": 0
+			}
+		},
+		"last_seen": 1800001210,
+		"lodgings": {
+			"corail_1": {
+				"booking": null,
+				"state": "VACANT",
+				"timer_end": 0,
+				"timer_start": 0
+			},
+			"hibiscus_1": {
+				"booking": {
+					"accepted_at": 1800000870,
+					"commission_percent": 20,
+					"guest_name": "Léa",
+					"guests": 1,
+					"id": "bk_0005",
+					"nightly_price": 250,
+					"nights": 1,
+					"template_id": "solo_lea"
+				},
+				"state": "OCCUPIED",
+				"timer_end": 1800001380,
+				"timer_start": 1800001080
+			}
+		},
+		"map": "mahana",
+		"paid_bookings": [
+			"bk_0002"
+		],
+		"producers": {
+			"farm_1": {
+				"slots": [
+					{
+
+					}
+				]
+			},
+			"workshop_1": {
+				"slots": [
+					{
+
+					}
+				]
+			}
+		},
+		"progression": {
+			"xp": 85
+		},
+		"quests": {
+			"tutorial_01": {
+				"progress": [
+					0,
+					0
+				],
+				"rewarded": false,
+				"status": "ACTIVE"
+			},
+			"tutorial_02": {
+				"progress": [
+					0
+				],
+				"rewarded": false,
+				"status": "LOCKED"
+			},
+			"tutorial_03": {
+				"progress": [
+					0
+				],
+				"rewarded": false,
+				"status": "LOCKED"
+			},
+			"tutorial_04": {
+				"progress": [
+					0
+				],
+				"rewarded": false,
+				"status": "LOCKED"
+			},
+			"tutorial_06": {
+				"progress": [
+					0
+				],
+				"rewarded": false,
+				"status": "LOCKED"
+			},
+			"tutorial_07": {
+				"progress": [
+					0
+				],
+				"rewarded": false,
+				"status": "LOCKED"
+			},
+			"tutorial_09": {
+				"progress": [
+					0,
+					0
+				],
+				"rewarded": false,
+				"status": "LOCKED"
+			},
+			"tutorial_10": {
+				"progress": [
+					0
+				],
+				"rewarded": false,
+				"status": "LOCKED"
+			}
+		},
+		"stay_history": [
+			{
+				"booking": {
+					"accepted_at": 1800000000,
+					"commission_percent": 20,
+					"guest_name": "Camille et Noé",
+					"guests": 2,
+					"id": "bk_0002",
+					"nightly_price": 300,
+					"nights": 2,
+					"template_id": "couple_camille_noe"
+				},
+				"commission": 120,
+				"lodging": "hibiscus_1",
+				"owner_share": 480,
+				"paid_at": 1800000810
+			}
+		],
+		"wallet": {
+			"balances": {
+				"shells": 120
+			},
+			"history": [
+				{
+					"balance": 50,
+					"currency": "shells",
+					"delta": 50,
+					"reason": "new_game"
+				},
+				{
+					"balance": 170,
+					"currency": "shells",
+					"delta": 120,
+					"reason": "commission:bk_0002"
+				},
+				{
+					"balance": 270,
+					"currency": "shells",
+					"delta": 100,
+					"reason": "fixture_setup"
+				},
+				{
+					"balance": 120,
+					"currency": "shells",
+					"delta": -150,
+					"reason": "construction:tiki_site_1"
+				}
+			]
+		}
+	},
+	"format": "island_concierge_save",
+	"saved_at": 1793564541,
+	"version": 1
+}
