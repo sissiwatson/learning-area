@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="SpeedupDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/defs/speedup_def.gd" id="1_speedup"]
+
+[resource]
+script = ExtResource("1_speedup")
+stay_full_commission_percent = 15
+free_full_speedups = 1

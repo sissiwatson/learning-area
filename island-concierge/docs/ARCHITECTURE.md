@@ -606,3 +606,22 @@ données, chaque règle testée.
   documents d'aménagement versionnés — voir [`DECORATION.md`](DECORATION.md).
 - **Accélérations** : règles pures sur les minuteurs existants — voir
   [`PACING_AND_SPEEDUPS.md`](PACING_AND_SPEEDUPS.md).
+
+## 24. Accélérations de séjour (0.1.6, lot 1)
+
+- `SpeedupDef` (`data/balance/speedups.tres`) : pourcentage de la commission
+  pour un séjour entier (15) et accélérations offertes par partie (1).
+- `SpeedupRules` (pur) : réduction d'un palier (`ONE_NIGHT`, `FINISH`) et
+  **prix cumulatif** calculé en entiers ; somme des paliers = prix d'une
+  accélération complète.
+- `Lodging.shorten(now, seconds, expected_end, record)` : seul le minuteur
+  change ; la réservation (nuits, prix, commission, part du propriétaire)
+  est intacte. `speedups` est sauvegardé avec le logement et vidé au départ.
+- `GameState.quote_stay_speedup` (devis à afficher) puis
+  `speed_up_stay(uid, tier, expected_end)` : refus `stale_quote` si la fin
+  affichée a changé (double toucher), paiement tout-ou-rien, motif
+  `comfort:speedup:<réservation>`, signal `stay_sped_up`, sauvegarde
+  immédiate. `free_speedups` est sauvegardé (absent = sauvegarde antérieure :
+  une offerte, une seule fois).
+- `LedgerCategoriesDef` + `Ledger.category_of` : catégorie comptable de chaque
+  motif (`comfort` hors exploitation, `operating_charge`, `revenue`…).

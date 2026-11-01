@@ -50,3 +50,6 @@ signal ticked
 signal construction_started(site_uid: StringName)
 ## Une construction est terminée : l'emplacement devient le bâtiment `building_id`.
 signal building_built(site_uid: StringName, building_id: StringName)
+## Accélération d'un séjour (confort de jeu) : secondes retirées au minuteur,
+## coquillages payés (0 si offerte).
+signal stay_sped_up(lodging_uid: StringName, seconds: int, cost: int)

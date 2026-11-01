@@ -142,3 +142,56 @@ func test_inconsistent_save_falls_back_to_vacant() -> void:
 	var restored := Lodging.from_dict({"state": "OCCUPIED", "booking": null}, 2, false)
 	assert_eq(restored.state, S.VACANT)
 	assert_eq(Lodging.from_dict({"state": "DANCING"}, 2, false).state, S.VACANT)
+
+
+# --- Accélérations (0.1.6) ---------------------------------------------------
+
+func _occupied(now: int) -> Lodging:
+	var l := Lodging.new()
+	var b := Booking.new()
+	b.id = &"bk_t"; b.guests = 2; b.nights = 2; b.nightly_price = 300; b.commission_percent = 20
+	l.book(b)
+	l.start_preparing(now, 120)
+	l.update(now + 120)
+	l.welcome_guests(now + 120, 300)
+	return l
+
+
+func test_shorten_only_moves_the_timer_end() -> void:
+	var l := _occupied(1000)
+	var booking_before := l.booking.to_dict()
+	assert_eq(l.timer_end, 1720)
+	assert_true(l.shorten(1200, 300, 1720, {"seconds": 300}).ok)
+	assert_eq(l.timer_end, 1420)
+	assert_eq(l.removed_seconds(), 300)
+	assert_eq(l.stay_seconds(), 600, "durée d'origine conservée")
+	assert_eq(l.booking.to_dict(), booking_before, "réservation inchangée")
+
+
+func test_shorten_never_goes_before_now_and_refuses_a_stale_end() -> void:
+	var l := _occupied(1000)
+	assert_eq(l.shorten(1200, 300, 1700, {}).error, &"stale_quote")
+	assert_eq(l.timer_end, 1720, "rien n'a changé")
+	assert_true(l.shorten(1600, 9999, 1720, {"seconds": 9999}).ok)
+	assert_eq(l.timer_end, 1600, "jamais avant maintenant")
+
+
+func test_shorten_refused_outside_a_stay() -> void:
+	var l := Lodging.new()
+	assert_eq(l.shorten(0, 10, 0, {}).error, &"invalid_action")
+	var booked := _occupied(1000)
+	booked.update(5000)
+	assert_eq(booked.state, Lodging.State.STAY_COMPLETE)
+	assert_eq(booked.shorten(5000, 10, booked.timer_end, {}).error, &"invalid_action")
+
+
+func test_speedups_are_saved_and_cleared_at_checkout() -> void:
+	var l := _occupied(1000)
+	l.shorten(1200, 300, 1720, {"tier": "ONE_NIGHT", "seconds": 300, "cost": 9, "free": false, "at": 1200})
+	var restored := Lodging.from_dict(JSON.parse_string(JSON.stringify(l.to_dict())), 2, false)
+	assert_eq(restored.removed_seconds(), 300)
+	assert_eq(restored.speedups[0].cost, 9)
+	assert_typeof(restored.speedups[0].cost, TYPE_INT)
+	restored.update(2000)
+	restored.collect_commission()
+	assert_eq(restored.speedups.size(), 0, "vidé au départ des voyageurs")

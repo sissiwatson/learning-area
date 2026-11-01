@@ -12,7 +12,8 @@
    - Mesuré par une simulation « joueur raisonnable » **sans aucune
      accélération** (lot 4).
 2. **Accélérations facultatives et équilibrées.**
-   - Elles ne coûtent jamais plus de **20 % de ce que rapporte le séjour**.
+   - Elles ne coûtent jamais plus de **15 % de ce que rapporte le séjour**
+     (arrondi à l'entier supérieur).
    - Une accélération est offerte pendant le tutoriel.
    - Elles ne sont jamais nécessaires pour progresser.
 3. **Confort et charges séparés.**
@@ -30,32 +31,37 @@
 
 ## 2. Barème équilibré (remplace `PACING_AND_SPEEDUPS.md` §2.2)
 
-### Séjours — « Avancer le temps » (confort de jeu)
+### Séjours — « Avancer le temps » (confort de jeu) — **validé le 01/11**
 
-**Prix = 20 % de la commission du séjour × part du séjour retirée**, arrondi
-à l'unité supérieure, au moins 1 coquillage.
-- Le prix suit la valeur du séjour : un petit séjour coûte peu.
-- Un séjour terminé d'un coup ne coûte jamais plus d'un cinquième de sa
-  commission.
+**Prix = 15 % de la commission du séjour × part du séjour retirée**,
+arrondi à l'entier supérieur. Le prix est affiché avant confirmation
+(lot 2).
 
-| Palier | Effet | Léa (1 nuit, commission 50) | Camille et Noé (2 nuits, 120) | Amaru (3 nuits, 168) |
-|--------|-------|----------------------------:|------------------------------:|---------------------:|
-| « Une nuit passe » | −1 nuit (ou le reste s'il en reste moins) | 10 | 12 | 12 |
-| « Fin du séjour » au début du séjour | tout le temps restant | 10 | 24 | 34 |
-| « Fin du séjour » à mi-séjour | la moitié restante | 5 | 12 | 17 |
+| Palier (libellé validé) | Effet | Léa (1 nuit, commission 50) | Camille et Noé (2 nuits, 120) | Amaru (3 nuits, 168) |
+|-------------------------|-------|----------------------------:|------------------------------:|---------------------:|
+| « Passer une nuit » | −1 nuit (ou le reste s'il en reste moins) | 8 | 9 | 9 |
+| « Terminer le séjour » au début du séjour | tout le temps restant | 8 | 18 | 26 |
+| « Terminer le séjour » à mi-séjour | la moitié restante | 4 | 9 | 13 |
 
-Paliers enchaînables. Pour que les arrondis ne s'additionnent pas, le prix
-est **cumulatif** : prix d'un palier = plafond(20 % × C × temps retiré
-au total après ce palier / durée) − plafond(20 % × C × temps retiré
-avant / durée). La somme payée sur un séjour vaut donc au plus
-plafond(20 % × C).
+**Prix cumulatif** : prix d'un palier = plafond(15 % × C × temps retiré au
+total après ce palier / durée) − plafond(15 % × C × temps retiré avant /
+durée).
+- Plusieurs accélérations partielles ne coûtent jamais plus qu'une
+  accélération complète.
+- Exemple, Amaru : « Passer une nuit » trois fois donne 9 + 8 + 9 = 26,
+  exactement « Terminer le séjour » d'un coup. Avec un arrondi à chaque
+  palier, on aurait payé 27.
 
-Exemple, Amaru : « Une nuit passe » trois fois donne 12 + 11 + 11 = 34,
-exactement le prix de « Fin du séjour » d'un coup. Avec un arrondi à chaque
-palier, on aurait payé 36.
+**Accélération offerte** : une accélération complète (« Terminer le
+séjour ») est offerte une seule fois par partie, y compris aux sauvegardes
+existantes.
+- Le compteur est sauvegardé : il n'est jamais réattribué au rechargement
+  ni par une mise à jour.
+- « Passer une nuit » ne la consomme pas.
 
-**Tutoriel** : la première accélération est **offerte**, une seule fois par
-partie, y compris pour une ancienne sauvegarde.
+**Cohérence des séjours** : une accélération ne modifie ni la durée
+contractuelle, ni le prix payé par le voyageur, ni la commission, ni les
+revenus du propriétaire. Seul le minuteur de jeu se termine plus tôt.
 
 ### Renforts — charges d'exploitation (lot 3)
 
@@ -89,7 +95,7 @@ Le Bungalow Corail reste verrouillé.
 Les dialogues des lots 5 et 6 relèvent de la **fiction de Mahana** et sont
 étiquetés comme tels ; aucun fait réel n'y est affirmé sans source.
 
-## 4. Lot 1 — Socle des accélérations (à valider avant implémentation)
+## 4. Lot 1 — Socle des accélérations (✅ 🧪 réalisé, résultats au §4.7)
 
 ### 4.1 Ce qui change
 
@@ -98,7 +104,7 @@ sauvegarde. L'interface viendra au lot 2.
 
 | Fichier | Changement |
 |---------|------------|
-| `src/defs/speedup_def.gd` + `data/balance/speedups.tres` | barème : part de commission (0,20), paliers (`one_night`, `finish`), coût minimal (1), accélérations offertes (1), renforts (lot 3, déjà décrits mais non utilisés) |
+| `src/defs/speedup_def.gd` + `data/balance/speedups.tres` | barème : pourcentage de la commission (15), accélérations offertes (1) ; les renforts viendront au lot 3 |
 | `src/core/speedup_rules.gd` (pur) | `quote_stay(tier, commission, total, remaining, night_seconds)` → réduction (s) et prix ; aucune dépendance au moteur de jeu |
 | `src/core/lodging.gd` | `shorten(now, seconds, expected_end)` pendant un séjour (`OCCUPIED`) uniquement ; nouvelle fin = max(maintenant, fin − réduction) ; refus si la fin affichée ne correspond plus (double toucher) ; liste `speedups` (palier, secondes, prix, offert ou non, horodatage) sauvegardée avec le logement |
 | `src/autoload/game_state.gd` | `speed_up_stay(uid, tier, expected_end)` : vérifie, paie (ou consomme l'accélération offerte), applique, journalise, émet `stay_sped_up` ; `quote_speedup(uid, tier)` pour l'interface ; `free_speedups` sauvegardé |
@@ -134,7 +140,7 @@ sauvegarde. L'interface viendra au lot 2.
   - paliers des trois séjours (tableau du §2) ;
   - arrondi supérieur et minimum 1 ;
   - réduction jamais supérieure au temps restant ;
-  - prix jamais supérieur à 20 % de la commission ;
+  - prix jamais supérieur à 15 % de la commission (arrondi) ;
   - séjour presque fini.
 - **Refus sans effet** :
   - logement libre, réservé, en ménage, séjour terminé ;
@@ -144,11 +150,11 @@ sauvegarde. L'interface viendra au lot 2.
 - **Double toucher** : deux commandes avec la même fin affichée ; un seul
   paiement, une seule réduction.
 - **Paiements** :
-  - « Fin du séjour » puis encaissement : une seule commission ;
+  - « Terminer le séjour » puis encaissement : une seule commission ;
   - deuxième encaissement refusé.
-- **Paliers enchaînés** : « Une nuit passe » deux fois, puis « Fin du
-  séjour » ; la somme des prix est égale au prix de « Fin du séjour » d'un
-  coup (prix cumulatif), donc ≤ plafond(20 % de la commission).
+- **Paliers enchaînés** : « Passer une nuit » plusieurs fois, puis
+  « Terminer le séjour » ; la somme des prix est égale au prix de
+  « Terminer le séjour » d'un coup (prix cumulatif).
 - **Accélération offerte** :
   - utilisée une fois, la suivante est payante ;
   - toujours vraie après sauvegarde et rechargement.
@@ -162,7 +168,7 @@ sauvegarde. L'interface viendra au lot 2.
   - aucun motif de dépense existant n'est sans catégorie (garde-fou).
 - **Stabilité** : le joueur aléatoire (3 graines × 1 500 actions) tente aussi
   des accélérations ; les invariants restent vrais, avec un nouvel
-  invariant : les dépenses de confort d'un séjour restent ≤ plafond(20 % de
+  invariant : les dépenses de confort d'un séjour restent ≤ plafond(15 % de
   sa commission).
 
 Contre-épreuves :
@@ -179,13 +185,52 @@ Contre-épreuves :
 4. Recette de stabilité étendue réussie.
 5. Un commit poussé, et un compte rendu de ce qui est réellement vérifié.
 
-### 4.6 Points à confirmer avant de coder
+### 4.6 Décisions (01/11)
 
-1. **Taux de 20 %** de la commission pour un séjour entier : le garder, ou
-   le baisser (15 %) ?
-2. **Paliers** : « Une nuit passe » et « Fin du séjour » vous conviennent-ils ?
-   Ils remplacent les trois paliers de la première proposition.
-3. **Une accélération offerte** aussi aux sauvegardes existantes : d'accord ?
+Taux de 15 %, prix cumulatif, paliers « Passer une nuit » et « Terminer le
+séjour », une accélération complète offerte une fois par partie (sauvegardes
+existantes comprises, jamais réattribuée). Coquillages seulement en 0.1.6 ;
+perles prévues dans la conception (`PACING_AND_SPEEDUPS.md` §3).
+
+### 4.7 Résultats du lot 1 (🧪 vérifié par exécution, rien de visible)
+
+- **Tests** : 336 au vert (310 existants inchangés + 26 nouveaux), 0 erreur
+  moteur, 0 erreur de script.
+  - 7 tests de barème, dont 500 séjours tirés au hasard pour vérifier le
+    prix cumulatif ;
+  - 4 tests du logement ;
+  - 15 tests d'intégration : devis, offerte, double toucher, solde,
+    réservation inchangée, sauvegarde, horloge, vraie sauvegarde 0.1.5,
+    catégories, sauvegarde immédiate.
+- **Vraie sauvegarde 0.1.5** (`tests/fixtures/save_0_1_5.json`, produite
+  avant toute modification, commit séparé) :
+  - elle se charge ;
+  - le séjour de Léa, le chantier et le niveau 2 sont conservés ;
+  - elle reçoit une offerte, une seule fois ;
+  - la commission est encaissée une fois.
+- **Contre-épreuves** (défaut introduit puis retiré) :
+
+  | Défaut introduit | Résultat |
+  |------------------|----------|
+  | contrôle du double toucher retiré | 1 test échoue |
+  | arrondi à chaque palier | 2 tests unitaires échouent (les tests d'intégration ne le voient pas : le séjour de Camille ne comporte pas d'arrondi) |
+  | offerte réattribuée à chaque chargement | 3 tests échouent |
+  | accélération qui modifie la réservation | 3 tests échouent |
+  | barème doublé | la recette de stabilité le détecte dès le pas 86 |
+
+- **Recette de stabilité** : 3 graines × 1 500 actions, accélérations
+  comprises.
+  - 24 accélérations réussies, dont des doubles touchers refusés ;
+  - nouveaux invariants vrais à chaque pas : durée contractuelle inchangée,
+    plafond de 15 %, temps retiré ≤ durée, offerte bornée, chaque mouvement
+    d'argent catégorisé.
+- **Aucun changement visible** : les 31 captures ont été comparées à celles
+  de l'étape 12.
+  - Les écarts viennent uniquement des animations en temps réel
+    (balancement des personnages, fondu des messages, « +120 »).
+  - Deux passes sur le même code diffèrent déjà de 800 à 1 500 pixels ;
+    les deux plus grands écarts ont été vérifiés à l'œil.
+- **Non vérifié** : rien sur appareil (rien de visible dans ce lot).
 
 ## 5. Prototype 3D (après la 0.1.6)
 

@@ -22,7 +22,7 @@ func before_each() -> void:
 	GameState.clock = clock
 	map = load("res://data/maps/mahana.tres")
 	GameState.new_game(map)
-	stats = {"collected": 0, "built": 0, "reloads": 0, "refused": 0, "quests_completed": 0}
+	stats = {"collected": 0, "built": 0, "reloads": 0, "refused": 0, "quests_completed": 0, "speedups": 0}
 	_last_now = GameState.now()
 	_last_xp = 0
 
@@ -60,6 +60,15 @@ func _random_step() -> void:
 		var available := GameState.quest_log.with_status(QuestLog.Status.AVAILABLE)
 		if not available.is_empty():
 			result = GameState.start_quest(_pick(available).id)
+	elif roll < 0.78:
+		# Accélération : parfois avec une fin affichée périmée (double toucher).
+		var occupied := GameState.lodgings.keys().filter(func(id): return GameState.lodgings[id].state == Lodging.State.OCCUPIED)
+		var uid: StringName = _pick(occupied if not occupied.is_empty() and rng.randf() < 0.8 else GameState.lodgings.keys())
+		var lodging: Lodging = GameState.lodgings[uid]
+		var shown_end := lodging.timer_end if rng.randf() < 0.8 else lodging.timer_end + 7
+		result = GameState.speed_up_stay(uid, _pick([SpeedupRules.Tier.ONE_NIGHT, SpeedupRules.Tier.FINISH]), shown_end)
+		if result.ok:
+			stats.speedups += 1
 	elif roll < 0.93:
 		clock.advance(_pick(WAITS))
 		GameState.tick()
@@ -146,6 +155,28 @@ func _violations() -> Array[String]:
 	for uid in GameState.producers:
 		var def := GameState.get_placement(uid).building.producer
 		_expect(GameState.producers[uid].slots.size() <= def.slots, "GameState.producers[uid].slots.size() <= def.slots")
+	# Accélérations : réservation inchangée, jamais plus que 15 % arrondi.
+	var percent := GameState.speedup_def.stay_full_commission_percent
+	var templates := {}
+	for template in GameState.bookings.templates:
+		templates[template.id] = template
+	for uid in GameState.lodgings:
+		var lodging: Lodging = GameState.lodgings[uid]
+		if lodging.booking and templates.has(lodging.booking.template_id):
+			_expect(lodging.booking.nights == templates[lodging.booking.template_id].nights, "durée contractuelle inchangée")
+		if lodging.state in [Lodging.State.OCCUPIED, Lodging.State.STAY_COMPLETE]:
+			var speedup_paid := 0
+			for entry in lodging.speedups:
+				speedup_paid += int(entry.cost)
+			var full := SpeedupRules.cumulative_price(lodging.booking.commission(), percent, lodging.stay_seconds(), lodging.stay_seconds())
+			_expect(speedup_paid <= full, "accélérations d'un séjour <= accélération complète")
+			_expect(lodging.removed_seconds() <= lodging.stay_seconds(), "temps retiré <= durée du séjour")
+	for entry in GameState.stay_history:
+		if entry.has("speedups"):
+			_expect(int(entry.speedups.cost) <= (int(entry.commission) * percent + 99) / 100, "historique : accélérations <= 15 % de la commission")
+	_expect(GameState.free_speedups >= 0 and GameState.free_speedups <= GameState.speedup_def.free_full_speedups, "offerte bornée")
+	for entry in history:
+		_expect(GameState.ledger_category(str(entry.reason)) != Ledger.UNCATEGORIZED, "motif de dépense catégorisé")
 	return _broken
 
 
@@ -163,6 +194,7 @@ func _soak(seed_value: int) -> void:
 	assert_gt(stats.collected, 3, "plusieurs séjours menés à terme")
 	assert_gt(stats.reloads, 20, "nombreuses restaurations")
 	assert_gt(stats.refused, 0, "des actions invalides ont été tentées et refusées")
+	assert_gte(stats.speedups, 3, "des accélérations ont réellement eu lieu")
 
 
 func test_soak_seed_1() -> void:
@@ -187,6 +219,6 @@ func test_invariant_check_detects_a_double_payment() -> void:
 
 
 func test_invariant_check_detects_a_broken_ledger_and_overfull_inventory() -> void:
-	GameState.wallet.history.append({"currency": &"shells", "delta": 10, "balance": 999, "reason": &"x"})
+	GameState.wallet.history.append({"currency": &"shells", "delta": 10, "balance": 999, "reason": &"quest:x"})
 	GameState.inventory._counts[&"pineapple"] = GameState.inventory.capacity + 1
 	assert_eq(_violations().size(), 3, "journal incohérent, solde final faux, inventaire trop plein")

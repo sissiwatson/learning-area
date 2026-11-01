@@ -264,9 +264,14 @@ Aucune monétisation dans la V0.x de prototype. Quand elle viendra :
      - des variantes purement visuelles, aux effets identiques ;
      - des **conforts** d'interface ;
      - des **extensions** (destinations, histoires).
-   - Les accélérations se paient en **coquillages**
-     (`PACING_AND_SPEEDUPS.md`) ; en perles, seulement si cela est décidé
-     plus tard, avec un plafond quotidien.
+   - Les accélérations se paient en **coquillages** en 0.1.6
+     (`PACING_AND_SPEEDUPS.md`).
+   - **Plus tard, en perles aussi** (décision du 01/11), avec certains
+     conforts.
+   - Perles gagnées en jouant ou achetées en packs facultatifs ; aucun achat
+     réel n'est développé avant la boutique (lot $).
+   - Les accélérations restent du confort de jeu, séparé des charges
+     d'exploitation.
 4. **Transparence** : prix affichés en monnaie réelle, pas de coffres
    aléatoires payants, pas de compte à rebours pressant.
 5. **Mineurs et dépenses** : contrôle parental et limites de dépense

@@ -12,3 +12,7 @@ extends Resource
 @export var progression: ProgressionDef
 ## Quêtes de la partie, dans l'ordre de présentation.
 @export var quests: Array[QuestDef] = []
+## Barème des accélérations facultatives (confort de jeu).
+@export var speedups: SpeedupDef
+## Catégories comptables des motifs du porte-monnaie.
+@export var ledger_categories: LedgerCategoriesDef

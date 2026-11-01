@@ -127,9 +127,22 @@ joueur aléatoire de la recette de stabilité étendu aux accélérations.
    - conforts d'interface.
    - **Jamais** : réputation, avis, relations, confiance des propriétaires,
      meubles aux statistiques supérieures, coquillages.
-3. **Accélérations** : payées en coquillages (§2), comme demandé.
-   - En perles, seulement si vous le décidez plus tard.
-   - Dans ce cas, avec un plafond quotidien, conformément au §6 de `GAME_VISION.md`.
+3. **Accélérations** (décision du 01/11) :
+   - en 0.1.6, coquillages seulement ;
+   - **plus tard, les perles** pourront aussi payer les accélérations et
+     certains conforts.
+   - Les perles s'obtiennent **en jouant** ou dans des **packs facultatifs**.
+     Aucun achat réel n'est développé maintenant.
+   - Conception déjà compatible : un devis porte sa monnaie (`currency`), et
+     un barème en perles pourra s'ajouter au barème en coquillages sans
+     changer les règles (prix cumulatif, offerte, double toucher).
+   - Une dépense en perles n'apparaîtra **jamais** dans la trésorerie de la
+     conciergerie. Elle reste en « confort de jeu ».
+   - Plafond quotidien proposé (`GAME_VISION.md` §6), à décider avec la boutique.
+   - Dans les bilans financiers :
+     - accélérations de confort = catégorie `comfort`, hors exploitation ;
+     - renforts = `operating_charge`.
+     - Le classement existe dans le journal depuis la 0.1.6 (lot 1).
 4. **Boutique (architecture prévue)** :
    - catalogue de produits en données ;
    - un `StoreService` avec deux fournisseurs, un faux pour les tests et le

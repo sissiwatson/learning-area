@@ -41,6 +41,11 @@ var _placements := {}  # uid -> PlacementDef
 ## Instant le plus récent déjà vu (secondes Unix) : le temps de jeu ne recule
 ## jamais, même si l'horloge système est reculée.
 var last_seen := 0
+var speedup_def: SpeedupDef = SpeedupDef.new()
+var ledger_def: LedgerCategoriesDef = LedgerCategoriesDef.new()
+## Accélérations complètes encore offertes dans cette partie. Sauvegardé :
+## jamais réattribué au rechargement ni à une mise à jour.
+var free_speedups := 0
 
 const HISTORY_LIMIT := 100
 
@@ -67,6 +72,9 @@ func new_game(new_map: MapDef, setup: NewGameDef = DEFAULT_NEW_GAME) -> void:
 	last_seen = 0
 	timings = setup.timings
 	progression_def = setup.progression
+	speedup_def = setup.speedups if setup.speedups else SpeedupDef.new()
+	ledger_def = setup.ledger_categories if setup.ledger_categories else LedgerCategoriesDef.new()
+	free_speedups = speedup_def.free_full_speedups
 	progression = Progression.new(progression_def.level_thresholds)
 	quest_log = QuestLog.new(setup.quests)
 	currency_defs.clear()
@@ -162,6 +170,7 @@ func to_save_dict() -> Dictionary:
 		"bookings": bookings.to_dict(),
 		"paid_bookings": paid_bookings.keys(),
 		"stay_history": stay_history.duplicate(true),
+		"free_speedups": free_speedups,
 	}
 
 
@@ -199,6 +208,9 @@ func load_save_dict(data: Dictionary, new_map: MapDef, setup: NewGameDef = DEFAU
 	var paid: Variant = data.get("paid_bookings", [])
 	for id in (paid if paid is Array else []):
 		paid_bookings[StringName(str(id))] = true
+	# Sauvegarde antérieure à la 0.1.6 : l'accélération offerte est attribuée
+	# une fois ; ensuite la valeur sauvegardée fait foi.
+	free_speedups = clampi(int(data.get("free_speedups", speedup_def.free_full_speedups)), 0, speedup_def.free_full_speedups)
 	stay_history.clear()
 	var history: Variant = data.get("stay_history", [])
 	for entry in (history if history is Array else []):
@@ -535,6 +547,7 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 		return _report(Result.failure(&"already_paid"), Callable(), {"uid": uid})
 	if lodging.booking and wallet.balance(COMMISSION_CURRENCY) > Wallet.MAX_BALANCE - lodging.booking.commission():
 		return _report(Result.failure(&"balance_overflow"), Callable(), {"uid": uid})
+	var speedups := lodging.speedups.duplicate(true)
 	var result := lodging.collect_commission()
 	if not result.ok:
 		return _report(result, Callable(), {"uid": uid})
@@ -548,6 +561,7 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 	stay_history.append({
 		"booking": booking.to_dict(), "lodging": uid, "commission": amount,
 		"owner_share": booking.owner_share(), "paid_at": now(),
+		"speedups": _speedups_summary(speedups),
 	})
 	EventBus.commission_collected.emit(uid, booking.id, amount)
 	gain_xp(progression_def.xp_stay_completed, &"stay_completed")
@@ -555,6 +569,81 @@ func _collect(uid: StringName, lodging: Lodging) -> Result:
 	EventBus.lodging_state_changed.emit(uid, lodging.state)
 	tick()
 	return Result.success(amount)
+
+
+# --- Accélérations (confort de jeu) -----------------------------------------
+
+## Devis d'une accélération de séjour, à afficher avant confirmation :
+## {tier, seconds, cost, free, currency, expected_end}. N'en modifie rien.
+## L'accélération ne change ni la réservation (durée, prix, commission) ni
+## la part du propriétaire : seulement la fin du minuteur de jeu.
+func quote_stay_speedup(uid: StringName, tier: SpeedupRules.Tier) -> Result:
+	var lodging := get_lodging(uid)
+	if lodging == null:
+		return Result.failure(&"unknown_lodging")
+	if lodging.locked:
+		return Result.failure(&"lodging_locked")
+	if lodging.state != Lodging.State.OCCUPIED:
+		return Result.failure(&"invalid_action")
+	var remaining := lodging.remaining(now())
+	var seconds := SpeedupRules.stay_reduction(tier, remaining, timings.night_seconds)
+	if seconds <= 0:
+		return Result.failure(&"nothing_to_speed_up")
+	var free := tier == SpeedupRules.Tier.FINISH and free_speedups > 0
+	var cost := 0 if free else SpeedupRules.step_price(lodging.booking.commission(),
+			speedup_def.stay_full_commission_percent, lodging.removed_seconds(), seconds, lodging.stay_seconds())
+	return Result.success({
+		"tier": tier, "seconds": seconds, "cost": cost, "free": free,
+		"currency": COMMISSION_CURRENCY, "expected_end": lodging.timer_end,
+	})
+
+
+## Accélère un séjour. `expected_end` = fin du minuteur affichée avec le
+## devis : si elle a changé (double toucher), refus sans paiement.
+## Ordre sûr : devis, paiement tout-ou-rien, puis raccourcissement.
+func speed_up_stay(uid: StringName, tier: SpeedupRules.Tier, expected_end: int) -> Result:
+	var quote := quote_stay_speedup(uid, tier)
+	if not quote.ok:
+		return _report(quote, Callable(), {"uid": uid})
+	var q: Dictionary = quote.value
+	if expected_end != q.expected_end:
+		return _report(Result.failure(&"stale_quote"), Callable(), {"uid": uid})
+	var lodging := get_lodging(uid)
+	var booking_id := String(lodging.booking.id)
+	if q.cost > 0:
+		var paid := spend({COMMISSION_CURRENCY: q.cost}, StringName("comfort:speedup:" + booking_id))
+		if not paid.ok:
+			return paid
+	var record := {
+		"tier": SpeedupRules.Tier.keys()[tier], "seconds": q.seconds, "cost": q.cost,
+		"free": q.free, "at": now(),
+	}
+	var result := lodging.shorten(now(), q.seconds, expected_end, record)
+	if not result.ok:
+		# Impossible après le devis ; par sécurité, rien n'est perdu.
+		if q.cost > 0:
+			earn(COMMISSION_CURRENCY, q.cost, StringName("comfort:refund:" + booking_id))
+		return _report(result, Callable(), {"uid": uid})
+	if q.free:
+		free_speedups -= 1
+	EventBus.stay_sped_up.emit(uid, q.seconds, q.cost)
+	tick()  # le séjour se termine tout de suite si le minuteur est écoulé
+	return Result.success(q)
+
+
+## Catégorie comptable d'un motif du porte-monnaie (bilans financiers).
+func ledger_category(reason: String) -> StringName:
+	return Ledger.category_of(reason, ledger_def.prefixes)
+
+
+func _speedups_summary(speedups: Array) -> Dictionary:
+	var summary := {"count": speedups.size(), "seconds": 0, "cost": 0, "free": 0}
+	for entry: Dictionary in speedups:
+		summary.seconds += int(entry.get("seconds", 0))
+		summary.cost += int(entry.get("cost", 0))
+		if entry.get("free", false):
+			summary.free += 1
+	return summary
 
 
 ## Instant présent pour toutes les règles de jeu, monotone :

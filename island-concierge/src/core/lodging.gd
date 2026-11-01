@@ -29,6 +29,9 @@ var booking: Booking
 ## Début et fin du minuteur en cours (ménage ou séjour), en secondes Unix.
 var timer_start := 0
 var timer_end := 0
+## Accélérations du séjour en cours : {tier, seconds, cost, free, at}. Elles
+## ne raccourcissent que le minuteur de jeu, jamais la réservation.
+var speedups: Array[Dictionary] = []
 
 
 func available_actions() -> Array[Action]:
@@ -87,7 +90,37 @@ func collect_commission() -> Result:
 	state = State.VACANT
 	timer_start = 0
 	timer_end = 0
+	speedups.clear()
 	return Result.success(paid)
+
+
+## Raccourcit le minuteur du séjour en cours de `seconds` (jamais en dessous
+## de `now`). `expected_end` est la fin affichée au joueur : si elle a changé
+## (double toucher, autre accélération), la demande est refusée sans effet.
+func shorten(now: int, seconds: int, expected_end: int, record: Dictionary) -> Result:
+	var check := _expect(State.OCCUPIED)
+	if not check.ok:
+		return check
+	if expected_end != timer_end:
+		return Result.failure(&"stale_quote")
+	if seconds <= 0 or now >= timer_end:
+		return Result.failure(&"nothing_to_speed_up")
+	timer_end = maxi(now, timer_end - seconds)
+	speedups.append(record)
+	return Result.success()
+
+
+## Secondes déjà retirées du séjour en cours par des accélérations.
+func removed_seconds() -> int:
+	var total := 0
+	for entry in speedups:
+		total += int(entry.get("seconds", 0))
+	return total
+
+
+## Durée d'origine du séjour en cours (minuteur actuel + temps retiré).
+func stay_seconds() -> int:
+	return (timer_end - timer_start) + removed_seconds() if state == State.OCCUPIED or state == State.STAY_COMPLETE else 0
 
 
 ## Applique les fins de minuteur. Renvoie les états atteints (souvent vide).
@@ -122,6 +155,7 @@ func to_dict() -> Dictionary:
 	return {
 		"state": State.keys()[state], "timer_start": timer_start, "timer_end": timer_end,
 		"booking": booking.to_dict() if booking else null,
+		"speedups": speedups.duplicate(true),
 	}
 
 
@@ -140,6 +174,15 @@ static func from_dict(data: Dictionary, lodging_capacity: int, is_locked: bool) 
 		l.booking = Booking.from_dict(booking_data)
 	if l.state != State.VACANT and l.booking == null:
 		l.state = State.VACANT
+	var saved_speedups: Variant = data.get("speedups", [])
+	if l.state in [State.OCCUPIED, State.STAY_COMPLETE] and saved_speedups is Array:
+		for entry in saved_speedups:
+			if entry is Dictionary:
+				l.speedups.append({
+					"tier": str(entry.get("tier", "")), "seconds": maxi(int(entry.get("seconds", 0)), 0),
+					"cost": maxi(int(entry.get("cost", 0)), 0), "free": bool(entry.get("free", false)),
+					"at": int(entry.get("at", 0)),
+				})
 	return l
 
 

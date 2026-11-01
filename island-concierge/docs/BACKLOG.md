@@ -28,7 +28,7 @@ personnel sont en V0.2 et au-delà.
 | ✅ 🧪 | 10c · Première animation de production (plantation en 3 stades, anneau de progression, « +3 » et « +120 » flottants, rebond) | Sur appareil : fluidité et lisibilité |
 | ✅ 🧪 | 11 · Tiki bar (niveau 2, 150 coquillages, 5 min, chantier remplacé par le tiki bar, fin du tutoriel) | Sur appareil : parcours complet du tutoriel |
 | ✅ 🧪 | 12 · Finitions V0.1 : audit UX (3 formats d'écran), recette de stabilité (aléatoire, singe, endurance), cadrage initial U1, crédits — voir `STABILITY_V0.1.md` | **Validation technique provisoire** (votre décision), sous réserve de la recette n°4. Retour 0.1.5 : le jeu fonctionne ; attentes trop longues pendant les séjours → 0.1.6 « Rythme ». Points de la recette n°4 non encore renseignés |
-| 🔜 | 0.1.6 · Rythme : accélérations équilibrées et activités pendant les séjours (lots 1 à 7) — plan d'exécution `PLAN_V0.1.6.md` | Lot 1 présenté, en attente de votre accord |
+| 🟡 | 0.1.6 · Rythme : accélérations équilibrées et activités pendant les séjours (lots 1 à 7) — plan d'exécution `PLAN_V0.1.6.md` | Lot 1 fait (🧪, rien de visible) ; lot 2 en attente de votre accord |
 
 Reporté en V0.2 : réputation R1–R6, carnet N6–N7, décision de décoration,
 demande de voyageurs et avis détaillé du tutoriel (séquences 5 et 8).
@@ -276,7 +276,7 @@ réputation achetée, accélérations plafonnées, transparence).
 |--------|-------|-----------|
 | ⬜ | $0 · Étude de boutique : packs de perles, caisse premium séparée de la trésorerie, faux fournisseur de paiement — `PACING_AND_SPEEDUPS.md` §3 | — |
 | ⬜ | $1 · Perles gagnées en jeu (monnaie déjà extensible), jamais convertibles en coquillages | 5 |
-| ⬜ | $2 · Accélérations en perles : seulement si décidé (plafond quotidien) ; les accélérations en coquillages sont le lot Z | $1, Z1 |
+| ⬜ | $2 · Accélérations et conforts en perles (décidé le 01/11 ; plafond quotidien à fixer) ; en coquillages : lot Z | $1, Z1 |
 | ⬜ | $3 · Packs décoratifs, conforts, extensions | $1 |
 | ⬜ | $4 · Simulation : progression complète atteignable sans achat | $2–$3 |
 
@@ -286,7 +286,7 @@ Conception : [`PACING_AND_SPEEDUPS.md`](PACING_AND_SPEEDUPS.md).
 
 | Statut | Étape | Dépend de | Version |
 |--------|-------|-----------|---------|
-| ⬜ | Z1 · Règles d'accélération pures (barème en données, paliers, refus, idempotence, sauvegarde, horloge) | 7, 9 | 0.1.6 |
+| ✅ 🧪 | Z1 · Socle des accélérations : barème en données (15 %, prix cumulatif), « Passer une nuit » / « Terminer le séjour », offerte une fois par partie, double toucher, sauvegarde, catégories du journal — `PLAN_V0.1.6.md` §4.7 | 7, 9 | 0.1.6 |
 | ⬜ | Z2 · « Avancer le temps » dans le panneau du séjour ; accélération offerte une seule fois dans le tutoriel | Z1 | 0.1.6 |
 | ⬜ | Z3 · Renfort de ménage et équipe renforcée (chantiers) | Z1 | 0.1.6 |
 | ⬜ | Z4 · Mesure des temps morts (≤ 90 s sur 30 min) dans une simulation de session | — | 0.1.6 (avancé) |

@@ -38,6 +38,8 @@ func _ready() -> void:
 			EventBus.offers_changed, EventBus.production_started, EventBus.production_completed]:
 		sig.connect(func(_a = null, _b = null): request_save())
 	EventBus.commission_collected.connect(func(_a, _b, _c): save_now())
+	# Accélération (payée ou offerte) : enregistrée tout de suite.
+	EventBus.stay_sped_up.connect(func(_a, _b, _c): save_now())
 
 
 func _notification(what: int) -> void:
