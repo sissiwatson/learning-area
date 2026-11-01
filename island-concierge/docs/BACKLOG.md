@@ -295,8 +295,11 @@ Conception : [`PACING_AND_SPEEDUPS.md`](PACING_AND_SPEEDUPS.md).
 
 ### Direction artistique 3D et prototype (lot G) — proposition
 
-Conception : [`ART_DIRECTION.md`](ART_DIRECTION.md), [`TRANSITION_3D.md`](TRANSITION_3D.md).
-Rien n'est commencé ; le jeu existant n'est pas modifié.
+Conception : [`ART_DIRECTION.md`](ART_DIRECTION.md), [`TRANSITION_3D.md`](TRANSITION_3D.md),
+**plan de réalisation [`PROTOTYPE_3D_PLAN.md`](PROTOTYPE_3D_PLAN.md)** (inventaire
+des ressources libres, composition, étapes D0–D5 avec validation technique et
+validation artistique distinctes). Lancé le 01/11, en parallèle de la 0.1.6 ;
+proposition en attente de validation. Le jeu existant n'est pas modifié.
 
 | Statut | Étape | Critère principal |
 |--------|-------|-------------------|

@@ -1,5 +1,12 @@
 # Transition progressive vers la 3D — architecture, faisabilité, prototype
 
+> Mise à jour du 01/11 : le prototype est lancé ; inventaire des ressources,
+> composition de la scène et plan D0 à D5 dans
+> [`PROTOTYPE_3D_PLAN.md`](PROTOTYPE_3D_PLAN.md). Changement par rapport au
+> §6 : **projet Godot séparé** (`prototype-3d/`), plus étanche que le dossier
+> dans le jeu. Le jeu n'est pas touché ; la réutilisation du cœur métier sera
+> prouvée à l'étape M1.
+>
 > Statut : **proposition technique à valider.** Aucune scène du jeu n'est
 > modifiée et la refonte 3D n'est pas commencée. Direction artistique :
 > `ART_DIRECTION.md` ; décoration : `DECORATION.md`.
